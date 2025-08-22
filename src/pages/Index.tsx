@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { FeatureCard } from "@/components/FeatureCard";
 import { StatsSection } from "@/components/StatsSection";
 import { PriceBoard } from "@/components/PriceBoard";
+import { Marketplace } from "@/components/Marketplace";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { CTASection } from "@/components/CTASection";
 import heroImage from "@/assets/hero-agriculture-kenya.jpg";
@@ -156,6 +157,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Marketplace Section */}
+      <Marketplace />
 
       <StatsSection />
 
