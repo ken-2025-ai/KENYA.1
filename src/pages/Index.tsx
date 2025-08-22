@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
+import { AuthModal } from "@/components/auth/AuthModal";
+import { useNavigate } from "react-router-dom";
 import { FeatureCard } from "@/components/FeatureCard";
 import { StatsSection } from "@/components/StatsSection";
 import { PriceBoard } from "@/components/PriceBoard";
@@ -55,6 +58,20 @@ const features = [
 ];
 
 const Index = () => {
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; defaultTab: "login" | "signup" }>({
+    isOpen: false,
+    defaultTab: "signup"
+  });
+  const navigate = useNavigate();
+
+  const openAuthModal = (defaultTab: "login" | "signup") => {
+    setAuthModal({ isOpen: true, defaultTab });
+  };
+
+  const closeAuthModal = () => {
+    setAuthModal({ isOpen: false, defaultTab: "signup" });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -79,7 +96,12 @@ const Index = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12 animate-slide-up" style={{ animationDelay: "0.4s" }}>
-              <Button variant="accent" size="lg" className="group">
+              <Button 
+                variant="accent" 
+                size="lg" 
+                className="group"
+                onClick={() => openAuthModal("signup")}
+              >
                 <Users className="w-5 h-5 mr-2" />
                 Start Selling Now
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-smooth" />
@@ -154,7 +176,11 @@ const Index = () => {
               Access expert agricultural knowledge, weather forecasts, and farming best practices 
               to maximize your harvest and profits.
             </p>
-            <Button variant="hero" size="lg">
+            <Button 
+              variant="hero" 
+              size="lg"
+              onClick={() => navigate("/learn")}
+            >
               Explore Learning Resources
             </Button>
           </div>
@@ -216,6 +242,12 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      <AuthModal 
+        isOpen={authModal.isOpen} 
+        onClose={closeAuthModal}
+        defaultTab={authModal.defaultTab}
+      />
     </div>
   );
 };

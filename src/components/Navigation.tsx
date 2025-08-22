@@ -1,7 +1,24 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, Smartphone, TrendingUp, BookOpen, Users } from "lucide-react";
+import { AuthModal } from "@/components/auth/AuthModal";
+import { useNavigate } from "react-router-dom";
 
 export const Navigation = () => {
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; defaultTab: "login" | "signup" }>({
+    isOpen: false,
+    defaultTab: "login"
+  });
+  const navigate = useNavigate();
+
+  const openAuthModal = (defaultTab: "login" | "signup") => {
+    setAuthModal({ isOpen: true, defaultTab });
+  };
+
+  const closeAuthModal = () => {
+    setAuthModal({ isOpen: false, defaultTab: "login" });
+  };
+
   return (
     <nav className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -24,14 +41,31 @@ export const Navigation = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="hidden md:flex">Sign In</Button>
-            <Button variant="hero">Get Started</Button>
+            <Button 
+              variant="ghost" 
+              className="hidden md:flex"
+              onClick={() => openAuthModal("login")}
+            >
+              Sign In
+            </Button>
+            <Button 
+              variant="hero"
+              onClick={() => openAuthModal("signup")}
+            >
+              Get Started
+            </Button>
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="w-5 h-5" />
             </Button>
           </div>
         </div>
       </div>
+
+      <AuthModal 
+        isOpen={authModal.isOpen} 
+        onClose={closeAuthModal}
+        defaultTab={authModal.defaultTab}
+      />
     </nav>
   );
 };
