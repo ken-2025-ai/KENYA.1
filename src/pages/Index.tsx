@@ -7,6 +7,7 @@ import { FeatureCard } from "@/components/FeatureCard";
 import { StatsSection } from "@/components/StatsSection";
 import { PriceBoard } from "@/components/PriceBoard";
 import { Marketplace } from "@/components/Marketplace";
+import { AIMarketBoard } from "@/components/AIMarketBoard";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { CTASection } from "@/components/CTASection";
 import heroImage from "@/assets/hero-agriculture-kenya.jpg";
@@ -162,6 +163,9 @@ const Index = () => {
       <Marketplace />
 
       <StatsSection />
+
+      {/* AI Market Board Section */}
+      <AIMarketBoard />
 
       {/* Market Prices Section */}
       <section id="prices">
