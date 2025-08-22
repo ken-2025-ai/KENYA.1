@@ -27,6 +27,7 @@ export type Database = {
           location: string
           price_per_unit: number
           quantity_available: number
+          sold_at: string | null
           title: string
           unit: string
           updated_at: string
@@ -44,6 +45,7 @@ export type Database = {
           location: string
           price_per_unit: number
           quantity_available?: number
+          sold_at?: string | null
           title: string
           unit?: string
           updated_at?: string
@@ -61,6 +63,7 @@ export type Database = {
           location?: string
           price_per_unit?: number
           quantity_available?: number
+          sold_at?: string | null
           title?: string
           unit?: string
           updated_at?: string
@@ -115,7 +118,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_sold_listings: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
