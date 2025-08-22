@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ListingForm } from "@/components/ListingForm";
 import { 
   User, 
   Plus, 
@@ -15,7 +16,8 @@ import {
   Calendar,
   Edit,
   Trash2,
-  Eye
+  Eye,
+  CheckCircle
 } from "lucide-react";
 
 interface Profile {
@@ -40,6 +42,7 @@ interface MarketListing {
   harvest_date: string | null;
   is_active: boolean;
   created_at: string;
+  sold_at: string | null;
 }
 
 const Dashboard = () => {
@@ -47,6 +50,7 @@ const Dashboard = () => {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [listings, setListings] = useState<MarketListing[]>([]);
   const [loadingData, setLoadingData] = useState(true);
+  const [isListingFormOpen, setIsListingFormOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -54,6 +58,19 @@ const Dashboard = () => {
       fetchUserData();
     }
   }, [user]);
+
+  // Cleanup sold listings periodically
+  useEffect(() => {
+    const cleanupInterval = setInterval(async () => {
+      try {
+        await supabase.functions.invoke('cleanup-sold-listings');
+      } catch (error) {
+        console.log('Cleanup function not available or failed:', error);
+      }
+    }, 30 * 60 * 1000); // Run every 30 minutes
+
+    return () => clearInterval(cleanupInterval);
+  }, []);
 
   const fetchUserData = async () => {
     try {
@@ -121,6 +138,36 @@ const Dashboard = () => {
     }
   };
 
+  const markAsSold = async (listingId: string) => {
+    try {
+      const { error } = await supabase
+        .from("market_listings")
+        .update({ sold_at: new Date().toISOString() })
+        .eq("id", listingId);
+
+      if (error) throw error;
+
+      setListings(prev => 
+        prev.map(listing => 
+          listing.id === listingId 
+            ? { ...listing, sold_at: new Date().toISOString() }
+            : listing
+        )
+      );
+
+      toast({
+        title: "Listing marked as sold",
+        description: "The listing will be automatically removed in 2 hours.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error marking as sold",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading || loadingData) {
     return (
       <div className="min-h-screen bg-background">
@@ -152,7 +199,7 @@ const Dashboard = () => {
               Manage your farm listings and connect with buyers
             </p>
           </div>
-          <Button variant="hero" className="gap-2">
+          <Button variant="hero" className="gap-2" onClick={() => setIsListingFormOpen(true)}>
             <Plus className="w-4 h-4" />
             New Listing
           </Button>
@@ -228,7 +275,7 @@ const Dashboard = () => {
                 <p className="text-muted-foreground mb-4">
                   Start selling your produce by creating your first listing
                 </p>
-                <Button variant="hero">
+                <Button variant="hero" onClick={() => setIsListingFormOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
                   Create First Listing
                 </Button>
@@ -241,15 +288,20 @@ const Dashboard = () => {
                     className="flex items-center justify-between p-4 border rounded-lg hover:shadow-soft transition-smooth"
                   >
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-semibold">{listing.title}</h3>
-                        <Badge 
-                          variant={listing.is_active ? "default" : "secondary"}
-                        >
-                          {listing.is_active ? "Active" : "Inactive"}
-                        </Badge>
-                        <Badge variant="outline">{listing.category}</Badge>
-                      </div>
+                       <div className="flex items-center gap-3 mb-2">
+                         <h3 className="font-semibold">{listing.title}</h3>
+                         <Badge 
+                           variant={listing.is_active ? "default" : "secondary"}
+                         >
+                           {listing.is_active ? "Active" : "Inactive"}
+                         </Badge>
+                         {listing.sold_at && (
+                           <Badge variant="destructive">
+                             Sold
+                           </Badge>
+                         )}
+                         <Badge variant="outline">{listing.category}</Badge>
+                       </div>
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <span>KSh {listing.price_per_unit}/{listing.unit}</span>
                         <span className="flex items-center gap-1">
@@ -266,24 +318,36 @@ const Dashboard = () => {
                         </span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => toggleListingStatus(listing.id, listing.is_active)}
-                      >
-                        {listing.is_active ? "Deactivate" : "Activate"}
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Trash2 className="w-4 h-4 text-destructive" />
-                      </Button>
-                    </div>
+                     <div className="flex items-center gap-2">
+                       <Button variant="ghost" size="sm">
+                         <Eye className="w-4 h-4" />
+                       </Button>
+                       <Button variant="ghost" size="sm">
+                         <Edit className="w-4 h-4" />
+                       </Button>
+                       {!listing.sold_at && (
+                         <>
+                           <Button 
+                             variant="ghost" 
+                             size="sm"
+                             onClick={() => toggleListingStatus(listing.id, listing.is_active)}
+                           >
+                             {listing.is_active ? "Deactivate" : "Activate"}
+                           </Button>
+                           <Button 
+                             variant="ghost" 
+                             size="sm"
+                             onClick={() => markAsSold(listing.id)}
+                             className="text-success hover:text-success"
+                           >
+                             <CheckCircle className="w-4 h-4" />
+                           </Button>
+                         </>
+                       )}
+                       <Button variant="ghost" size="sm">
+                         <Trash2 className="w-4 h-4 text-destructive" />
+                       </Button>
+                     </div>
                   </div>
                 ))}
               </div>
@@ -291,6 +355,12 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      <ListingForm 
+        isOpen={isListingFormOpen}
+        onClose={() => setIsListingFormOpen(false)}
+        onSuccess={fetchUserData}
+      />
     </div>
   );
 };
