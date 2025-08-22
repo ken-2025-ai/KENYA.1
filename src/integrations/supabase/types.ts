@@ -14,7 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      market_listings: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          expiry_date: string | null
+          harvest_date: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          location: string
+          price_per_unit: number
+          quantity_available: number
+          title: string
+          unit: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          expiry_date?: string | null
+          harvest_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          location: string
+          price_per_unit: number
+          quantity_available?: number
+          title: string
+          unit?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          expiry_date?: string | null
+          harvest_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          location?: string
+          price_per_unit?: number
+          quantity_available?: number
+          title?: string
+          unit?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          farm_size: string | null
+          farming_type: string | null
+          full_name: string | null
+          id: string
+          location: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          farm_size?: string | null
+          farming_type?: string | null
+          full_name?: string | null
+          id?: string
+          location?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          farm_size?: string | null
+          farming_type?: string | null
+          full_name?: string | null
+          id?: string
+          location?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

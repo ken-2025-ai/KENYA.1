@@ -1,8 +1,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, Smartphone, TrendingUp, BookOpen, Users } from "lucide-react";
+import { Menu, Smartphone, TrendingUp, BookOpen, Users, LogOut } from "lucide-react";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export const Navigation = () => {
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; defaultTab: "login" | "signup" }>({
@@ -10,6 +18,7 @@ export const Navigation = () => {
     defaultTab: "login"
   });
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const openAuthModal = (defaultTab: "login" | "signup") => {
     setAuthModal({ isOpen: true, defaultTab });
@@ -17,6 +26,11 @@ export const Navigation = () => {
 
   const closeAuthModal = () => {
     setAuthModal({ isOpen: false, defaultTab: "login" });
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
   };
 
   return (
@@ -41,19 +55,54 @@ export const Navigation = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <Button 
-              variant="ghost" 
-              className="hidden md:flex"
-              onClick={() => openAuthModal("login")}
-            >
-              Sign In
-            </Button>
-            <Button 
-              variant="hero"
-              onClick={() => openAuthModal("signup")}
-            >
-              Get Started
-            </Button>
+            {user ? (
+              <>
+                <Button 
+                  variant="ghost" 
+                  className="hidden md:flex"
+                  onClick={() => navigate('/dashboard')}
+                >
+                  Dashboard
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="gap-2">
+                      <Users className="w-4 h-4" />
+                      {user.email}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/profile')}>
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <>
+                <Button 
+                  variant="ghost" 
+                  className="hidden md:flex"
+                  onClick={() => openAuthModal("login")}
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  variant="hero"
+                  onClick={() => openAuthModal("signup")}
+                >
+                  Get Started
+                </Button>
+              </>
+            )}
             <Button variant="ghost" size="icon" className="md:hidden">
               <Menu className="w-5 h-5" />
             </Button>
@@ -61,11 +110,13 @@ export const Navigation = () => {
         </div>
       </div>
 
-      <AuthModal 
-        isOpen={authModal.isOpen} 
-        onClose={closeAuthModal}
-        defaultTab={authModal.defaultTab}
-      />
+      {!user && (
+        <AuthModal 
+          isOpen={authModal.isOpen} 
+          onClose={closeAuthModal}
+          defaultTab={authModal.defaultTab}
+        />
+      )}
     </nav>
   );
 };
