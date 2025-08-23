@@ -21,6 +21,7 @@ interface MarketListing {
   image_url: string;
   created_at: string;
   user_id: string;
+  sold_at: string | null;
 }
 
 const categories = [
@@ -235,9 +236,16 @@ export const Marketplace = () => {
                 >
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start mb-2">
-                      <Badge variant="secondary" className="text-xs">
-                        {listing.category}
-                      </Badge>
+                      <div className="flex gap-2">
+                        <Badge variant="secondary" className="text-xs">
+                          {listing.category}
+                        </Badge>
+                        {listing.sold_at && (
+                          <Badge variant="destructive" className="text-xs">
+                            SOLD
+                          </Badge>
+                        )}
+                      </div>
                       <Badge 
                         variant={expiryStatus.color as "default" | "secondary" | "destructive"}
                         className="text-xs"

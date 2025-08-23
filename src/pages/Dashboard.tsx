@@ -40,6 +40,7 @@ interface MarketListing {
   quantity_available: number;
   location: string;
   harvest_date: string | null;
+  expiry_date: string | null;
   is_active: boolean;
   created_at: string;
   sold_at: string | null;
@@ -51,6 +52,7 @@ const Dashboard = () => {
   const [listings, setListings] = useState<MarketListing[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [isListingFormOpen, setIsListingFormOpen] = useState(false);
+  const [editingListing, setEditingListing] = useState<MarketListing | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -200,10 +202,16 @@ const Dashboard = () => {
   };
 
   const editListing = (listingId: string) => {
-    toast({
-      title: "Edit Listing",
-      description: "Edit functionality coming soon! You'll be able to modify your listings.",
-    });
+    const listing = listings.find(l => l.id === listingId);
+    if (listing) {
+      setEditingListing(listing);
+      setIsListingFormOpen(true);
+    }
+  };
+
+  const handleCloseForm = () => {
+    setIsListingFormOpen(false);
+    setEditingListing(null);
   };
 
   if (loading || loadingData) {
@@ -414,8 +422,10 @@ const Dashboard = () => {
 
       <ListingForm 
         isOpen={isListingFormOpen}
-        onClose={() => setIsListingFormOpen(false)}
+        onClose={handleCloseForm}
         onSuccess={fetchUserData}
+        editListing={editingListing || undefined}
+        isEditing={!!editingListing}
       />
     </div>
   );

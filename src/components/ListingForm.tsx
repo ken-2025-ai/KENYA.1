@@ -34,6 +34,19 @@ interface ListingFormProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  editListing?: {
+    id: string;
+    title: string;
+    description: string | null;
+    category: string;
+    price_per_unit: number;
+    unit: string;
+    quantity_available: number;
+    location: string;
+    harvest_date: string | null;
+    expiry_date: string | null;
+  };
+  isEditing?: boolean;
 }
 
 const categories = [
@@ -48,7 +61,7 @@ const categories = [
 
 const units = ["kg", "tons", "pieces", "bags", "liters"];
 
-export const ListingForm = ({ isOpen, onClose, onSuccess }: ListingFormProps) => {
+export const ListingForm = ({ isOpen, onClose, onSuccess, editListing, isEditing = false }: ListingFormProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,13 +69,15 @@ export const ListingForm = ({ isOpen, onClose, onSuccess }: ListingFormProps) =>
   const form = useForm<ListingFormData>({
     resolver: zodResolver(listingSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      category: "",
-      price_per_unit: 0,
-      unit: "kg",
-      quantity_available: 1,
-      location: "",
+      title: editListing?.title || "",
+      description: editListing?.description || "",
+      category: editListing?.category || "",
+      price_per_unit: editListing?.price_per_unit || 0,
+      unit: editListing?.unit || "kg",
+      quantity_available: editListing?.quantity_available || 1,
+      location: editListing?.location || "",
+      harvest_date: editListing?.harvest_date ? new Date(editListing.harvest_date) : undefined,
+      expiry_date: editListing?.expiry_date ? new Date(editListing.expiry_date) : undefined,
     },
   });
 
@@ -71,35 +86,59 @@ export const ListingForm = ({ isOpen, onClose, onSuccess }: ListingFormProps) =>
 
     setIsSubmitting(true);
     try {
-      const { error } = await supabase
-        .from("market_listings")
-        .insert({
-          title: data.title,
-          description: data.description || null,
-          category: data.category,
-          price_per_unit: data.price_per_unit,
-          unit: data.unit,
-          quantity_available: data.quantity_available,
-          location: data.location,
-          harvest_date: data.harvest_date ? data.harvest_date.toISOString().split('T')[0] : null,
-          expiry_date: data.expiry_date ? data.expiry_date.toISOString().split('T')[0] : null,
-          user_id: user.id,
-          is_active: true,
+      if (isEditing && editListing) {
+        const { error } = await supabase
+          .from("market_listings")
+          .update({
+            title: data.title,
+            description: data.description || null,
+            category: data.category,
+            price_per_unit: data.price_per_unit,
+            unit: data.unit,
+            quantity_available: data.quantity_available,
+            location: data.location,
+            harvest_date: data.harvest_date ? data.harvest_date.toISOString().split('T')[0] : null,
+            expiry_date: data.expiry_date ? data.expiry_date.toISOString().split('T')[0] : null,
+          })
+          .eq('id', editListing.id);
+
+        if (error) throw error;
+
+        toast({
+          title: "Success!",
+          description: "Your listing has been updated successfully.",
         });
+      } else {
+        const { error } = await supabase
+          .from("market_listings")
+          .insert({
+            title: data.title,
+            description: data.description || null,
+            category: data.category,
+            price_per_unit: data.price_per_unit,
+            unit: data.unit,
+            quantity_available: data.quantity_available,
+            location: data.location,
+            harvest_date: data.harvest_date ? data.harvest_date.toISOString().split('T')[0] : null,
+            expiry_date: data.expiry_date ? data.expiry_date.toISOString().split('T')[0] : null,
+            user_id: user.id,
+            is_active: true,
+          });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: "Success!",
-        description: "Your listing has been created successfully.",
-      });
+        toast({
+          title: "Success!",
+          description: "Your listing has been created successfully.",
+        });
+      }
 
       form.reset();
       onSuccess();
       onClose();
     } catch (error: any) {
       toast({
-        title: "Error creating listing",
+        title: isEditing ? "Error updating listing" : "Error creating listing",
         description: error.message,
         variant: "destructive",
       });
@@ -114,7 +153,7 @@ export const ListingForm = ({ isOpen, onClose, onSuccess }: ListingFormProps) =>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Package className="w-5 h-5" />
-            Create New Listing
+            {isEditing ? "Edit Listing" : "Create New Listing"}
           </DialogTitle>
         </DialogHeader>
 
@@ -336,7 +375,10 @@ export const ListingForm = ({ isOpen, onClose, onSuccess }: ListingFormProps) =>
                 Cancel
               </Button>
               <Button type="submit" variant="hero" disabled={isSubmitting}>
-                {isSubmitting ? "Creating..." : "Create Listing"}
+                {isSubmitting 
+                  ? (isEditing ? "Updating..." : "Creating...") 
+                  : (isEditing ? "Update Listing" : "Create Listing")
+                }
               </Button>
             </div>
           </form>
