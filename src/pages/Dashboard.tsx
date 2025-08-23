@@ -168,6 +168,44 @@ const Dashboard = () => {
     }
   };
 
+  const deleteListing = async (listingId: string) => {
+    try {
+      const { error } = await supabase
+        .from("market_listings")
+        .delete()
+        .eq("id", listingId);
+
+      if (error) throw error;
+
+      setListings(prev => prev.filter(listing => listing.id !== listingId));
+
+      toast({
+        title: "Listing deleted",
+        description: "Your listing has been permanently removed.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error deleting listing",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const viewListing = (listing: MarketListing) => {
+    toast({
+      title: listing.title,
+      description: `${listing.description || 'No description'} - KSh ${listing.price_per_unit}/${listing.unit}`,
+    });
+  };
+
+  const editListing = (listingId: string) => {
+    toast({
+      title: "Edit Listing",
+      description: "Edit functionality coming soon! You'll be able to modify your listings.",
+    });
+  };
+
   if (loading || loadingData) {
     return (
       <div className="min-h-screen bg-background">
@@ -318,36 +356,54 @@ const Dashboard = () => {
                         </span>
                       </div>
                     </div>
-                     <div className="flex items-center gap-2">
-                       <Button variant="ghost" size="sm">
-                         <Eye className="w-4 h-4" />
-                       </Button>
-                       <Button variant="ghost" size="sm">
-                         <Edit className="w-4 h-4" />
-                       </Button>
-                       {!listing.sold_at && (
-                         <>
-                           <Button 
-                             variant="ghost" 
-                             size="sm"
-                             onClick={() => toggleListingStatus(listing.id, listing.is_active)}
-                           >
-                             {listing.is_active ? "Deactivate" : "Activate"}
-                           </Button>
-                           <Button 
-                             variant="ghost" 
-                             size="sm"
-                             onClick={() => markAsSold(listing.id)}
-                             className="text-success hover:text-success"
-                           >
-                             <CheckCircle className="w-4 h-4" />
-                           </Button>
-                         </>
-                       )}
-                       <Button variant="ghost" size="sm">
-                         <Trash2 className="w-4 h-4 text-destructive" />
-                       </Button>
-                     </div>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => viewListing(listing)}
+                          title="View listing details"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => editListing(listing.id)}
+                          title="Edit listing"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        {!listing.sold_at && (
+                          <>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => toggleListingStatus(listing.id, listing.is_active)}
+                              title={listing.is_active ? "Deactivate listing" : "Activate listing"}
+                            >
+                              {listing.is_active ? "Deactivate" : "Activate"}
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => markAsSold(listing.id)}
+                              className="text-success hover:text-success"
+                              title="Mark as sold"
+                            >
+                              <CheckCircle className="w-4 h-4" />
+                            </Button>
+                          </>
+                        )}
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => deleteListing(listing.id)}
+                          title="Delete listing"
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
                   </div>
                 ))}
               </div>

@@ -176,7 +176,16 @@ export const Marketplace = () => {
                 className="pl-10 bg-background/80 border-border/50 focus:bg-background transition-smooth"
               />
             </div>
-            <Button variant="outline" className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              className="flex items-center gap-2"
+              onClick={() => {
+                toast({
+                  title: "Advanced Filters",
+                  description: "Price range, location, and freshness filters coming soon!",
+                });
+              }}
+            >
               <Filter className="w-4 h-4" />
               Filters
             </Button>
@@ -289,6 +298,12 @@ export const Marketplace = () => {
                     <Button 
                       className="w-full group bg-gradient-primary hover:shadow-glow-primary transition-smooth"
                       size="sm"
+                      onClick={() => {
+                        toast({
+                          title: "Contact Information",
+                          description: "Feature coming soon! You'll be able to contact farmers directly.",
+                        });
+                      }}
                     >
                       <Package className="w-4 h-4 mr-2" />
                       Contact Farmer
@@ -314,7 +329,17 @@ export const Marketplace = () => {
         {/* View All Button */}
         {filteredListings.length > 0 && (
           <div className="text-center mt-12">
-            <Button variant="outline" size="lg" className="group">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="group"
+              onClick={() => {
+                toast({
+                  title: "All Products",
+                  description: "Showing all available products in the marketplace!",
+                });
+              }}
+            >
               View All Products
               <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-smooth" />
             </Button>
