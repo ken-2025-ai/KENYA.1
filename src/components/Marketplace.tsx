@@ -3,10 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
-import { MapPin, Calendar, Package, Filter, Search, Star, ChevronRight, Clock } from "lucide-react";
+import { MapPin, Calendar, Package, Search, Star, ChevronRight, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { ContactFarmerModal } from "./ContactFarmerModal";
+import { FilterModal } from "./FilterModal";
 
 interface MarketListing {
   id: string;
@@ -35,6 +36,15 @@ const categories = [
   { name: "Livestock", value: "livestock", color: "bg-purple-500" }
 ];
 
+interface FilterState {
+  priceRange: [number, number];
+  location: string;
+  maxDistance: number;
+  freshness: string;
+  minQuantity: number;
+  categories: string[];
+}
+
 export const Marketplace = () => {
   const [listings, setListings] = useState<MarketListing[]>([]);
   const [filteredListings, setFilteredListings] = useState<MarketListing[]>([]);
@@ -43,6 +53,14 @@ export const Marketplace = () => {
   const [loading, setLoading] = useState(true);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState<MarketListing | null>(null);
+  const [filters, setFilters] = useState<FilterState>({
+    priceRange: [0, 10000],
+    location: "",
+    maxDistance: 50,
+    freshness: "all",
+    minQuantity: 0,
+    categories: []
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -51,7 +69,7 @@ export const Marketplace = () => {
 
   useEffect(() => {
     filterListings();
-  }, [listings, selectedCategory, searchQuery]);
+  }, [listings, selectedCategory, searchQuery, filters]);
 
   const fetchListings = async () => {
     try {
@@ -81,17 +99,63 @@ export const Marketplace = () => {
   const filterListings = () => {
     let filtered = listings;
 
+    // Category filter (existing)
     if (selectedCategory !== "all") {
       filtered = filtered.filter(listing => 
         listing.category.toLowerCase() === selectedCategory.toLowerCase()
       );
     }
 
+    // Advanced category filter
+    if (filters.categories.length > 0) {
+      filtered = filtered.filter(listing =>
+        filters.categories.includes(listing.category.toLowerCase())
+      );
+    }
+
+    // Search filter (existing)
     if (searchQuery.trim()) {
       filtered = filtered.filter(listing =>
         listing.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         listing.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         listing.location.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    // Price range filter
+    filtered = filtered.filter(listing =>
+      listing.price_per_unit >= filters.priceRange[0] &&
+      listing.price_per_unit <= filters.priceRange[1]
+    );
+
+    // Location filter
+    if (filters.location) {
+      filtered = filtered.filter(listing =>
+        listing.location.toLowerCase().includes(filters.location.toLowerCase())
+      );
+    }
+
+    // Freshness filter
+    if (filters.freshness !== "all") {
+      filtered = filtered.filter(listing => {
+        const days = getDaysUntilExpiry(listing.expiry_date);
+        switch (filters.freshness) {
+          case "fresh":
+            return days >= 7;
+          case "soon":
+            return days >= 3 && days < 7;
+          case "urgent":
+            return days >= 1 && days < 3;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Minimum quantity filter
+    if (filters.minQuantity > 0) {
+      filtered = filtered.filter(listing =>
+        listing.quantity_available >= filters.minQuantity
       );
     }
 
@@ -180,19 +244,12 @@ export const Marketplace = () => {
                 className="pl-10 bg-background/80 border-border/50 focus:bg-background transition-smooth"
               />
             </div>
-            <Button 
-              variant="outline" 
-              className="flex items-center gap-2"
-              onClick={() => {
-                toast({
-                  title: "Advanced Filters",
-                  description: "Price range, location, and freshness filters coming soon!",
-                });
-              }}
-            >
-              <Filter className="w-4 h-4" />
-              Filters
-            </Button>
+            <FilterModal 
+              filters={filters}
+              onFiltersChange={setFilters}
+              availableCategories={categories.filter(cat => cat.value !== "all")}
+              availableLocations={[...new Set(listings.map(listing => listing.location))]}
+            />
           </div>
 
           {/* Category Filter */}
