@@ -48,7 +48,7 @@ export const FilterModal = ({
   const handleResetFilters = () => {
     const resetFilters: FilterState = {
       priceRange: [0, 10000],
-      location: "",
+      location: "all",
       maxDistance: 50,
       freshness: "all",
       minQuantity: 0,
@@ -70,7 +70,7 @@ export const FilterModal = ({
     return (
       filters.priceRange[0] > 0 ||
       filters.priceRange[1] < 10000 ||
-      filters.location !== "" ||
+      filters.location !== "all" ||
       filters.maxDistance < 50 ||
       filters.freshness !== "all" ||
       filters.minQuantity > 0 ||
@@ -141,7 +141,7 @@ export const FilterModal = ({
                 <SelectValue placeholder="Select location" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Locations</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
                 {availableLocations.map((location) => (
                   <SelectItem key={location} value={location}>
                     {location}

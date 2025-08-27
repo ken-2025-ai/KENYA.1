@@ -55,7 +55,7 @@ export const Marketplace = () => {
   const [selectedListing, setSelectedListing] = useState<MarketListing | null>(null);
   const [filters, setFilters] = useState<FilterState>({
     priceRange: [0, 10000],
-    location: "",
+    location: "all",
     maxDistance: 50,
     freshness: "all",
     minQuantity: 0,
@@ -129,7 +129,7 @@ export const Marketplace = () => {
     );
 
     // Location filter
-    if (filters.location) {
+    if (filters.location && filters.location !== "all") {
       filtered = filtered.filter(listing =>
         listing.location.toLowerCase().includes(filters.location.toLowerCase())
       );
