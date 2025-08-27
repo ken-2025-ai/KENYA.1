@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { 
   BookOpen, 
   CloudRain, 
@@ -13,7 +14,9 @@ import {
   Users,
   Play,
   Download,
-  Star
+  Star,
+  Smartphone,
+  Zap
 } from "lucide-react";
 
 const learningCategories = [
@@ -98,32 +101,85 @@ const featuredCourses = [
 ];
 
 const Learn = () => {
+  const isMobile = useIsMobile();
+
+  const handleDownloadApp = () => {
+    // Simulate app download or redirect to app store
+    if ('vibrate' in navigator) {
+      navigator.vibrate(100);
+    }
+    // In a real app, this would redirect to Google Play Store or Apple App Store
+    window.open('https://play.google.com/store', '_blank');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
       
       {/* Hero Section */}
-      <section className="bg-gradient-hero py-16">
+      <section className="bg-gradient-hero py-12 md:py-16">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto text-primary-foreground">
-            <BookOpen className="w-16 h-16 mx-auto mb-6 text-accent-glow" />
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            <BookOpen className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-6 text-accent-glow animate-pulse" />
+            <h1 className="text-3xl md:text-6xl font-bold mb-6">
               Learn Modern Farming
             </h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto">
+            <p className="text-lg md:text-2xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto">
               Access expert agricultural knowledge, weather insights, and farming best practices 
               to maximize your harvest and profits.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="accent" size="lg">
+            <div className="flex flex-col gap-4 justify-center max-w-md mx-auto md:max-w-none md:flex-row">
+              <Button 
+                variant="accent" 
+                size={isMobile ? "default" : "lg"} 
+                className="w-full md:w-auto shadow-glow-accent"
+              >
                 <Play className="w-5 h-5 mr-2" />
                 Start Learning
               </Button>
-              <Button variant="outline" size="lg" className="bg-white/10 text-primary-foreground border-white/30 hover:bg-white/20">
-                <Download className="w-5 h-5 mr-2" />
-                Download Mobile App
+              
+              {/* Enhanced Mobile App Download Button */}
+              <Button 
+                variant="premium" 
+                size={isMobile ? "default" : "lg"}
+                className="w-full md:w-auto relative overflow-hidden group bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-sm border border-white/30 text-primary-foreground hover:from-white/30 hover:to-white/20 hover:scale-105 transition-all duration-300"
+                onClick={handleDownloadApp}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <Smartphone className="w-5 h-5 mr-2 animate-bounce" />
+                <span className="relative z-10 font-semibold">
+                  {isMobile ? "Get Mobile App" : "Download Mobile App"}
+                </span>
+                <Zap className="w-4 h-4 ml-2 text-accent-glow animate-pulse" />
               </Button>
             </div>
+            
+            {/* Mobile App Features Preview */}
+            {isMobile && (
+              <div className="mt-8 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                <h3 className="text-sm font-semibold mb-3 text-primary-foreground">
+                  📱 Mobile App Features
+                </h3>
+                <div className="grid grid-cols-2 gap-3 text-xs text-primary-foreground/80">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-accent-glow rounded-full animate-pulse" />
+                    Offline Learning
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-accent-glow rounded-full animate-pulse" />
+                    Weather Alerts
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-accent-glow rounded-full animate-pulse" />
+                    Market Prices
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-accent-glow rounded-full animate-pulse" />
+                    Expert Chat
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -206,8 +262,21 @@ const Learn = () => {
                       {course.students}
                     </div>
                   </div>
-                  <Button variant="hero" size="sm" className="w-full group-hover:scale-105 transition-smooth">
-                    Start Course
+                  <Button 
+                    variant="hero" 
+                    size={isMobile ? "default" : "sm"} 
+                    className="w-full group-hover:scale-105 transition-all duration-300 hover:shadow-glow-primary active:scale-95 touch-manipulation min-h-[44px] relative overflow-hidden"
+                    onClick={() => {
+                      if ('vibrate' in navigator) {
+                        navigator.vibrate(50);
+                      }
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary-glow/0 to-primary-glow/30 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500" />
+                    <Play className="w-4 h-4 mr-2" />
+                    <span className="relative z-10 font-semibold">
+                      {isMobile ? "Start Now" : "Start Course"}
+                    </span>
                   </Button>
                 </CardContent>
               </Card>
