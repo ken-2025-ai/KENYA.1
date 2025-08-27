@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MapPin, Calendar, Package, Filter, Search, Star, ChevronRight, Clock } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { ContactFarmerModal } from "./ContactFarmerModal";
 
 interface MarketListing {
   id: string;
@@ -40,6 +41,8 @@ export const Marketplace = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+  const [selectedListing, setSelectedListing] = useState<MarketListing | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -307,10 +310,8 @@ export const Marketplace = () => {
                       className="w-full group bg-gradient-primary hover:shadow-glow-primary transition-smooth"
                       size="sm"
                       onClick={() => {
-                        toast({
-                          title: "Contact Information",
-                          description: "Feature coming soon! You'll be able to contact farmers directly.",
-                        });
+                        setSelectedListing(listing);
+                        setContactModalOpen(true);
                       }}
                     >
                       <Package className="w-4 h-4 mr-2" />
@@ -353,6 +354,13 @@ export const Marketplace = () => {
             </Button>
           </div>
         )}
+
+        {/* Contact Farmer Modal */}
+        <ContactFarmerModal 
+          isOpen={contactModalOpen}
+          onClose={() => setContactModalOpen(false)}
+          listing={selectedListing}
+        />
       </div>
     </section>
   );
