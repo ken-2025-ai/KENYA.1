@@ -20,9 +20,9 @@ Deno.serve(async (req) => {
     console.log('Starting cleanup of sold listings older than 2 hours...')
 
     // Delete listings marked as sold more than 2 hours ago
-    const { data, error } = await supabaseClient
+    const { count, error } = await supabaseClient
       .from('market_listings')
-      .delete()
+      .delete({ count: 'exact' })
       .lte('sold_at', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString())
       .not('sold_at', 'is', null)
 
@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
       throw error
     }
 
-    const deletedCount = data?.length || 0
+    const deletedCount = count || 0
     console.log(`Successfully cleaned up ${deletedCount} sold listings`)
 
     return new Response(
@@ -51,11 +51,12 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Cleanup function error:', error)
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
     
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: error.message 
+        error: errorMessage 
       }),
       { 
         headers: { 

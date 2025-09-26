@@ -55,7 +55,7 @@ Quality should be "Grade A", "Grade B", or "Mixed".
 Availability should be "High", "Medium", or "Low".
 Ensure prices reflect current Kenyan market conditions.`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${geminiApiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -150,7 +150,8 @@ Ensure prices reflect current Kenyan market conditions.`;
 
   } catch (error) {
     console.error('Error in ai-market-prices function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
