@@ -310,9 +310,9 @@ const Index = () => {
             <div>
               <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm text-primary-foreground/80">
-                <li>📧 hello@kenyapulse.co.ke</li>
-                <li>📱 +254 700 000 000</li>
-                <li>📍 Nairobi, Kenya</li>
+                <li>📧 kenkendagor3@gmail.com</li>
+                <li>📱 +254768731991</li>
+                <li>📍 Eldoret, Kenya</li>
               </ul>
             </div>
           </div>
