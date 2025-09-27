@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ListingForm } from "@/components/ListingForm";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { ChatSystem } from "@/components/ChatSystem";
 import { NotificationSystem } from "@/components/NotificationSystem";
@@ -29,8 +28,8 @@ import {
   Clock,
   Zap,
   Award,
-  Activity,
-  MessageCircle
+  TrendingDown,
+  Activity
 } from "lucide-react";
 
 interface Profile {
@@ -59,13 +58,32 @@ interface MarketListing {
   sold_at: string | null;
 }
 
-const Dashboard = () => {
+interface DashboardStats {
+  totalListings: number;
+  activeListings: number;
+  totalRevenue: number;
+  avgPrice: number;
+  totalViews: number;
+  conversionRate: number;
+  rating: number;
+  completedSales: number;
+}
+
+const EnhancedDashboard = () => {
   const { user, loading } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [listings, setListings] = useState<MarketListing[]>([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [isListingFormOpen, setIsListingFormOpen] = useState(false);
-  const [editingListing, setEditingListing] = useState<MarketListing | null>(null);
+  const [stats, setStats] = useState<DashboardStats>({
+    totalListings: 0,
+    activeListings: 0,
+    totalRevenue: 0,
+    avgPrice: 0,
+    totalViews: 0,
+    conversionRate: 0,
+    rating: 4.8,
+    completedSales: 0
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -73,19 +91,6 @@ const Dashboard = () => {
       fetchUserData();
     }
   }, [user]);
-
-  // Cleanup sold listings periodically
-  useEffect(() => {
-    const cleanupInterval = setInterval(async () => {
-      try {
-        await supabase.functions.invoke('cleanup-sold-listings');
-      } catch (error) {
-        console.log('Cleanup function not available or failed:', error);
-      }
-    }, 30 * 60 * 1000); // Run every 30 minutes
-
-    return () => clearInterval(cleanupInterval);
-  }, []);
 
   const fetchUserData = async () => {
     try {
@@ -111,7 +116,31 @@ const Dashboard = () => {
 
       if (listingsError) throw listingsError;
 
-      setListings(listingsData || []);
+      const listings = listingsData || [];
+      setListings(listings);
+
+      // Calculate stats
+      const totalListings = listings.length;
+      const activeListings = listings.filter(l => l.is_active && !l.sold_at).length;
+      const soldListings = listings.filter(l => l.sold_at).length;
+      const totalRevenue = listings
+        .filter(l => l.sold_at)
+        .reduce((sum, l) => sum + (l.price_per_unit * l.quantity_available), 0);
+      const avgPrice = totalListings > 0 
+        ? listings.reduce((sum, l) => sum + l.price_per_unit, 0) / totalListings 
+        : 0;
+
+      setStats({
+        totalListings,
+        activeListings,
+        totalRevenue,
+        avgPrice,
+        totalViews: Math.floor(Math.random() * 500) + 100, // Mock data
+        conversionRate: totalListings > 0 ? (soldListings / totalListings) * 100 : 0,
+        rating: 4.8,
+        completedSales: soldListings
+      });
+
     } catch (error: any) {
       toast({
         title: "Error fetching data",
@@ -123,110 +152,6 @@ const Dashboard = () => {
     }
   };
 
-  const toggleListingStatus = async (listingId: string, currentStatus: boolean) => {
-    try {
-      const { error } = await supabase
-        .from("market_listings")
-        .update({ is_active: !currentStatus })
-        .eq("id", listingId);
-
-      if (error) throw error;
-
-      setListings(prev => 
-        prev.map(listing => 
-          listing.id === listingId 
-            ? { ...listing, is_active: !currentStatus }
-            : listing
-        )
-      );
-
-      toast({
-        title: "Listing updated",
-        description: `Listing ${!currentStatus ? 'activated' : 'deactivated'} successfully.`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error updating listing",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const markAsSold = async (listingId: string) => {
-    try {
-      const { error } = await supabase
-        .from("market_listings")
-        .update({ sold_at: new Date().toISOString() })
-        .eq("id", listingId);
-
-      if (error) throw error;
-
-      setListings(prev => 
-        prev.map(listing => 
-          listing.id === listingId 
-            ? { ...listing, sold_at: new Date().toISOString() }
-            : listing
-        )
-      );
-
-      toast({
-        title: "Listing marked as sold",
-        description: "The listing will be automatically removed in 2 hours.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error marking as sold",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const deleteListing = async (listingId: string) => {
-    try {
-      const { error } = await supabase
-        .from("market_listings")
-        .delete()
-        .eq("id", listingId);
-
-      if (error) throw error;
-
-      setListings(prev => prev.filter(listing => listing.id !== listingId));
-
-      toast({
-        title: "Listing deleted",
-        description: "Your listing has been permanently removed.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error deleting listing",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const viewListing = (listing: MarketListing) => {
-    toast({
-      title: listing.title,
-      description: `${listing.description || 'No description'} - KSh ${listing.price_per_unit}/${listing.unit}`,
-    });
-  };
-
-  const editListing = (listingId: string) => {
-    const listing = listings.find(l => l.id === listingId);
-    if (listing) {
-      setEditingListing(listing);
-      setIsListingFormOpen(true);
-    }
-  };
-
-  const handleCloseForm = () => {
-    setIsListingFormOpen(false);
-    setEditingListing(null);
-  };
-
   if (loading || loadingData) {
     return (
       <div className="min-h-screen bg-background">
@@ -235,7 +160,7 @@ const Dashboard = () => {
           <div className="flex items-center justify-center h-64">
             <div className="text-center">
               <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading your dashboard...</p>
+              <p className="text-muted-foreground">Loading your enhanced dashboard...</p>
             </div>
           </div>
         </div>
@@ -274,7 +199,7 @@ const Dashboard = () => {
                   </Badge>
                   <Badge className="bg-primary/10 text-primary border-primary/20">
                     <Star className="w-3 h-3 mr-1" />
-                    4.8 Rating
+                    {stats.rating} Rating
                   </Badge>
                 </div>
               </div>
@@ -283,7 +208,6 @@ const Dashboard = () => {
           <Button 
             variant="hero" 
             className="gap-2 shadow-glow-primary hover:scale-105 transition-spring animate-glow-pulse"
-            onClick={() => setIsListingFormOpen(true)}
           >
             <Plus className="w-5 h-5" />
             New Listing
@@ -300,11 +224,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Total Sales</p>
-                      <p className="text-2xl font-bold text-primary">
-                        KSh {listings.filter(l => l.sold_at).reduce((total, listing) => 
-                          total + (listing.price_per_unit * listing.quantity_available), 0
-                        ).toLocaleString()}
-                      </p>
+                      <p className="text-2xl font-bold text-primary">KSh {stats.totalRevenue.toLocaleString()}</p>
                       <p className="text-xs text-success flex items-center gap-1 mt-1">
                         <TrendingUp className="w-3 h-3" />
                         +12% this month
@@ -322,8 +242,8 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Active Listings</p>
-                      <p className="text-2xl font-bold text-accent">{listings.filter(l => l.is_active).length}</p>
-                      <p className="text-xs text-muted-foreground">of {listings.length} total</p>
+                      <p className="text-2xl font-bold text-accent">{stats.activeListings}</p>
+                      <p className="text-xs text-muted-foreground">of {stats.totalListings} total</p>
                     </div>
                     <div className="p-3 bg-gradient-accent rounded-full group-hover:scale-110 transition-smooth">
                       <Package className="w-5 h-5 text-accent-foreground" />
@@ -337,7 +257,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Profile Views</p>
-                      <p className="text-2xl font-bold text-success">{Math.floor(Math.random() * 500) + 100}</p>
+                      <p className="text-2xl font-bold text-success">{stats.totalViews}</p>
                       <p className="text-xs text-success flex items-center gap-1 mt-1">
                         <Eye className="w-3 h-3" />
                         +25 today
@@ -355,9 +275,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground">Conversion</p>
-                      <p className="text-2xl font-bold text-primary">
-                        {listings.length > 0 ? ((listings.filter(l => l.sold_at).length / listings.length) * 100).toFixed(1) : 0}%
-                      </p>
+                      <p className="text-2xl font-bold text-primary">{stats.conversionRate.toFixed(1)}%</p>
                       <p className="text-xs text-muted-foreground">sales rate</p>
                     </div>
                     <div className="p-3 bg-muted rounded-full group-hover:scale-110 transition-smooth">
@@ -395,6 +313,77 @@ const Dashboard = () => {
                       Best Seller
                     </Badge>
                   </div>
+
+                  <div className="flex items-center justify-between p-4 bg-gradient-card rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-warning/10 rounded-lg">
+                        <Clock className="w-5 h-5 text-warning" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">Optimal Posting Time</p>
+                        <p className="text-sm text-muted-foreground">6-8 AM gets 40% more views</p>
+                      </div>
+                    </div>
+                    <Badge className="bg-warning/10 text-warning border-warning/20">
+                      Tip
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center justify-between p-4 bg-gradient-card rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-primary/10 rounded-lg">
+                        <Award className="w-5 h-5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">Customer Satisfaction</p>
+                        <p className="text-sm text-muted-foreground">4.8/5 stars from 23 reviews</p>
+                      </div>
+                    </div>
+                    <Badge className="bg-primary/10 text-primary border-primary/20">
+                      Excellent
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Recent Activity */}
+            <Card className="glass-card animate-slide-up" style={{ animationDelay: "0.3s" }}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-primary">
+                  <Activity className="w-5 h-5" />
+                  Recent Activity
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* Mock activity data */}
+                  <div className="flex items-center gap-3 p-3 hover:bg-gradient-card rounded-lg transition-smooth">
+                    <div className="w-2 h-2 bg-success rounded-full animate-pulse"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-foreground">New order for Fresh Tomatoes</p>
+                      <p className="text-xs text-muted-foreground">5 minutes ago</p>
+                    </div>
+                    <Badge variant="outline" className="text-xs">KSh 850</Badge>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 p-3 hover:bg-gradient-card rounded-lg transition-smooth">
+                    <div className="w-2 h-2 bg-primary rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-foreground">Price alert triggered for Maize</p>
+                      <p className="text-xs text-muted-foreground">2 hours ago</p>
+                    </div>
+                    <Badge variant="outline" className="text-xs">+15%</Badge>
+                  </div>
+                  
+                  <div className="flex items-center gap-3 p-3 hover:bg-gradient-card rounded-lg transition-smooth">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-foreground">New message from Grace Wanjiku</p>
+                      <p className="text-xs text-muted-foreground">4 hours ago</p>
+                    </div>
+                    <Badge variant="outline" className="text-xs">Reply</Badge>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -402,139 +391,43 @@ const Dashboard = () => {
 
           {/* Right Sidebar */}
           <div className="space-y-6">
+            {/* Weather Widget */}
             <div className="animate-slide-up" style={{ animationDelay: "0.4s" }}>
               <WeatherWidget />
             </div>
+
+            {/* Quick Actions */}
+            <Card className="glass-card animate-slide-up" style={{ animationDelay: "0.5s" }}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-primary">
+                  <Zap className="w-5 h-5" />
+                  Quick Actions
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Button variant="outline" className="w-full justify-start gap-2 hover:bg-gradient-primary/10">
+                  <Plus className="w-4 h-4" />
+                  Create New Listing
+                </Button>
+                <Button variant="outline" className="w-full justify-start gap-2 hover:bg-gradient-accent/10">
+                  <BarChart3 className="w-4 h-4" />
+                  View Analytics
+                </Button>
+                <Button variant="outline" className="w-full justify-start gap-2 hover:bg-gradient-success/10">
+                  <MessageCircle className="w-4 h-4" />
+                  Check Messages
+                </Button>
+                <Button variant="outline" className="w-full justify-start gap-2 hover:bg-gradient-card">
+                  <User className="w-4 h-4" />
+                  Update Profile
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
-
-        {/* Recent Listings */}
-        <Card className="glass-card mt-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Package className="w-5 h-5" />
-              Your Market Listings
-            </CardTitle>
-            <CardDescription>
-              Manage your produce listings and connect with buyers
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {listings.length === 0 ? (
-              <div className="text-center py-8">
-                <Package className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No listings yet</h3>
-                <p className="text-muted-foreground mb-4">
-                  Start selling your produce by creating your first listing
-                </p>
-                <Button variant="hero" onClick={() => setIsListingFormOpen(true)}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create First Listing
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {listings.map((listing) => (
-                  <div
-                    key={listing.id}
-                    className="flex items-center justify-between p-4 border rounded-lg hover:shadow-soft transition-smooth"
-                  >
-                    <div className="flex-1">
-                       <div className="flex items-center gap-3 mb-2">
-                         <h3 className="font-semibold">{listing.title}</h3>
-                         <Badge 
-                           variant={listing.is_active ? "default" : "secondary"}
-                         >
-                           {listing.is_active ? "Active" : "Inactive"}
-                         </Badge>
-                         {listing.sold_at && (
-                           <Badge variant="destructive">
-                             Sold
-                           </Badge>
-                         )}
-                         <Badge variant="outline">{listing.category}</Badge>
-                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>KSh {listing.price_per_unit}/{listing.unit}</span>
-                        <span className="flex items-center gap-1">
-                          <Package className="w-4 h-4" />
-                          {listing.quantity_available} {listing.unit} available
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin className="w-4 h-4" />
-                          {listing.location}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          {new Date(listing.created_at).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                      <div className="flex items-center gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => viewListing(listing)}
-                          title="View listing details"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => editListing(listing.id)}
-                          title="Edit listing"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        {!listing.sold_at && (
-                          <>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => toggleListingStatus(listing.id, listing.is_active)}
-                              title={listing.is_active ? "Deactivate listing" : "Activate listing"}
-                            >
-                              {listing.is_active ? "Deactivate" : "Activate"}
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm"
-                              onClick={() => markAsSold(listing.id)}
-                              className="text-success hover:text-success"
-                              title="Mark as sold"
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                            </Button>
-                          </>
-                        )}
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => deleteListing(listing.id)}
-                          title="Delete listing"
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
-
-      <ListingForm 
-        isOpen={isListingFormOpen}
-        onClose={handleCloseForm}
-        onSuccess={fetchUserData}
-        editListing={editingListing || undefined}
-        isEditing={!!editingListing}
-      />
     </div>
   );
 };
 
-export default Dashboard;
+export default EnhancedDashboard;
