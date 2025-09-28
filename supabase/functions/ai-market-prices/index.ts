@@ -55,7 +55,7 @@ Quality should be "Grade A", "Grade B", or "Mixed".
 Availability should be "High", "Medium", or "Low".
 Ensure prices reflect current Kenyan market conditions.`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiApiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
