@@ -17,7 +17,11 @@ import {
   Download,
   Star,
   Smartphone,
-  Zap
+  Zap,
+  Beef,
+  Wheat,
+  ExternalLink,
+  ArrowRight
 } from "lucide-react";
 
 const learningCategories = [
@@ -193,6 +197,142 @@ const Learn = () => {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Specialized Management Systems */}
+      <section className="py-16 bg-gradient-to-br from-primary/5 to-accent/5">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              Specialized Management Systems
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Access our dedicated platforms for comprehensive farm management
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {/* Animal Husbandry Button */}
+            <Card className="group relative overflow-hidden hover:shadow-glow-primary transition-all duration-500 border-2 border-primary/20 hover:border-primary/40">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <ExternalLink className="w-5 h-5 text-primary" />
+              </div>
+              
+              <CardHeader className="relative z-10 pb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Beef className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+                  Animal Husbandry
+                </CardTitle>
+                <CardDescription className="text-base">
+                  Complete livestock management system for cattle, goats, sheep, and poultry. Track health, breeding, feeding schedules, and profitability.
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="relative z-10 pt-0">
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                    Livestock Health Records
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                    Breeding & Genetics Tracking
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                    Feed Management & Costs
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
+                    Production Analytics
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="hero"
+                  size="lg"
+                  className="w-full group/btn relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 shadow-glow-accent hover:shadow-glow-primary transition-all duration-300 min-h-[52px]"
+                  onClick={() => {
+                    if ('vibrate' in navigator) {
+                      navigator.vibrate(100);
+                    }
+                    window.open('https://farmsite-manager-kendagor.netlify.app/', '_blank');
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
+                  <Beef className="w-5 h-5 mr-3" />
+                  <span className="relative z-10 font-bold">
+                    Manage Livestock
+                  </span>
+                  <ArrowRight className="w-5 h-5 ml-3 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Crop Management Button */}
+            <Card className="group relative overflow-hidden hover:shadow-glow-accent transition-all duration-500 border-2 border-accent/20 hover:border-accent/40">
+              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <ExternalLink className="w-5 h-5 text-accent" />
+              </div>
+              
+              <CardHeader className="relative z-10 pb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Wheat className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-foreground group-hover:text-accent transition-colors duration-300">
+                  Crop Management
+                </CardTitle>
+                <CardDescription className="text-base">
+                  Advanced crop planning and management system for maize, coffee, vegetables, and other crops. Optimize yields and maximize profits.
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="relative z-10 pt-0">
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    Planting & Harvest Planning
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    Pest & Disease Management
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    Irrigation & Weather Integration
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    Yield & Profit Analytics
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="hero"
+                  size="lg"
+                  className="w-full group/btn relative overflow-hidden bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-glow-accent hover:shadow-glow-primary transition-all duration-300 min-h-[52px]"
+                  onClick={() => {
+                    if ('vibrate' in navigator) {
+                      navigator.vibrate(100);
+                    }
+                    window.open('https://riftvalley-cropmanager-kendagor.netlify.app/', '_blank');
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
+                  <Wheat className="w-5 h-5 mr-3" />
+                  <span className="relative z-10 font-bold">
+                    Manage Crops
+                  </span>
+                  <ArrowRight className="w-5 h-5 ml-3 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
