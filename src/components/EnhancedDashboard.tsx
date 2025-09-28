@@ -29,7 +29,8 @@ import {
   Zap,
   Award,
   TrendingDown,
-  Activity
+  Activity,
+  MessageCircle
 } from "lucide-react";
 
 interface Profile {
