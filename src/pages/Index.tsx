@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { AuthModal } from "@/components/auth/AuthModal";
@@ -11,6 +11,7 @@ import { AIMarketBoard } from "@/components/AIMarketBoard";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { CTASection } from "@/components/CTASection";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { usePWA } from "@/hooks/usePWA";
 import heroImage from "@/assets/hero-agriculture-kenya.jpg";
 import { 
   Smartphone, 
@@ -69,6 +70,12 @@ const Index = () => {
   });
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { canInstall, installApp, registerServiceWorker } = usePWA();
+
+  useEffect(() => {
+    // Register service worker on component mount
+    registerServiceWorker();
+  }, [registerServiceWorker]);
 
   const openAuthModal = (defaultTab: "login" | "signup") => {
     setAuthModal({ isOpen: true, defaultTab });
@@ -123,18 +130,29 @@ const Index = () => {
                 variant="premium" 
                 size={isMobile ? "default" : "lg"}
                 className="w-full sm:w-auto min-h-[48px] touch-manipulation relative overflow-hidden group bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-sm border border-white/30 text-primary-foreground hover:from-white/30 hover:to-white/20 hover:scale-105 transition-all duration-300"
-                onClick={() => {
+                onClick={async () => {
                   if ('vibrate' in navigator) {
                     navigator.vibrate(100);
                   }
-                  // Simulate app download
-                  window.open('https://play.google.com/store', '_blank');
+                  
+                  // Try PWA install first, fallback to app store
+                  if (canInstall) {
+                    const installed = await installApp();
+                    if (!installed) {
+                      window.open('https://play.google.com/store', '_blank');
+                    }
+                  } else {
+                    window.open('https://play.google.com/store', '_blank');
+                  }
                 }}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <Download className="w-5 h-5 mr-2 animate-bounce" />
                 <span className="relative z-10 font-semibold">
-                  {isMobile ? "Get Mobile App" : "Download Mobile App"}
+                  {canInstall 
+                    ? (isMobile ? "Install App" : "Install App") 
+                    : (isMobile ? "Get Mobile App" : "Download Mobile App")
+                  }
                 </span>
                 <Zap className="w-4 h-4 ml-2 text-accent-glow animate-pulse" />
               </Button>

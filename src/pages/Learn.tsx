@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { usePWA } from "@/hooks/usePWA";
 import { 
   BookOpen, 
   CloudRain, 
@@ -102,14 +103,23 @@ const featuredCourses = [
 
 const Learn = () => {
   const isMobile = useIsMobile();
+  const { canInstall, installApp } = usePWA();
 
-  const handleDownloadApp = () => {
+  const handleDownloadApp = async () => {
     // Simulate app download or redirect to app store
     if ('vibrate' in navigator) {
       navigator.vibrate(100);
     }
-    // In a real app, this would redirect to Google Play Store or Apple App Store
-    window.open('https://play.google.com/store', '_blank');
+    
+    // Try PWA install first, fallback to app store
+    if (canInstall) {
+      const installed = await installApp();
+      if (!installed) {
+        window.open('https://play.google.com/store', '_blank');
+      }
+    } else {
+      window.open('https://play.google.com/store', '_blank');
+    }
   };
 
   return (
@@ -148,7 +158,10 @@ const Learn = () => {
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <Smartphone className="w-5 h-5 mr-2 animate-bounce" />
                 <span className="relative z-10 font-semibold">
-                  {isMobile ? "Get Mobile App" : "Download Mobile App"}
+                  {canInstall 
+                    ? (isMobile ? "Install App" : "Install App") 
+                    : (isMobile ? "Get Mobile App" : "Download Mobile App")
+                  }
                 </span>
                 <Zap className="w-4 h-4 ml-2 text-accent-glow animate-pulse" />
               </Button>
