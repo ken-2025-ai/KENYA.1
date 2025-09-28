@@ -12,6 +12,7 @@ import { TestimonialsSection } from "@/components/TestimonialsSection";
 import { CTASection } from "@/components/CTASection";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePWA } from "@/hooks/usePWA";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import heroImage from "@/assets/hero-agriculture-kenya.jpg";
 import { 
   Smartphone, 
@@ -341,6 +342,8 @@ const Index = () => {
         </div>
       </footer>
 
+      <InstallPrompt />
+      
       <AuthModal 
         isOpen={authModal.isOpen} 
         onClose={closeAuthModal}
