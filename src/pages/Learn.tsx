@@ -135,14 +135,17 @@ const Learn = () => {
         <Navigation />
       
       {/* Hero Section */}
-      <section className="bg-gradient-hero py-12 md:py-16">
-        <div className="container mx-auto px-4 text-center">
+      <section className="bg-gradient-hero py-12 md:py-16 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-mesh opacity-10"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
           <div className="max-w-4xl mx-auto text-primary-foreground">
-            <BookOpen className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-6 text-accent-glow animate-pulse" />
-            <h1 className="text-3xl md:text-6xl font-bold mb-6">
+            <div className="inline-block p-4 bg-white/10 rounded-full mb-6 backdrop-blur-sm">
+              <BookOpen className="w-12 h-12 md:w-16 md:h-16 text-accent-glow animate-pulse" />
+            </div>
+            <h1 className="text-3xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-white via-accent-glow to-white bg-clip-text text-transparent">
               Learn Modern Farming
             </h1>
-            <p className="text-lg md:text-2xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto">
+            <p className="text-lg md:text-2xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto font-medium leading-relaxed">
               Access expert agricultural knowledge, weather insights, and farming best practices 
               to maximize your harvest and profits.
             </p>
@@ -150,7 +153,7 @@ const Learn = () => {
               <Button 
                 variant="accent" 
                 size={isMobile ? "default" : "lg"} 
-                className="w-full md:w-auto shadow-glow-accent"
+                className="w-full md:w-auto shadow-glow-accent font-bold hover:scale-105 transition-all duration-300"
               >
                 <Play className="w-5 h-5 mr-2" />
                 Start Learning
@@ -206,13 +209,14 @@ const Learn = () => {
       </section>
 
       {/* Specialized Management Systems */}
-      <section className="py-16 bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+      <section className="py-16 bg-gradient-to-br from-primary/5 to-accent/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-mesh opacity-5"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-12 animate-slide-up">
+            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent mb-4">
               Specialized Management Systems
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
               Access our dedicated platforms for comprehensive farm management
             </p>
           </div>
@@ -342,33 +346,33 @@ const Learn = () => {
       </section>
 
       {/* Learning Categories */}
-      <section className="py-16 bg-background">
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <div className="text-center mb-12 animate-slide-up">
+            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent mb-4">
               Learning Categories
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
               Choose from our comprehensive learning paths designed specifically for Kenyan farmers
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-16">
             {learningCategories.map((category, index) => (
-              <Card key={index} className="hover:shadow-medium transition-smooth cursor-pointer group">
+              <Card key={index} className="glass-card hover:shadow-glow-primary transition-smooth cursor-pointer group border-2 border-transparent hover:border-primary/20" style={{ animationDelay: `${index * 0.1}s` }}>
                 <CardHeader>
-                  <div className={`w-12 h-12 rounded-lg ${category.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-smooth`}>
+                  <div className={`w-12 h-12 rounded-lg ${category.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-bounce shadow-soft`}>
                     <category.icon className="w-6 h-6" />
                   </div>
-                  <CardTitle className="text-xl">{category.title}</CardTitle>
-                  <CardDescription>{category.description}</CardDescription>
+                  <CardTitle className="text-xl font-bold group-hover:text-primary transition-colors">{category.title}</CardTitle>
+                  <CardDescription className="font-medium">{category.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-sm font-semibold text-muted-foreground">
                       {category.courses} courses
                     </span>
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" className="font-semibold group-hover:text-primary">
                       Explore →
                     </Button>
                   </div>
@@ -380,20 +384,21 @@ const Learn = () => {
       </section>
 
       {/* Featured Courses */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+      <section className="py-16 bg-gradient-to-br from-muted/30 to-accent/10 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-mesh opacity-5"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-12 animate-slide-up">
+            <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent mb-4">
               Featured Courses
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
               Popular courses that are helping farmers across Kenya succeed
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {featuredCourses.map((course, index) => (
-              <Card key={index} className="hover:shadow-medium transition-smooth cursor-pointer group overflow-hidden">
+              <Card key={index} className="glass-card hover:shadow-glow-accent transition-smooth cursor-pointer group overflow-hidden border-2 border-transparent hover:border-accent/20" style={{ animationDelay: `${index * 0.1}s` }}>
                 <CardHeader className="pb-3">
                   <div className="text-4xl mb-2">{course.image}</div>
                   <div className="flex items-center justify-between mb-2">
@@ -443,20 +448,21 @@ const Learn = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-16 bg-gradient-primary">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto text-primary-foreground">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+      <section className="py-16 bg-gradient-primary relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-mesh opacity-10"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <div className="max-w-3xl mx-auto text-primary-foreground glass-card p-8 md:p-12 rounded-2xl backdrop-blur-xl border border-white/20">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 bg-gradient-to-r from-white via-accent-glow to-white bg-clip-text text-transparent">
               Ready to Transform Your Farm?
             </h2>
-            <p className="text-xl text-primary-foreground/90 mb-8">
+            <p className="text-xl text-primary-foreground/90 mb-8 font-medium leading-relaxed">
               Join thousands of Kenyan farmers who are already using our platform to increase their yields and profits.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="accent" size="lg">
+              <Button variant="accent" size="lg" className="font-bold shadow-glow-accent hover:scale-105 transition-all duration-300">
                 Get Started Today
               </Button>
-              <Button variant="outline" size="lg" className="bg-white/10 text-primary-foreground border-white/30 hover:bg-white/20">
+              <Button variant="outline" size="lg" className="bg-white/10 text-primary-foreground border-white/30 hover:bg-white/20 font-semibold hover:scale-105 transition-all duration-300">
                 Contact Support
               </Button>
             </div>

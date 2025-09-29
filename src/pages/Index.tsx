@@ -221,13 +221,13 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 md:py-20 bg-background">
+      <section id="features" className="py-16 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12 md:mb-16">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4 md:mb-6 leading-tight">
+          <div className="text-center mb-12 md:mb-16 animate-slide-up">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent mb-4 md:mb-6 leading-tight">
               Everything Farmers Need in One Platform
             </h2>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-medium">
               From market access to agricultural insights, we provide comprehensive tools 
               to help Kenyan farmers succeed in the digital age.
             </p>
@@ -261,31 +261,34 @@ const Index = () => {
       </section>
 
       {/* Education Section */}
-      <section id="education" className="py-16 md:py-20 bg-gradient-to-br from-muted/30 to-accent/10">
-        <div className="container mx-auto px-4 text-center">
+      <section id="education" className="py-16 md:py-20 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-mesh opacity-5"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
           <div className="max-w-4xl mx-auto">
-            <BookOpen className="w-12 h-12 md:w-16 md:h-16 text-primary mx-auto mb-6 animate-float" />
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
-              Learn Modern Farming
-            </h2>
-            <p className="text-lg sm:text-xl text-muted-foreground mb-8 leading-relaxed">
-              Access expert agricultural knowledge, weather forecasts, and farming best practices 
-              to maximize your harvest and profits.
-            </p>
-            <Button 
-              variant="hero" 
-              size={isMobile ? "default" : "lg"}
-              className="w-full sm:w-auto min-h-[48px] touch-manipulation shadow-glow-primary hover:scale-105 transition-all duration-300"
-              onClick={() => {
-                if ('vibrate' in navigator) {
-                  navigator.vibrate(50);
-                }
-                navigate("/learn");
-              }}
-            >
-              <BookOpen className="w-5 h-5 mr-2" />
-              <span className="font-semibold">Explore Learning Resources</span>
-            </Button>
+            <div className="glass-card p-8 md:p-12 rounded-2xl shadow-glow-primary">
+              <BookOpen className="w-12 h-12 md:w-16 md:h-16 text-primary mx-auto mb-6 animate-float" />
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent mb-6 leading-tight">
+                Learn Modern Farming
+              </h2>
+              <p className="text-lg sm:text-xl text-muted-foreground mb-8 leading-relaxed font-medium">
+                Access expert agricultural knowledge, weather forecasts, and farming best practices 
+                to maximize your harvest and profits.
+              </p>
+              <Button 
+                variant="hero" 
+                size={isMobile ? "default" : "lg"}
+                className="w-full sm:w-auto min-h-[48px] touch-manipulation shadow-glow-primary hover:scale-105 transition-all duration-300 font-bold"
+                onClick={() => {
+                  if ('vibrate' in navigator) {
+                    navigator.vibrate(50);
+                  }
+                  navigate("/learn");
+                }}
+              >
+                <BookOpen className="w-5 h-5 mr-2" />
+                <span className="font-semibold">Explore Learning Resources</span>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

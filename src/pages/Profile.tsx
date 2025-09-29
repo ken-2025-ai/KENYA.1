@@ -160,18 +160,20 @@ const Profile = () => {
       <div className="relative z-10">
         <Navigation />
       
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Profile Settings</h1>
-          <p className="text-muted-foreground">
-            Update your profile information to help buyers connect with you
-          </p>
-        </div>
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          {/* Header */}
+          <div className="mb-8 animate-slide-up">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary-glow to-primary bg-clip-text text-transparent mb-2">
+              Profile Settings
+            </h1>
+            <p className="text-muted-foreground font-medium">
+              Update your profile information to help buyers connect with you
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Summary */}
-          <Card className="lg:col-span-1">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Profile Summary */}
+            <Card className="lg:col-span-1 glass-card hover:shadow-glow-primary transition-smooth border-2 border-transparent hover:border-primary/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="w-5 h-5" />
@@ -180,40 +182,40 @@ const Profile = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <User className="w-10 h-10 text-primary-foreground" />
-                </div>
-                <h3 className="font-semibold text-lg">
-                  {formData.full_name || "Complete your profile"}
-                </h3>
-                <p className="text-sm text-muted-foreground">{user?.email}</p>
+                  <div className="w-20 h-20 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4 shadow-glow-primary">
+                    <User className="w-10 h-10 text-primary-foreground" />
+                  </div>
+                  <h3 className="font-bold text-lg">
+                    {formData.full_name || "Complete your profile"}
+                  </h3>
+                  <p className="text-sm text-muted-foreground font-medium">{user?.email}</p>
               </div>
-              
-              <div className="space-y-3 pt-4 border-t">
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="w-4 h-4 text-muted-foreground" />
-                  <span>{formData.phone || "Add phone number"}</span>
+                
+                <div className="space-y-3 pt-4 border-t">
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Phone className="w-4 h-4 text-primary" />
+                    <span>{formData.phone || "Add phone number"}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <MapPin className="w-4 h-4 text-primary" />
+                    <span>{formData.location || "Add location"}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm font-medium">
+                    <Tractor className="w-4 h-4 text-primary" />
+                    <span>{formData.farming_type || "Add farming type"}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <MapPin className="w-4 h-4 text-muted-foreground" />
-                  <span>{formData.location || "Add location"}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Tractor className="w-4 h-4 text-muted-foreground" />
-                  <span>{formData.farming_type || "Add farming type"}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
 
-          {/* Profile Form */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Profile Information</CardTitle>
-              <CardDescription>
-                This information will be visible to potential buyers
-              </CardDescription>
-            </CardHeader>
+            {/* Profile Form */}
+            <Card className="lg:col-span-2 glass-card hover:shadow-glow-accent transition-smooth border-2 border-transparent hover:border-accent/20">
+              <CardHeader>
+                <CardTitle className="font-bold text-2xl">Profile Information</CardTitle>
+                <CardDescription className="font-medium">
+                  This information will be visible to potential buyers
+                </CardDescription>
+              </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -303,7 +305,7 @@ const Profile = () => {
                   onClick={handleSave} 
                   disabled={saving}
                   variant="hero"
-                  className="gap-2"
+                  className="gap-2 shadow-glow-primary hover:scale-105 transition-all duration-300 font-bold"
                 >
                   <Save className="w-4 h-4" />
                   {saving ? "Saving..." : "Save Profile"}
