@@ -127,8 +127,12 @@ const Learn = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+      {/* Animated gradient mesh background */}
+      <div className="fixed inset-0 gradient-mesh-bg pointer-events-none" />
+      
+      <div className="relative z-10">
+        <Navigation />
       
       {/* Hero Section */}
       <section className="bg-gradient-hero py-12 md:py-16">
@@ -459,6 +463,7 @@ const Learn = () => {
           </div>
         </div>
       </section>
+      </div>
     </div>
   );
 };

@@ -133,13 +133,18 @@ const Profile = () => {
 
   if (loading || loadingProfile) {
     return (
-      <div className="min-h-screen bg-background">
-        <Navigation />
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-              <p className="text-muted-foreground">Loading your profile...</p>
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+        {/* Animated gradient mesh background */}
+        <div className="fixed inset-0 gradient-mesh-bg pointer-events-none" />
+        
+        <div className="relative z-10">
+          <Navigation />
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex items-center justify-center h-64">
+              <div className="text-center">
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-muted-foreground">Loading your profile...</p>
+              </div>
             </div>
           </div>
         </div>
@@ -148,8 +153,12 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+      {/* Animated gradient mesh background */}
+      <div className="fixed inset-0 gradient-mesh-bg pointer-events-none" />
+      
+      <div className="relative z-10">
+        <Navigation />
       
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
@@ -303,6 +312,7 @@ const Profile = () => {
             </CardContent>
           </Card>
         </div>
+      </div>
       </div>
     </div>
   );

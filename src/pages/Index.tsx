@@ -87,8 +87,12 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation />
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+      {/* Animated gradient mesh background */}
+      <div className="fixed inset-0 gradient-mesh-bg pointer-events-none" />
+      
+      <div className="relative z-10">
+        <Navigation />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-hero">
@@ -344,11 +348,12 @@ const Index = () => {
 
       <InstallPrompt />
       
-      <AuthModal 
-        isOpen={authModal.isOpen} 
-        onClose={closeAuthModal}
-        defaultTab={authModal.defaultTab}
-      />
+        <AuthModal 
+          isOpen={authModal.isOpen} 
+          onClose={closeAuthModal}
+          defaultTab={authModal.defaultTab}
+        />
+      </div>
     </div>
   );
 };
