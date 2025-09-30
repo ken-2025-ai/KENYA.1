@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   Bell, 
   BellRing, 
@@ -31,76 +32,55 @@ interface Notification {
   };
 }
 
-// Mock notifications
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    type: 'message',
-    title: 'New Message from John Mwangi',
-    message: 'Is the maize still available for purchase?',
-    timestamp: new Date(Date.now() - 5 * 60 * 1000),
-    read: false,
-    priority: 'high',
-    action: {
-      label: 'Reply',
-      onClick: () => console.log('Reply to message')
-    }
-  },
-  {
-    id: '2',
-    type: 'price',
-    title: 'Price Alert: Maize Prices Up',
-    message: 'Maize prices increased by 15% in Eldoret market. Good time to sell!',
-    timestamp: new Date(Date.now() - 30 * 60 * 1000),
-    read: false,
-    priority: 'medium',
-    action: {
-      label: 'View Prices',
-      onClick: () => console.log('View prices')
-    }
-  },
-  {
-    id: '3',
-    type: 'weather',
-    title: 'Weather Alert',
-    message: 'Heavy rainfall expected in the next 48 hours. Protect your crops!',
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000),
-    read: true,
-    priority: 'high',
-    action: {
-      label: 'View Forecast',
-      onClick: () => console.log('View weather')
-    }
-  },
-  {
-    id: '4',
-    type: 'order',
-    title: 'New Order Received',
-    message: 'Grace Wanjiku ordered 5 bags of tomatoes for KSh 2,500',
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000),
-    read: true,
-    priority: 'medium',
-    action: {
-      label: 'View Order',
-      onClick: () => console.log('View order')
-    }
-  },
-  {
-    id: '5',
-    type: 'payment',
-    title: 'Payment Received',
-    message: 'M-Pesa payment of KSh 1,200 received from David Kiprop',
-    timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    read: true,
-    priority: 'low'
-  }
-];
 
-export const NotificationSystem = () => {
+export const NotificationSystem = ({ userLocation }: { userLocation?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  // Fetch weather alerts and add them to notifications
+  const fetchWeatherAlerts = async () => {
+    try {
+      const location = userLocation || "Eldoret, Kenya";
+      const { data, error } = await supabase.functions.invoke('weather-forecast', {
+        body: { location }
+      });
+
+      if (error) throw error;
+
+      if (data?.alerts && data.alerts.length > 0) {
+        const weatherNotifications: Notification[] = data.alerts.map((alert: any, index: number) => ({
+          id: `weather-${Date.now()}-${index}`,
+          type: 'weather' as const,
+          title: alert.type === 'warning' ? 'Weather Warning' : 'Weather Update',
+          message: alert.message,
+          timestamp: new Date(),
+          read: false,
+          priority: alert.type === 'warning' ? 'high' as const : 'medium' as const,
+          action: {
+            label: 'View Forecast',
+            onClick: () => console.log('View weather')
+          }
+        }));
+
+        setNotifications(prev => {
+          // Remove old weather notifications
+          const nonWeather = prev.filter(n => n.type !== 'weather');
+          return [...weatherNotifications, ...nonWeather];
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching weather alerts:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchWeatherAlerts();
+    // Refresh weather alerts every 30 minutes
+    const interval = setInterval(fetchWeatherAlerts, 30 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [userLocation]);
 
   const getNotificationIcon = (type: string) => {
     switch (type) {

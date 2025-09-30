@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Cloud, 
   Sun, 
@@ -39,57 +41,46 @@ interface WeatherData {
   }>;
 }
 
-// Mock weather data for Kenya
-const mockWeatherData: WeatherData = {
-  location: "Eldoret, Kenya",
-  temperature: 22,
-  condition: "partly-cloudy",
-  humidity: 65,
-  windSpeed: 12,
-  visibility: 10,
-  forecast: [
-    { day: "Today", high: 24, low: 16, condition: "sunny", rain: 0 },
-    { day: "Tomorrow", high: 26, low: 18, condition: "partly-cloudy", rain: 10 },
-    { day: "Thursday", high: 23, low: 15, condition: "rainy", rain: 85 },
-    { day: "Friday", high: 21, low: 14, condition: "rainy", rain: 75 },
-    { day: "Weekend", high: 25, low: 17, condition: "sunny", rain: 5 }
-  ],
-  farmingTips: [
-    "Perfect weather for maize planting - soil moisture is ideal",
-    "Consider harvesting mature vegetables before Thursday's rain",
-    "Good time to apply organic fertilizer to leafy greens",
-    "Monitor for pest activity with increasing humidity"
-  ],
-  alerts: [
-    {
-      type: "warning",
-      message: "Heavy rainfall expected Thursday - protect young seedlings"
-    },
-    {
-      type: "info", 
-      message: "Optimal planting conditions for the next 48 hours"
-    }
-  ]
-};
-
-export const WeatherWidget = () => {
+export const WeatherWidget = ({ userLocation }: { userLocation?: string }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const { toast } = useToast();
+
+  const fetchWeather = async (location: string) => {
+    try {
+      setLoading(true);
+      console.log('Fetching weather for:', location);
+      
+      const { data, error } = await supabase.functions.invoke('weather-forecast', {
+        body: { location }
+      });
+
+      if (error) throw error;
+
+      setWeather(data);
+      setLastUpdated(new Date());
+      console.log('Weather data received:', data);
+    } catch (error) {
+      console.error('Error fetching weather:', error);
+      toast({
+        title: "Weather Fetch Failed",
+        description: "Could not retrieve weather data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Simulate API call
-    setWeather(mockWeatherData);
-  }, []);
+    const location = userLocation || "Eldoret, Kenya";
+    fetchWeather(location);
+  }, [userLocation]);
 
   const refreshWeather = () => {
-    setLoading(true);
-    // Simulate API refresh
-    setTimeout(() => {
-      setWeather(mockWeatherData);
-      setLastUpdated(new Date());
-      setLoading(false);
-    }, 1000);
+    const location = userLocation || weather?.location || "Eldoret, Kenya";
+    fetchWeather(location);
   };
 
   const getWeatherIcon = (condition: string) => {

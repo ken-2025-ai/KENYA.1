@@ -249,7 +249,7 @@ const Dashboard = () => {
       <div className="fixed inset-0 gradient-mesh-bg pointer-events-none"></div>
       
       <Navigation />
-      <NotificationSystem />
+      <NotificationSystem userLocation={profile?.location} />
       <ChatSystem />
       
       <div className="container mx-auto px-4 py-8 relative z-10">
@@ -403,7 +403,7 @@ const Dashboard = () => {
           {/* Right Sidebar */}
           <div className="space-y-6">
             <div className="animate-slide-up" style={{ animationDelay: "0.4s" }}>
-              <WeatherWidget />
+              <WeatherWidget userLocation={profile?.location} />
             </div>
           </div>
         </div>

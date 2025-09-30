@@ -1,1 +1,10 @@
 project_id = "lfipxpoypivbiraavtkw"
+
+[functions.cleanup-sold-listings]
+verify_jwt = false
+
+[functions.ai-market-prices]
+verify_jwt = false
+
+[functions.weather-forecast]
+verify_jwt = false
