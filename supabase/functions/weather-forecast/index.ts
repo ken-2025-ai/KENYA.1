@@ -43,11 +43,19 @@ serve(async (req) => {
 
     // Get coordinates from location name
     const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(location)}&limit=1&appid=${openWeatherApiKey}`;
+    console.log(`Geocoding URL: ${geoUrl}`);
+    
     const geoResponse = await fetch(geoUrl);
+    
+    if (!geoResponse.ok) {
+      throw new Error(`Geocoding API error: ${geoResponse.status} ${geoResponse.statusText}`);
+    }
+    
     const geoData = await geoResponse.json();
+    console.log(`Geocoding response:`, JSON.stringify(geoData));
 
-    if (!geoData || geoData.length === 0) {
-      throw new Error('Location not found');
+    if (!geoData || !Array.isArray(geoData) || geoData.length === 0) {
+      throw new Error(`Location "${location}" not found. Please try a different location or be more specific (e.g., "Nairobi, Kenya")`);
     }
 
     const { lat, lon, name, country } = geoData[0];
