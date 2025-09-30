@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const geminiApiKey = Deno.env.get('GEMINI_API_KEY');
+const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -30,54 +30,95 @@ serve(async (req) => {
       });
     }
 
+    if (!lovableApiKey) {
+      console.error('LOVABLE_API_KEY not configured');
+      return new Response(JSON.stringify({ error: 'AI service not configured' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     console.log(`Fetching market prices for crop: ${crop}`);
 
-    const prompt = `You are a Kenyan agricultural market expert. Provide realistic current market prices for ${crop} across major Kenyan towns and markets. 
+    const systemPrompt = `You are a Kenyan agricultural market intelligence expert with deep knowledge of local farming markets, pricing trends, and crop trading across Kenya. Provide accurate, realistic market data for farmers.`;
 
-Return ONLY a valid JSON array with this exact structure (no additional text, markdown, or explanations):
-[
-  {
-    "location": "Nairobi",
-    "market": "Wakulima Market",
-    "price": 45,
-    "unit": "kg",
-    "trend": "up",
-    "change": "+5%",
-    "quality": "Grade A",
-    "availability": "High"
-  }
-]
+    const userPrompt = `Provide current market prices for ${crop} across major Kenyan markets. Include data for these locations: ${kenyanLocations.slice(0, 12).join(', ')}.
 
-Include data for these locations: ${kenyanLocations.slice(0, 12).join(', ')}.
-Use realistic Kenyan Shilling prices. Include different markets where relevant (e.g., Wakulima Market, Gikomba Market, etc.).
-Trend should be "up", "down", or "stable".
-Quality should be "Grade A", "Grade B", or "Mixed".
-Availability should be "High", "Medium", or "Low".
-Ensure prices reflect current Kenyan market conditions.`;
+Consider:
+- Regional price variations based on proximity to markets
+- Seasonal factors affecting supply and demand
+- Transportation costs affecting rural vs urban prices
+- Current market trends in Kenya
+- Quality grades commonly used in Kenyan markets`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`, {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${lovableApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
+        model: 'google/gemini-2.5-flash',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'provide_market_prices',
+            description: 'Provide market price data for agricultural crops across Kenyan markets',
+            parameters: {
+              type: 'object',
+              properties: {
+                prices: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      location: { type: 'string', description: 'Kenyan city or town name' },
+                      market: { type: 'string', description: 'Market name (e.g., Wakulima Market, Gikomba Market)' },
+                      price: { type: 'number', description: 'Price in Kenyan Shillings' },
+                      unit: { type: 'string', description: 'Unit of measurement (kg, bag, etc.)' },
+                      trend: { type: 'string', enum: ['up', 'down', 'stable'], description: 'Price trend' },
+                      change: { type: 'string', description: 'Percentage change (e.g., +5%, -3%)' },
+                      quality: { type: 'string', enum: ['Grade A', 'Grade B', 'Mixed'], description: 'Produce quality grade' },
+                      availability: { type: 'string', enum: ['High', 'Medium', 'Low'], description: 'Current availability' }
+                    },
+                    required: ['location', 'market', 'price', 'unit', 'trend', 'change', 'quality', 'availability']
+                  }
+                }
+              },
+              required: ['prices']
+            }
+          }
         }],
-        generationConfig: {
-          temperature: 0.3,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 2048,
-        }
+        tool_choice: { type: 'function', function: { name: 'provide_market_prices' } }
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Gemini API error:', errorText);
+      console.error('Lovable AI error:', response.status, errorText);
+      
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ 
+          error: 'Rate limit exceeded. Please try again in a moment.' 
+        }), {
+          status: 429,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ 
+          error: 'AI service requires payment. Please contact support.' 
+        }), {
+          status: 402,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+      
       return new Response(JSON.stringify({ error: 'Failed to fetch market data' }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -85,30 +126,23 @@ Ensure prices reflect current Kenyan market conditions.`;
     }
 
     const data = await response.json();
-    console.log('Gemini response:', JSON.stringify(data, null, 2));
+    console.log('Lovable AI response:', JSON.stringify(data, null, 2));
 
-    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-      console.error('Unexpected Gemini response structure:', data);
-      return new Response(JSON.stringify({ error: 'Invalid response from AI service' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    let marketData = [];
+
+    if (data.choices?.[0]?.message?.tool_calls?.[0]?.function?.arguments) {
+      try {
+        const toolResult = JSON.parse(data.choices[0].message.tool_calls[0].function.arguments);
+        marketData = toolResult.prices || [];
+        console.log('Parsed market data from tool call:', marketData);
+      } catch (parseError) {
+        console.error('Error parsing tool call response:', parseError);
+      }
     }
 
-    const generatedText = data.candidates[0].content.parts[0].text;
-    console.log('Generated text:', generatedText);
-
-    // Try to parse the JSON response
-    let marketData;
-    try {
-      // Clean the response text (remove markdown formatting if present)
-      const cleanText = generatedText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      marketData = JSON.parse(cleanText);
-    } catch (parseError) {
-      console.error('JSON parsing error:', parseError);
-      console.error('Raw text:', generatedText);
-      
-      // Fallback to mock data if parsing fails
+    // Fallback if no data
+    if (!marketData || marketData.length === 0) {
+      console.log('No market data returned, using fallback');
       marketData = [
         {
           location: "Nairobi",
@@ -124,18 +158,13 @@ Ensure prices reflect current Kenyan market conditions.`;
           location: "Mombasa",
           market: "Kongowea Market",
           price: 50,
-          unit: "kg", 
+          unit: "kg",
           trend: "up",
           change: "+10%",
           quality: "Grade B",
           availability: "Medium"
         }
       ];
-    }
-
-    // Ensure we have an array
-    if (!Array.isArray(marketData)) {
-      marketData = [marketData];
     }
 
     console.log('Final market data:', marketData);
