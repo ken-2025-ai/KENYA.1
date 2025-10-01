@@ -39,6 +39,42 @@ export const NotificationSystem = ({ userLocation }: { userLocation?: string }) 
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  // Fetch market insights and add them to notifications
+  const fetchMarketInsights = async () => {
+    try {
+      const location = userLocation || "Eldoret, Kenya";
+      const { data, error } = await supabase.functions.invoke('ai-market-insights', {
+        body: { location }
+      });
+
+      if (error) throw error;
+
+      if (data?.insights && data.insights.length > 0) {
+        const marketNotifications: Notification[] = data.insights.map((insight: any, index: number) => ({
+          id: `market-${Date.now()}-${index}`,
+          type: 'price' as const,
+          title: `${insight.crop.charAt(0).toUpperCase() + insight.crop.slice(1)}: ${insight.title}`,
+          message: `${insight.message}\n\n💡 ${insight.advice}\n📊 Current: KSh ${insight.currentPrice}/kg (${insight.percentageChange})\n⏰ ${insight.timing}`,
+          timestamp: new Date(),
+          read: false,
+          priority: insight.priority as 'low' | 'medium' | 'high',
+          action: {
+            label: 'View Prices',
+            onClick: () => console.log('View market prices')
+          }
+        }));
+
+        setNotifications(prev => {
+          // Remove old market notifications
+          const nonMarket = prev.filter(n => n.type !== 'price');
+          return [...marketNotifications, ...nonMarket];
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching market insights:', error);
+    }
+  };
+
   // Fetch weather alerts and add them to notifications
   const fetchWeatherAlerts = async () => {
     try {
@@ -76,10 +112,20 @@ export const NotificationSystem = ({ userLocation }: { userLocation?: string }) 
   };
 
   useEffect(() => {
+    // Fetch both weather and market insights on mount
     fetchWeatherAlerts();
+    fetchMarketInsights();
+    
     // Refresh weather alerts every 30 minutes
-    const interval = setInterval(fetchWeatherAlerts, 30 * 60 * 1000);
-    return () => clearInterval(interval);
+    const weatherInterval = setInterval(fetchWeatherAlerts, 30 * 60 * 1000);
+    
+    // Refresh market insights every 2 hours for frequent updates
+    const marketInterval = setInterval(fetchMarketInsights, 2 * 60 * 60 * 1000);
+    
+    return () => {
+      clearInterval(weatherInterval);
+      clearInterval(marketInterval);
+    };
   }, [userLocation]);
 
   const getNotificationIcon = (type: string) => {
