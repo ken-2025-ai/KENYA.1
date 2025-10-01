@@ -202,7 +202,7 @@ export const NotificationSystem = ({ userLocation }: { userLocation?: string }) 
         <Button
           onClick={() => setIsOpen(true)}
           variant="ghost"
-          className="relative p-3 rounded-full glass-nav hover:bg-primary/10 transition-smooth group"
+          className="relative p-3 rounded-full bg-background border border-border hover:bg-primary/10 transition-smooth group"
         >
           {unreadCount > 0 ? (
             <BellRing className="w-6 h-6 text-primary group-hover:scale-110 transition-smooth animate-pulse" />
@@ -221,10 +221,10 @@ export const NotificationSystem = ({ userLocation }: { userLocation?: string }) 
 
   return (
     <div className="fixed top-6 right-6 w-96 max-h-[80vh] z-50 animate-bounce-in">
-      <Card className="glass-card border-primary/20 shadow-elevated">
+      <Card className="bg-background border-primary/20 shadow-elevated">
         <CardContent className="p-0">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border/50 bg-gradient-card">
+          <div className="flex items-center justify-between p-4 border-b border-border/50 bg-background">
             <div className="flex items-center gap-2">
               <BellRing className="w-5 h-5 text-primary" />
               <h3 className="font-semibold text-foreground">Notifications</h3>
@@ -271,7 +271,7 @@ export const NotificationSystem = ({ userLocation }: { userLocation?: string }) 
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`p-4 hover:bg-gradient-card transition-smooth group ${
+                    className={`p-4 hover:bg-muted/50 transition-smooth group ${
                       !notification.read ? 'bg-primary/5' : ''
                     }`}
                     onClick={() => !notification.read && markAsRead(notification.id)}
@@ -345,7 +345,7 @@ export const NotificationSystem = ({ userLocation }: { userLocation?: string }) 
 
           {/* Footer */}
           {notifications.length > 0 && (
-            <div className="p-3 border-t border-border/50 bg-gradient-card text-center">
+            <div className="p-3 border-t border-border/50 bg-background text-center">
               <Button
                 variant="ghost"
                 size="sm"

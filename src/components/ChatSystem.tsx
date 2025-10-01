@@ -199,7 +199,7 @@ export const ChatSystem = () => {
 
   return (
     <div className="fixed bottom-6 right-6 w-96 h-[32rem] z-50 animate-bounce-in">
-      <Card className="glass-card h-full flex flex-col border-primary/20 shadow-elevated">
+      <Card className="bg-background h-full flex flex-col border-primary/20 shadow-elevated">
         <CardHeader className="pb-3 border-b border-border/50">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-primary">
@@ -251,7 +251,7 @@ export const ChatSystem = () => {
                     <div
                       key={chat.id}
                       onClick={() => setSelectedChat(chat)}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-gradient-card cursor-pointer transition-smooth group"
+                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-smooth group"
                     >
                       <div className="relative">
                         <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center">
@@ -295,7 +295,7 @@ export const ChatSystem = () => {
             // Chat Messages
             <div className="h-full flex flex-col">
               {/* Chat Header */}
-              <div className="flex items-center justify-between p-4 border-b border-border/50 bg-gradient-card">
+              <div className="flex items-center justify-between p-4 border-b border-border/50 bg-background">
                 <div className="flex items-center gap-3">
                   <Button
                     variant="ghost"
@@ -346,7 +346,7 @@ export const ChatSystem = () => {
                       className={`max-w-[80%] rounded-lg px-3 py-2 ${
                         message.sender_id === 'current_user'
                           ? 'bg-gradient-primary text-primary-foreground'
-                          : 'bg-gradient-card text-foreground'
+                          : 'bg-muted text-foreground'
                       }`}
                     >
                       <p className="text-sm">{message.content}</p>
@@ -372,7 +372,7 @@ export const ChatSystem = () => {
               </div>
 
               {/* Message Input */}
-              <div className="p-4 border-t border-border/50 bg-gradient-card">
+              <div className="p-4 border-t border-border/50 bg-background">
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="sm" className="text-muted-foreground">
                     <Paperclip className="w-4 h-4" />
