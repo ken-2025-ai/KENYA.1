@@ -45,15 +45,15 @@ serve(async (req) => {
     const weatherUrl = `http://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${encodeURIComponent(location)}&days=5&aqi=no&alerts=yes`;
     console.log(`WeatherAPI URL: ${weatherUrl.replace(weatherApiKey, 'HIDDEN')}`);
     
-    const weatherResponse = await fetch(weatherUrl);
+    const apiResponse = await fetch(weatherUrl);
     
-    if (!weatherResponse.ok) {
-      const errorText = await weatherResponse.text();
-      console.error(`WeatherAPI error: ${weatherResponse.status} - ${errorText}`);
-      throw new Error(`Weather API error: ${weatherResponse.status} ${weatherResponse.statusText}`);
+    if (!apiResponse.ok) {
+      const errorText = await apiResponse.text();
+      console.error(`WeatherAPI error: ${apiResponse.status} - ${errorText}`);
+      throw new Error(`Weather API error: ${apiResponse.status} ${apiResponse.statusText}`);
     }
     
-    const weatherData = await weatherResponse.json();
+    const weatherData = await apiResponse.json();
     console.log(`Weather data received for: ${weatherData.location.name}, ${weatherData.location.country}`);
 
     // Map weather condition to simple strings
