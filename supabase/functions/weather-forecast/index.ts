@@ -33,97 +33,60 @@ serve(async (req) => {
 
   try {
     const { location } = await req.json();
-    const openWeatherApiKey = Deno.env.get('OPENWEATHER_API_KEY');
+    const weatherApiKey = Deno.env.get('WEATHERAPI_KEY');
 
-    if (!openWeatherApiKey) {
-      throw new Error('OPENWEATHER_API_KEY not configured');
+    if (!weatherApiKey) {
+      throw new Error('WEATHERAPI_KEY not configured');
     }
 
     console.log(`Fetching weather for location: ${location}`);
 
-    // Get coordinates from location name
-    const geoUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(location)}&limit=1&appid=${openWeatherApiKey}`;
-    console.log(`Geocoding URL: ${geoUrl}`);
+    // Get current weather and 5-day forecast in one call
+    const weatherUrl = `http://api.weatherapi.com/v1/forecast.json?key=${weatherApiKey}&q=${encodeURIComponent(location)}&days=5&aqi=no&alerts=yes`;
+    console.log(`WeatherAPI URL: ${weatherUrl.replace(weatherApiKey, 'HIDDEN')}`);
     
-    const geoResponse = await fetch(geoUrl);
+    const weatherResponse = await fetch(weatherUrl);
     
-    if (!geoResponse.ok) {
-      throw new Error(`Geocoding API error: ${geoResponse.status} ${geoResponse.statusText}`);
+    if (!weatherResponse.ok) {
+      const errorText = await weatherResponse.text();
+      console.error(`WeatherAPI error: ${weatherResponse.status} - ${errorText}`);
+      throw new Error(`Weather API error: ${weatherResponse.status} ${weatherResponse.statusText}`);
     }
     
-    const geoData = await geoResponse.json();
-    console.log(`Geocoding response:`, JSON.stringify(geoData));
+    const weatherData = await weatherResponse.json();
+    console.log(`Weather data received for: ${weatherData.location.name}, ${weatherData.location.country}`);
 
-    if (!geoData || !Array.isArray(geoData) || geoData.length === 0) {
-      throw new Error(`Location "${location}" not found. Please try a different location or be more specific (e.g., "Nairobi, Kenya")`);
-    }
-
-    const { lat, lon, name, country } = geoData[0];
-    console.log(`Found coordinates: ${lat}, ${lon} for ${name}, ${country}`);
-
-    // Get current weather
-    const currentUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${openWeatherApiKey}`;
-    const currentResponse = await fetch(currentUrl);
-    const currentData = await currentResponse.json();
-
-    // Get 5-day forecast
-    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${openWeatherApiKey}`;
-    const forecastResponse = await fetch(forecastUrl);
-    const forecastData = await forecastResponse.json();
-
-    // Map weather condition codes to simple strings
-    const mapCondition = (code: number): string => {
-      if (code >= 200 && code < 300) return 'rainy';
-      if (code >= 300 && code < 600) return 'rainy';
-      if (code >= 600 && code < 700) return 'snowy';
-      if (code >= 700 && code < 800) return 'cloudy';
-      if (code === 800) return 'sunny';
-      if (code > 800) return 'partly-cloudy';
+    // Map weather condition to simple strings
+    const mapCondition = (conditionText: string): string => {
+      const text = conditionText.toLowerCase();
+      if (text.includes('rain') || text.includes('drizzle') || text.includes('shower')) return 'rainy';
+      if (text.includes('snow') || text.includes('sleet') || text.includes('blizzard')) return 'snowy';
+      if (text.includes('cloud') || text.includes('overcast')) return 'cloudy';
+      if (text.includes('clear') || text.includes('sunny')) return 'sunny';
+      if (text.includes('partly')) return 'partly-cloudy';
       return 'sunny';
     };
 
-    // Process forecast data - get one forecast per day
-    const dailyForecasts: any = {};
-    forecastData.list.forEach((item: any) => {
-      const date = new Date(item.dt * 1000);
-      const dayKey = date.toLocaleDateString('en-US', { weekday: 'long' });
-      
-      if (!dailyForecasts[dayKey]) {
-        dailyForecasts[dayKey] = {
-          temps: [],
-          conditions: [],
-          rain: 0
-        };
-      }
-      
-      dailyForecasts[dayKey].temps.push(item.main.temp);
-      dailyForecasts[dayKey].conditions.push(item.weather[0].id);
-      if (item.rain) {
-        dailyForecasts[dayKey].rain = Math.max(dailyForecasts[dayKey].rain, (item.pop || 0) * 100);
-      }
-    });
-
-    // Get today and next 4 days
-    const today = new Date().toLocaleDateString('en-US', { weekday: 'long' });
-    const dayNames = Object.keys(dailyForecasts);
-    const forecast = dayNames.slice(0, 5).map((day, index) => {
-      const data = dailyForecasts[day];
-      const displayDay = index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : day;
+    // Process forecast data
+    const forecast = weatherData.forecast.forecastday.map((day: any, index: number) => {
+      const date = new Date(day.date);
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+      const displayDay = index === 0 ? 'Today' : index === 1 ? 'Tomorrow' : dayName;
       
       return {
         day: displayDay,
-        high: Math.round(Math.max(...data.temps)),
-        low: Math.round(Math.min(...data.temps)),
-        condition: mapCondition(Math.round(data.conditions.reduce((a: number, b: number) => a + b) / data.conditions.length)),
-        rain: Math.round(data.rain)
+        high: Math.round(day.day.maxtemp_c),
+        low: Math.round(day.day.mintemp_c),
+        condition: mapCondition(day.day.condition.text),
+        rain: Math.round(day.day.daily_chance_of_rain)
       };
     });
 
     // Generate farming tips based on weather
     const farmingTips: string[] = [];
-    const currentTemp = Math.round(currentData.main.temp);
-    const humidity = currentData.main.humidity;
-    const windSpeed = Math.round(currentData.wind.speed * 3.6); // Convert m/s to km/h
+    const currentTemp = Math.round(weatherData.current.temp_c);
+    const humidity = weatherData.current.humidity;
+    const windSpeed = Math.round(weatherData.current.wind_kph);
 
     if (currentTemp > 15 && currentTemp < 25 && humidity > 50) {
       farmingTips.push("Perfect weather for maize planting - soil moisture is ideal");
@@ -180,13 +143,23 @@ serve(async (req) => {
       });
     }
 
+    // Add any weather alerts from the API
+    if (weatherData.alerts && weatherData.alerts.alert && weatherData.alerts.alert.length > 0) {
+      weatherData.alerts.alert.forEach((alert: any) => {
+        alerts.push({
+          type: "warning",
+          message: alert.headline || alert.event
+        });
+      });
+    }
+
     const weatherResponse: WeatherResponse = {
-      location: `${name}, ${country}`,
+      location: `${weatherData.location.name}, ${weatherData.location.country}`,
       temperature: currentTemp,
-      condition: mapCondition(currentData.weather[0].id),
+      condition: mapCondition(weatherData.current.condition.text),
       humidity,
       windSpeed,
-      visibility: Math.round(currentData.visibility / 1000),
+      visibility: Math.round(weatherData.current.vis_km),
       forecast,
       farmingTips,
       alerts
