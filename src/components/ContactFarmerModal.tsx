@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import { Phone, MessageCircle, MapPin, User, Wheat, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface ContactFarmerModalProps {
   isOpen: boolean;
@@ -37,6 +38,7 @@ export const ContactFarmerModal = ({ isOpen, onClose, listing }: ContactFarmerMo
   const [farmerProfile, setFarmerProfile] = useState<FarmerProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isOpen && listing) {
@@ -89,6 +91,81 @@ export const ContactFarmerModal = ({ isOpen, onClose, listing }: ContactFarmerMo
       toast({
         title: "WhatsApp Not Available",
         description: "This farmer hasn't provided a phone number for WhatsApp.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleStartChat = async () => {
+    if (!listing) return;
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast({
+          title: "Login Required",
+          description: "Please login to start a conversation",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (user.id === listing.user_id) {
+        toast({
+          title: "Cannot Chat",
+          description: "You cannot start a conversation with yourself",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Check if conversation already exists
+      const { data: existingConversation } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('listing_id', listing.id)
+        .eq('buyer_id', user.id)
+        .eq('seller_id', listing.user_id)
+        .maybeSingle();
+
+      let conversationId;
+
+      if (existingConversation) {
+        conversationId = existingConversation.id;
+      } else {
+        // Create new conversation
+        const { data: newConversation, error } = await supabase
+          .from('conversations')
+          .insert({
+            listing_id: listing.id,
+            buyer_id: user.id,
+            seller_id: listing.user_id
+          })
+          .select('id')
+          .single();
+
+        if (error) throw error;
+        conversationId = newConversation.id;
+
+        // Send initial message
+        await supabase
+          .from('messages')
+          .insert({
+            conversation_id: conversationId,
+            sender_id: user.id,
+            content: `Hi! I'm interested in your ${listing.title}. Can you provide more details?`,
+            type: 'text'
+          });
+      }
+
+      onClose();
+      navigate('/dashboard', { state: { openChat: true, conversationId } });
+    } catch (error) {
+      console.error('Error starting chat:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start conversation",
         variant: "destructive"
       });
     }
@@ -174,8 +251,16 @@ export const ContactFarmerModal = ({ isOpen, onClose, listing }: ContactFarmerMo
               <h4 className="font-semibold text-foreground">Get in Touch</h4>
               <div className="grid grid-cols-1 gap-3">
                 <Button
-                  onClick={handlePhoneContact}
+                  onClick={handleStartChat}
                   className="flex items-center gap-2 bg-gradient-primary hover:shadow-glow-primary transition-smooth"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Start Chat
+                </Button>
+                <Button
+                  onClick={handlePhoneContact}
+                  variant="outline"
+                  className="flex items-center gap-2"
                   disabled={!farmerProfile?.phone}
                 >
                   <Phone className="w-4 h-4" />
@@ -193,7 +278,7 @@ export const ContactFarmerModal = ({ isOpen, onClose, listing }: ContactFarmerMo
               </div>
               {!farmerProfile?.phone && (
                 <p className="text-xs text-muted-foreground text-center mt-2">
-                  Contact information not available for this farmer yet.
+                  Some contact options may not be available.
                 </p>
               )}
             </div>

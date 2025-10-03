@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "react-router-dom";
 import { 
   MessageCircle, 
   Send, 
@@ -62,6 +63,7 @@ interface ChatDisplay {
 export const ChatSystem = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [chats, setChats] = useState<ChatDisplay[]>([]);
   const [selectedChat, setSelectedChat] = useState<ChatDisplay | null>(null);
@@ -188,6 +190,26 @@ export const ChatSystem = () => {
       fetchConversations();
     }
   }, [user, isOpen]);
+
+  // Handle navigation state to open chat
+  useEffect(() => {
+    const state = location.state as { openChat?: boolean; conversationId?: string };
+    if (state?.openChat) {
+      setIsOpen(true);
+      if (state.conversationId) {
+        const openConversation = async () => {
+          await fetchConversations();
+          const chat = chats.find(c => c.id === state.conversationId);
+          if (chat) {
+            handleChatSelect(chat);
+          }
+        };
+        openConversation();
+      }
+      // Clear the state
+      window.history.replaceState({}, document.title);
+    }
+  }, [location]);
 
   // Set up realtime subscriptions
   useEffect(() => {

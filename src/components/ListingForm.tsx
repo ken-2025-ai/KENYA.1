@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -11,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { CalendarIcon, Package } from "lucide-react";
+import { CalendarIcon, Package, Upload, X } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
@@ -45,6 +46,7 @@ interface ListingFormProps {
     location: string;
     harvest_date: string | null;
     expiry_date: string | null;
+    image_url?: string | null;
   };
   isEditing?: boolean;
 }
@@ -65,6 +67,8 @@ export const ListingForm = ({ isOpen, onClose, onSuccess, editListing, isEditing
   const { user } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(editListing?.image_url || null);
 
   const form = useForm<ListingFormData>({
     resolver: zodResolver(listingSchema),
@@ -86,6 +90,33 @@ export const ListingForm = ({ isOpen, onClose, onSuccess, editListing, isEditing
 
     setIsSubmitting(true);
     try {
+      let image_url = editListing?.image_url || null;
+
+      // Upload image if a new file was selected
+      if (imageFile) {
+        const fileExt = imageFile.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(fileName, imageFile);
+
+        if (uploadError) {
+          toast({
+            title: "Error",
+            description: "Failed to upload image",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(fileName);
+        
+        image_url = publicUrl;
+      }
+
       if (isEditing && editListing) {
         const { error } = await supabase
           .from("market_listings")
@@ -99,6 +130,7 @@ export const ListingForm = ({ isOpen, onClose, onSuccess, editListing, isEditing
             location: data.location,
             harvest_date: data.harvest_date ? data.harvest_date.toISOString().split('T')[0] : null,
             expiry_date: data.expiry_date ? data.expiry_date.toISOString().split('T')[0] : null,
+            image_url,
           })
           .eq('id', editListing.id);
 
@@ -121,6 +153,7 @@ export const ListingForm = ({ isOpen, onClose, onSuccess, editListing, isEditing
             location: data.location,
             harvest_date: data.harvest_date ? data.harvest_date.toISOString().split('T')[0] : null,
             expiry_date: data.expiry_date ? data.expiry_date.toISOString().split('T')[0] : null,
+            image_url,
             user_id: user.id,
             is_active: true,
           });
@@ -134,6 +167,8 @@ export const ListingForm = ({ isOpen, onClose, onSuccess, editListing, isEditing
       }
 
       form.reset();
+      setImageFile(null);
+      setImagePreview(null);
       onSuccess();
       onClose();
     } catch (error: any) {
@@ -145,6 +180,23 @@ export const ListingForm = ({ isOpen, onClose, onSuccess, editListing, isEditing
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
   };
 
   return (
@@ -263,19 +315,62 @@ export const ListingForm = ({ isOpen, onClose, onSuccess, editListing, isEditing
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="location"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Location</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., Nairobi, Kenya" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+            <FormField
+              control={form.control}
+              name="location"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Location</FormLabel>
+                  <FormControl>
+                    <Input placeholder="e.g., Nairobi, Kenya" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Image Upload */}
+            <div className="space-y-2">
+              <Label>Product Image</Label>
+              {imagePreview ? (
+                <div className="relative">
+                  <img 
+                    src={imagePreview} 
+                    alt="Product preview" 
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    size="icon"
+                    className="absolute top-2 right-2"
+                    onClick={removeImage}
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
+                  <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <Label 
+                    htmlFor="image-upload" 
+                    className="cursor-pointer text-primary hover:text-primary/80"
+                  >
+                    Click to upload product image
+                  </Label>
+                  <Input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageChange}
+                  />
+                  <p className="text-xs text-muted-foreground mt-2">
+                    PNG, JPG up to 5MB
+                  </p>
+                </div>
+              )}
+            </div>
 
               <FormField
                 control={form.control}
