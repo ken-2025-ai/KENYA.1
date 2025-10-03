@@ -294,9 +294,20 @@ export const Marketplace = () => {
                   className="group cursor-pointer transition-smooth hover:shadow-large hover:-translate-y-2 bg-card/80 backdrop-blur-sm border-border/50 animate-slide-up overflow-hidden"
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
+                  {/* Product Image */}
+                  {listing.image_url && (
+                    <div className="w-full h-48 overflow-hidden">
+                      <img 
+                        src={listing.image_url} 
+                        alt={listing.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-smooth duration-300"
+                      />
+                    </div>
+                  )}
+
                   <CardHeader className="pb-3">
                     <div className="flex justify-between items-start mb-2">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
                         <Badge variant="secondary" className="text-xs">
                           {listing.category}
                         </Badge>
@@ -308,10 +319,10 @@ export const Marketplace = () => {
                       </div>
                       <Badge 
                         variant={expiryStatus.color as "default" | "secondary" | "destructive"}
-                        className="text-xs"
+                        className="text-xs flex-shrink-0"
                       >
                         <Clock className="w-3 h-3 mr-1" />
-                        {getDaysUntilExpiry(listing.expiry_date)} days
+                        {getDaysUntilExpiry(listing.expiry_date)}d
                       </Badge>
                     </div>
                     <CardTitle className="text-lg font-semibold text-foreground group-hover:text-primary transition-smooth">
@@ -319,7 +330,7 @@ export const Marketplace = () => {
                     </CardTitle>
                     <div className="flex items-center gap-1 text-muted-foreground text-sm">
                       <MapPin className="w-3 h-3" />
-                      <span>{listing.location}</span>
+                      <span className="truncate">{listing.location}</span>
                     </div>
                   </CardHeader>
 
