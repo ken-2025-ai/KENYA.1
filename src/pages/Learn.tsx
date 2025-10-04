@@ -56,7 +56,7 @@ const learningCategories = [
     description: "Modern tools and machinery for efficiency",
     courses: 6,
     color: "bg-purple-500/10 text-purple-600",
-    link: undefined
+    link: "/learn/farm-equipment"
   },
   {
     icon: TrendingUp,
@@ -64,7 +64,7 @@ const learningCategories = [
     description: "Understanding market trends and pricing",
     courses: 10,
     color: "bg-primary/10 text-primary",
-    link: undefined
+    link: "/learn/market-intelligence"
   }
 ];
 

@@ -13,6 +13,8 @@ import NotFound from "./pages/NotFound";
 import CropManagement from "./pages/CropManagement";
 import WeatherClimate from "./pages/WeatherClimate";
 import PestControl from "./pages/PestControl";
+import FarmEquipment from "./pages/FarmEquipment";
+import MarketIntelligence from "./pages/MarketIntelligence";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +31,8 @@ const App = () => (
             <Route path="/learn/crop-management" element={<CropManagement />} />
             <Route path="/learn/weather-climate" element={<WeatherClimate />} />
             <Route path="/learn/pest-control" element={<PestControl />} />
+            <Route path="/learn/farm-equipment" element={<FarmEquipment />} />
+            <Route path="/learn/market-intelligence" element={<MarketIntelligence />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

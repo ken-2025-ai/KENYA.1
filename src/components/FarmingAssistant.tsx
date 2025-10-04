@@ -12,15 +12,25 @@ interface Message {
 }
 
 interface FarmingAssistantProps {
-  topic: 'crop-management' | 'weather-climate' | 'pest-control';
-  topicTitle: string;
+  topic: 'crop-management' | 'weather-climate' | 'pest-control' | 'farm-equipment' | 'market-intelligence';
+  topicTitle?: string;
 }
 
 export const FarmingAssistant = ({ topic, topicTitle }: FarmingAssistantProps) => {
+  const topicTitles = {
+    'crop-management': 'Crop Management',
+    'weather-climate': 'Weather & Climate',
+    'pest-control': 'Pest Control',
+    'farm-equipment': 'Farm Equipment',
+    'market-intelligence': 'Market Intelligence'
+  };
+
+  const displayTitle = topicTitle || topicTitles[topic];
+
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: `Hello! I'm your ${topicTitle} assistant. Ask me anything about farming practices, tips, or challenges you're facing.`
+      content: `Hello! I'm your ${displayTitle} assistant. Ask me anything about farming practices, tips, or challenges you're facing.`
     }
   ]);
   const [input, setInput] = useState('');
@@ -185,7 +195,7 @@ export const FarmingAssistant = ({ topic, topicTitle }: FarmingAssistantProps) =
           </div>
           <div>
             <h3 className="font-semibold text-foreground">AI Farming Assistant</h3>
-            <p className="text-sm text-muted-foreground">{topicTitle} Expert</p>
+            <p className="text-sm text-muted-foreground">{displayTitle} Expert</p>
           </div>
         </div>
       </div>
