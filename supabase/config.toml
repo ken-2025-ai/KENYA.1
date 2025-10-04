@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.weather-forecast]
 verify_jwt = false
+
+[functions.farming-assistant]
+verify_jwt = false

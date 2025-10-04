@@ -10,6 +10,9 @@ import Learn from "./pages/Learn";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
+import CropManagement from "./pages/CropManagement";
+import WeatherClimate from "./pages/WeatherClimate";
+import PestControl from "./pages/PestControl";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +26,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/learn" element={<Learn />} />
+            <Route path="/learn/crop-management" element={<CropManagement />} />
+            <Route path="/learn/weather-climate" element={<WeatherClimate />} />
+            <Route path="/learn/pest-control" element={<PestControl />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

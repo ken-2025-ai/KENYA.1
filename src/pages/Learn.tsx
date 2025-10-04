@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Navigation } from "@/components/Navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePWA } from "@/hooks/usePWA";
+import { useNavigate } from "react-router-dom";
 import { 
   BookOpen, 
   CloudRain, 
@@ -30,35 +31,40 @@ const learningCategories = [
     title: "Crop Management",
     description: "Learn modern farming techniques for better yields",
     courses: 12,
-    color: "bg-green-500/10 text-green-600"
+    color: "bg-green-500/10 text-green-600",
+    link: "/learn/crop-management"
   },
   {
     icon: CloudRain,
     title: "Weather & Climate",
     description: "Understanding weather patterns for optimal farming",
     courses: 8,
-    color: "bg-blue-500/10 text-blue-600"
+    color: "bg-blue-500/10 text-blue-600",
+    link: "/learn/weather-climate"
   },
   {
     icon: Bug,
     title: "Pest Control",
     description: "Sustainable pest and disease management",
     courses: 15,
-    color: "bg-orange-500/10 text-orange-600"
+    color: "bg-orange-500/10 text-orange-600",
+    link: "/learn/pest-control"
   },
   {
     icon: Tractor,
     title: "Farm Equipment",
     description: "Modern tools and machinery for efficiency",
     courses: 6,
-    color: "bg-purple-500/10 text-purple-600"
+    color: "bg-purple-500/10 text-purple-600",
+    link: undefined
   },
   {
     icon: TrendingUp,
     title: "Market Intelligence",
     description: "Understanding market trends and pricing",
     courses: 10,
-    color: "bg-primary/10 text-primary"
+    color: "bg-primary/10 text-primary",
+    link: undefined
   }
 ];
 
@@ -108,6 +114,7 @@ const featuredCourses = [
 const Learn = () => {
   const isMobile = useIsMobile();
   const { canInstall, installApp } = usePWA();
+  const navigate = useNavigate();
 
   const handleDownloadApp = async () => {
     // Simulate app download or redirect to app store
@@ -359,7 +366,12 @@ const Learn = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-16">
             {learningCategories.map((category, index) => (
-              <Card key={index} className="glass-card hover:shadow-glow-primary transition-smooth cursor-pointer group border-2 border-transparent hover:border-primary/20" style={{ animationDelay: `${index * 0.1}s` }}>
+              <Card 
+                key={index} 
+                className="glass-card hover:shadow-glow-primary transition-smooth cursor-pointer group border-2 border-transparent hover:border-primary/20" 
+                style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => category.link && navigate(category.link)}
+              >
                 <CardHeader>
                   <div className={`w-12 h-12 rounded-lg ${category.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-bounce shadow-soft`}>
                     <category.icon className="w-6 h-6" />
@@ -372,8 +384,13 @@ const Learn = () => {
                     <span className="text-sm font-semibold text-muted-foreground">
                       {category.courses} courses
                     </span>
-                    <Button variant="ghost" size="sm" className="font-semibold group-hover:text-primary">
-                      Explore →
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="font-semibold group-hover:text-primary"
+                      disabled={!category.link}
+                    >
+                      {category.link ? 'Explore →' : 'Coming Soon'}
                     </Button>
                   </div>
                 </CardContent>
