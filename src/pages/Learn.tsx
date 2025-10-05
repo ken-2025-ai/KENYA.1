@@ -77,7 +77,15 @@ const featuredCourses = [
     rating: 4.8,
     image: "🌽",
     level: "Beginner",
-    category: "Crop Management"
+    category: "Crop Management",
+    videoId: "asscF9W9tqQ",
+    summary: "Learn expert techniques for high-yield maize farming in Kenya. This comprehensive course covers soil preparation, seed selection, planting density, fertilizer application, and pest management. Discover proven methods to maximize your maize harvest and profitability through modern farming practices adapted to Kenyan conditions.",
+    keyPoints: [
+      "Optimal planting techniques and spacing",
+      "Fertilizer application timing and rates",
+      "Pest and disease management strategies",
+      "Harvesting and post-harvest handling"
+    ]
   },
   {
     title: "Coffee Production Mastery",
@@ -87,7 +95,15 @@ const featuredCourses = [
     rating: 4.9,
     image: "☕",
     level: "Advanced",
-    category: "Crop Management"
+    category: "Crop Management",
+    videoId: "EANPhNtjD_Q",
+    summary: "Master the art of coffee farming with expert tips tailored for Kenyan farmers. This course explores pruning techniques, disease control, quality improvement, and sustainable practices. Learn how to produce premium coffee beans that command higher market prices and build lasting relationships with buyers.",
+    keyPoints: [
+      "Pruning and canopy management",
+      "Coffee Berry Disease (CBD) control",
+      "Quality processing and grading",
+      "Sustainable farming certifications"
+    ]
   },
   {
     title: "Sustainable Farming Practices",
@@ -97,7 +113,15 @@ const featuredCourses = [
     rating: 4.7,
     image: "🌱",
     level: "Intermediate",
-    category: "Best Practices"
+    category: "Best Practices",
+    videoId: "AFjd6DrlwsQ",
+    summary: "Discover sustainable agriculture methods that protect the environment while boosting productivity. Learn about integrated farming systems, soil conservation, water management, and organic practices. This course shows you how to build resilient farms that remain productive for generations while reducing costs and environmental impact.",
+    keyPoints: [
+      "Soil health and conservation techniques",
+      "Water harvesting and efficient irrigation",
+      "Integrated pest management (IPM)",
+      "Crop rotation and diversification"
+    ]
   },
   {
     title: "M-Pesa for Farmers",
@@ -107,7 +131,15 @@ const featuredCourses = [
     rating: 4.6,
     image: "📱",
     level: "Beginner",
-    category: "Digital Skills"
+    category: "Digital Skills",
+    videoId: "bL-_Rvst_ew",
+    summary: "Unlock the power of digital finance with M-Pesa for agricultural transactions. Learn how to use mobile money for buying inputs, selling produce, accessing credit, and managing farm finances. Discover how M-Pesa is revolutionizing agriculture in Kenya by enabling instant payments, reducing transaction costs, and connecting farmers to broader markets.",
+    keyPoints: [
+      "Sending and receiving payments safely",
+      "Accessing agricultural loans via mobile",
+      "Digital record-keeping for farm finances",
+      "Connecting to digital marketplaces"
+    ]
   }
 ];
 
@@ -413,48 +445,90 @@ const Learn = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
             {featuredCourses.map((course, index) => (
-              <Card key={index} className="glass-card hover:shadow-glow-accent transition-smooth cursor-pointer group overflow-hidden border-2 border-transparent hover:border-accent/20" style={{ animationDelay: `${index * 0.1}s` }}>
+              <Card key={index} className="glass-card hover:shadow-glow-accent transition-smooth group overflow-hidden border-2 border-transparent hover:border-accent/20" style={{ animationDelay: `${index * 0.1}s` }}>
                 <CardHeader className="pb-3">
-                  <div className="text-4xl mb-2">{course.image}</div>
-                  <div className="flex items-center justify-between mb-2">
-                    <Badge variant="secondary" className="text-xs">
-                      {course.level}
-                    </Badge>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                      <span className="text-sm text-muted-foreground">{course.rating}</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-3xl">{course.image}</div>
+                    <div className="flex items-center gap-3">
+                      <Badge variant="secondary" className="text-xs">
+                        {course.level}
+                      </Badge>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                        <span className="text-sm font-semibold text-muted-foreground">{course.rating}</span>
+                      </div>
                     </div>
                   </div>
-                  <CardTitle className="text-lg leading-tight">{course.title}</CardTitle>
-                  <CardDescription className="text-sm">{course.description}</CardDescription>
+                  <CardTitle className="text-xl leading-tight mb-2">{course.title}</CardTitle>
+                  <CardDescription className="text-sm mb-3">{course.description}</CardDescription>
+                  
+                  {/* YouTube Video Embed */}
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden mb-4 shadow-lg group-hover:shadow-glow-primary transition-all duration-300">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${course.videoId}?controls=1&rel=0&modestbranding=1`}
+                      title={course.title}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="absolute inset-0"
+                    />
+                  </div>
                 </CardHeader>
+                
                 <CardContent className="pt-0">
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-3">
+                  {/* Summary */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-bold text-foreground mb-2">📋 Course Summary</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {course.summary}
+                    </p>
+                  </div>
+                  
+                  {/* Key Points */}
+                  <div className="mb-4">
+                    <h4 className="text-sm font-bold text-foreground mb-2">✨ What You'll Learn</h4>
+                    <ul className="space-y-1.5">
+                      {course.keyPoints.map((point, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full mt-1.5 flex-shrink-0" />
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  
+                  {/* Stats and CTA */}
+                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4 pt-3 border-t border-border/50">
                     <div className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
-                      {course.duration}
+                      <span className="font-medium">{course.duration}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Users className="w-4 h-4" />
-                      {course.students}
+                      <span className="font-medium">{course.students.toLocaleString()} students</span>
                     </div>
                   </div>
+                  
                   <Button 
                     variant="hero" 
-                    size={isMobile ? "default" : "sm"} 
-                    className="w-full group-hover:scale-105 transition-all duration-300 hover:shadow-glow-primary active:scale-95 touch-manipulation min-h-[44px] relative overflow-hidden"
+                    size="lg"
+                    className="w-full group-hover:scale-105 transition-all duration-300 hover:shadow-glow-primary active:scale-95 touch-manipulation min-h-[48px] relative overflow-hidden"
                     onClick={() => {
                       if ('vibrate' in navigator) {
                         navigator.vibrate(50);
                       }
+                      // Open YouTube video in new tab
+                      window.open(`https://www.youtube.com/watch?v=${course.videoId}`, '_blank');
                     }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-primary-glow/0 to-primary-glow/30 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500" />
-                    <Play className="w-4 h-4 mr-2" />
-                    <span className="relative z-10 font-semibold">
-                      {isMobile ? "Start Now" : "Start Course"}
+                    <Play className="w-5 h-5 mr-2" />
+                    <span className="relative z-10 font-bold">
+                      Watch Full Course
                     </span>
                   </Button>
                 </CardContent>
