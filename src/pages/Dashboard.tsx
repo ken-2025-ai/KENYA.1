@@ -250,7 +250,7 @@ const Dashboard = () => {
       <div className="fixed inset-0 gradient-mesh-bg pointer-events-none"></div>
       
       <Navigation />
-      <NotificationSystem userLocation={profile?.location} />
+      <NotificationSystem />
       <ChatSystem />
       
       <div className="container mx-auto px-4 py-8 relative z-10">

@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { useGeolocation } from "@/hooks/useGeolocation";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Bell, 
   BellRing, 
@@ -15,12 +17,15 @@ import {
   Clock,
   CheckCircle,
   AlertTriangle,
-  Info
+  Info,
+  MapPin,
+  Sprout,
+  Droplets
 } from "lucide-react";
 
 interface Notification {
   id: string;
-  type: 'message' | 'price' | 'weather' | 'order' | 'payment' | 'system';
+  type: 'message' | 'price' | 'weather' | 'order' | 'payment' | 'system' | 'planting' | 'harvest' | 'irrigation';
   title: string;
   message: string;
   timestamp: Date;
@@ -32,19 +37,171 @@ interface Notification {
   };
 }
 
-
-export const NotificationSystem = ({ userLocation }: { userLocation?: string }) => {
+export const NotificationSystem = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [pushPermission, setPushPermission] = useState<NotificationPermission>('default');
+  const { location, latitude, longitude, loading: locationLoading, error: locationError } = useGeolocation();
+  const { toast } = useToast();
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  // Request push notification permission
+  const requestPushPermission = async () => {
+    if (!('Notification' in window)) {
+      toast({
+        title: "Not Supported",
+        description: "Your browser doesn't support notifications",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (Notification.permission === 'granted') {
+      setPushPermission('granted');
+      await subscribeToPushNotifications();
+      return;
+    }
+
+    if (Notification.permission === 'denied') {
+      toast({
+        title: "Notifications Blocked",
+        description: "Please enable notifications in your browser settings",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const permission = await Notification.requestPermission();
+    setPushPermission(permission);
+
+    if (permission === 'granted') {
+      toast({
+        title: "Notifications Enabled",
+        description: "You'll now receive farming alerts and updates",
+      });
+      await subscribeToPushNotifications();
+    }
+  };
+
+  // Subscribe to push notifications
+  const subscribeToPushNotifications = async () => {
+    try {
+      if ('serviceWorker' in navigator) {
+        const registration = await navigator.serviceWorker.ready;
+        
+        // Check if already subscribed
+        let subscription = await registration.pushManager.getSubscription();
+        
+        if (!subscription) {
+          // Subscribe to push notifications
+          subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(
+              // VAPID public key - in production, this should come from environment
+              'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjBJuBkr3qBUYIHBQFLXYp5Nksh8U'
+            )
+          });
+          
+          console.log('Push subscription created:', subscription);
+        }
+      }
+    } catch (error) {
+      console.error('Error subscribing to push notifications:', error);
+    }
+  };
+
+  // Helper function to convert VAPID key
+  const urlBase64ToUint8Array = (base64String: string) => {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+      .replace(/\-/g, '+')
+      .replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+      outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+  };
+
+  // Send browser notification with sound
+  const sendBrowserNotification = (notification: Notification) => {
+    if (Notification.permission === 'granted' && !document.hasFocus()) {
+      const browserNotif = new Notification(notification.title, {
+        body: notification.message,
+        icon: '/logo-192.png',
+        badge: '/logo-192.png',
+        tag: notification.type,
+        requireInteraction: notification.priority === 'high',
+        silent: false,
+      });
+
+      // Play notification sound
+      playNotificationSound(notification.priority);
+
+      browserNotif.onclick = () => {
+        window.focus();
+        setIsOpen(true);
+        browserNotif.close();
+      };
+    } else {
+      // Play sound even if tab is focused
+      playNotificationSound(notification.priority);
+    }
+  };
+
+  // Play notification sound
+  const playNotificationSound = (priority: 'low' | 'medium' | 'high') => {
+    try {
+      const audio = new Audio();
+      // Different sounds for different priorities
+      if (priority === 'high') {
+        // Create a more urgent beep sound
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 800;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+      } else {
+        // Simple beep for lower priority
+        const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 600;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.2);
+      }
+    } catch (error) {
+      console.error('Error playing notification sound:', error);
+    }
+  };
 
   // Fetch market insights and add them to notifications
   const fetchMarketInsights = async () => {
     try {
-      const location = userLocation || "Eldoret, Kenya";
+      const loc = location || "Eldoret, Kenya";
       const { data, error } = await supabase.functions.invoke('ai-market-insights', {
-        body: { location }
+        body: { location: loc }
       });
 
       if (error) throw error;
@@ -75,58 +232,113 @@ export const NotificationSystem = ({ userLocation }: { userLocation?: string }) 
     }
   };
 
-  // Fetch weather alerts and add them to notifications
-  const fetchWeatherAlerts = async () => {
+  // Fetch farming alerts based on location
+  const fetchFarmingAlerts = async () => {
+    if (!location || !latitude || !longitude) return;
+
     try {
-      const location = userLocation || "Eldoret, Kenya";
-      const { data, error } = await supabase.functions.invoke('weather-forecast', {
-        body: { location }
+      const { data, error } = await supabase.functions.invoke('farming-alerts', {
+        body: { 
+          location,
+          latitude,
+          longitude
+        }
       });
 
       if (error) throw error;
 
       if (data?.alerts && data.alerts.length > 0) {
-        const weatherNotifications: Notification[] = data.alerts.map((alert: any, index: number) => ({
-          id: `weather-${Date.now()}-${index}`,
-          type: 'weather' as const,
-          title: alert.type === 'warning' ? 'Weather Warning' : 'Weather Update',
-          message: alert.message,
-          timestamp: new Date(),
-          read: false,
-          priority: alert.type === 'warning' ? 'high' as const : 'medium' as const,
-          action: {
-            label: 'View Forecast',
-            onClick: () => console.log('View weather')
+        const farmingNotifications: Notification[] = data.alerts.map((alert: any, index: number) => {
+          const notif: Notification = {
+            id: `farming-${Date.now()}-${index}`,
+            type: alert.type as any,
+            title: alert.title,
+            message: `${alert.message}\n\n⏰ Timing: ${alert.timing}${alert.action ? '\n✅ Action: ' + alert.action : ''}`,
+            timestamp: new Date(),
+            read: false,
+            priority: alert.priority as 'low' | 'medium' | 'high',
+          };
+
+          // Send browser notification for high priority alerts
+          if (alert.priority === 'high') {
+            sendBrowserNotification(notif);
           }
-        }));
+
+          return notif;
+        });
 
         setNotifications(prev => {
-          // Remove old weather notifications
-          const nonWeather = prev.filter(n => n.type !== 'weather');
-          return [...weatherNotifications, ...nonWeather];
+          // Remove old farming alerts of the same type
+          const oldAlerts = prev.filter(n => 
+            !['planting', 'harvest', 'irrigation', 'weather', 'market'].includes(n.type)
+          );
+          return [...farmingNotifications, ...oldAlerts];
         });
+
+        // Show toast for critical alerts
+        const criticalAlerts = data.alerts.filter((a: any) => a.priority === 'high');
+        if (criticalAlerts.length > 0) {
+          toast({
+            title: "🚨 Critical Farming Alert",
+            description: `${criticalAlerts.length} important alert${criticalAlerts.length > 1 ? 's' : ''} for ${location}`,
+          });
+        }
       }
     } catch (error) {
-      console.error('Error fetching weather alerts:', error);
+      console.error('Error fetching farming alerts:', error);
     }
   };
 
   useEffect(() => {
-    // Fetch both weather and market insights on mount
-    fetchWeatherAlerts();
+    // Request notification permission on mount
+    if ('Notification' in window) {
+      setPushPermission(Notification.permission);
+      if (Notification.permission === 'default') {
+        // Don't auto-request, let user click button
+        toast({
+          title: "🔔 Enable Notifications",
+          description: "Get farming alerts based on your location",
+          action: (
+            <Button size="sm" onClick={requestPushPermission}>
+              Enable
+            </Button>
+          ),
+        });
+      } else if (Notification.permission === 'granted') {
+        subscribeToPushNotifications();
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!location || locationLoading) return;
+
+    // Fetch farming alerts when location is available
+    fetchFarmingAlerts();
     fetchMarketInsights();
     
-    // Refresh weather alerts every 30 minutes
-    const weatherInterval = setInterval(fetchWeatherAlerts, 30 * 60 * 1000);
+    // Refresh farming alerts every hour
+    const farmingInterval = setInterval(fetchFarmingAlerts, 60 * 60 * 1000);
     
-    // Refresh market insights every 2 hours for frequent updates
+    // Refresh market insights every 2 hours
     const marketInterval = setInterval(fetchMarketInsights, 2 * 60 * 60 * 1000);
     
     return () => {
-      clearInterval(weatherInterval);
+      clearInterval(farmingInterval);
       clearInterval(marketInterval);
     };
-  }, [userLocation]);
+  }, [location, latitude, longitude, locationLoading]);
+
+  // Show location error
+  useEffect(() => {
+    if (locationError) {
+      toast({
+        title: "Location Access Required",
+        description: "Please enable location access to receive personalized farming alerts",
+        variant: "destructive"
+      });
+    }
+  }, [locationError]);
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -135,6 +347,10 @@ export const NotificationSystem = ({ userLocation }: { userLocation?: string }) 
       case 'weather': return <CloudRain className="w-4 h-4" />;
       case 'order': return <Package className="w-4 h-4" />;
       case 'payment': return <DollarSign className="w-4 h-4" />;
+      case 'planting': return <Sprout className="w-4 h-4" />;
+      case 'harvest': return <Package className="w-4 h-4" />;
+      case 'irrigation': return <Droplets className="w-4 h-4" />;
+      case 'market': return <TrendingUp className="w-4 h-4" />;
       default: return <Info className="w-4 h-4" />;
     }
   };
@@ -189,13 +405,6 @@ export const NotificationSystem = ({ userLocation }: { userLocation?: string }) 
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
-  // Request notification permission on mount
-  useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }, []);
-
   if (!isOpen) {
     return (
       <div className="fixed top-6 right-6 z-50">
@@ -235,6 +444,23 @@ export const NotificationSystem = ({ userLocation }: { userLocation?: string }) 
               )}
             </div>
             <div className="flex items-center gap-2">
+              {location && (
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <MapPin className="w-3 h-3" />
+                  <span>{location}</span>
+                </div>
+              )}
+              {pushPermission !== 'granted' && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={requestPushPermission}
+                  className="text-xs text-primary hover:bg-primary/10"
+                >
+                  <Bell className="w-3 h-3 mr-1" />
+                  Enable Push
+                </Button>
+              )}
               {unreadCount > 0 && (
                 <Button
                   variant="ghost"

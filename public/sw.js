@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kenya-pulse-connect-v1';
+const CACHE_NAME = 'kenya-pulse-connect-v2';
 const urlsToCache = [
   '/',
   '/static/js/bundle.js',
@@ -8,12 +8,14 @@ const urlsToCache = [
 
 // Install service worker
 self.addEventListener('install', (event) => {
+  console.log('Service Worker installing...');
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
         return cache.addAll(urlsToCache);
       })
   );
+  self.skipWaiting();
 });
 
 // Fetch event - serve cached content when offline
@@ -42,43 +44,100 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Handle push notifications (optional for future use)
+// Handle push notifications
 self.addEventListener('push', (event) => {
-  const options = {
-    body: event.data?.text() || 'New update available!',
-    icon: '/placeholder.svg',
-    badge: '/placeholder.svg',
-    vibrate: [100, 50, 100],
-    data: {
-      dateOfArrival: Date.now(),
-      primaryKey: 1
-    },
-    actions: [
-      {
-        action: 'explore', 
-        title: 'View Details',
-        icon: '/placeholder.svg'
-      },
-      {
-        action: 'close', 
-        title: 'Close',
-        icon: '/placeholder.svg'
-      }
-    ]
+  console.log('Push notification received:', event);
+  
+  let notificationData = {
+    title: 'Kenya Pulse Connect',
+    body: 'New update available!',
+    icon: '/logo-192.png',
+    badge: '/logo-192.png',
+    tag: 'default',
+    requireInteraction: false,
+    vibrate: [200, 100, 200],
+    sound: '/notification.mp3',
   };
 
+  try {
+    if (event.data) {
+      const data = event.data.json();
+      notificationData = {
+        title: data.title || notificationData.title,
+        body: data.body || data.message || notificationData.body,
+        icon: data.icon || notificationData.icon,
+        badge: notificationData.badge,
+        tag: data.tag || data.type || 'default',
+        requireInteraction: data.priority === 'high',
+        vibrate: data.priority === 'high' ? [300, 100, 300, 100, 300] : [200, 100, 200],
+        sound: data.sound || notificationData.sound,
+        data: {
+          url: data.url || '/',
+          type: data.type || 'system',
+          timestamp: Date.now(),
+          ...data
+        },
+        actions: data.actions || [
+          {
+            action: 'view',
+            title: 'View Details',
+            icon: '/logo-192.png'
+          },
+          {
+            action: 'dismiss',
+            title: 'Dismiss',
+            icon: '/logo-192.png'
+          }
+        ]
+      };
+    }
+  } catch (error) {
+    console.error('Error parsing push notification data:', error);
+  }
+
   event.waitUntil(
-    self.registration.showNotification('Kenya Pulse Connect', options)
+    self.registration.showNotification(notificationData.title, notificationData)
   );
 });
 
 // Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
+  console.log('Notification clicked:', event.action, event.notification.data);
   event.notification.close();
 
-  if (event.action === 'explore') {
-    event.waitUntil(
-      clients.openWindow('/')
-    );
+  const urlToOpen = event.notification.data?.url || '/';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clientList) => {
+        // Check if there's already a window open
+        for (let i = 0; i < clientList.length; i++) {
+          const client = clientList[i];
+          if (client.url === urlToOpen && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // If not, open a new window
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
+  );
+});
+
+// Background sync for offline notifications
+self.addEventListener('sync', (event) => {
+  console.log('Background sync triggered:', event.tag);
+  if (event.tag === 'sync-notifications') {
+    event.waitUntil(syncNotifications());
   }
 });
+
+async function syncNotifications() {
+  try {
+    // Fetch any pending notifications
+    console.log('Syncing notifications...');
+  } catch (error) {
+    console.error('Error syncing notifications:', error);
+  }
+}
