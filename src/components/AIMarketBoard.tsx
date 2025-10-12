@@ -42,17 +42,33 @@ const crops = [
   { value: "sugarcane", label: "Sugarcane", emoji: "🎋" }
 ];
 
+const kenyanCities = [
+  { value: "nairobi", label: "Nairobi" },
+  { value: "mombasa", label: "Mombasa" },
+  { value: "kisumu", label: "Kisumu" },
+  { value: "nakuru", label: "Nakuru" },
+  { value: "eldoret", label: "Eldoret" },
+  { value: "thika", label: "Thika" },
+  { value: "malindi", label: "Malindi" },
+  { value: "kitale", label: "Kitale" },
+  { value: "garissa", label: "Garissa" },
+  { value: "kakamega", label: "Kakamega" },
+  { value: "machakos", label: "Machakos" },
+  { value: "meru", label: "Meru" }
+];
+
 export const AIMarketBoard = () => {
   const [selectedCrop, setSelectedCrop] = useState<string>("");
+  const [selectedCity, setSelectedCity] = useState<string>("");
   const [marketData, setMarketData] = useState<MarketData | null>(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const fetchMarketPrices = async (crop: string) => {
+  const fetchMarketPrices = async (crop: string, city: string) => {
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('ai-market-prices', {
-        body: { crop }
+        body: { crop, city }
       });
 
       if (error) {
@@ -68,7 +84,7 @@ export const AIMarketBoard = () => {
       setMarketData(data);
       toast({
         title: "Market Prices Updated",
-        description: `Successfully fetched current ${crop} prices from AI market analysis.`,
+        description: `Successfully fetched ${crop} prices in ${city} from AI market analysis.`,
       });
     } catch (error) {
       console.error('Error fetching market prices:', error);
@@ -84,7 +100,16 @@ export const AIMarketBoard = () => {
 
   const handleCropSelect = (crop: string) => {
     setSelectedCrop(crop);
-    fetchMarketPrices(crop);
+    if (selectedCity) {
+      fetchMarketPrices(crop, selectedCity);
+    }
+  };
+
+  const handleCitySelect = (city: string) => {
+    setSelectedCity(city);
+    if (selectedCrop) {
+      fetchMarketPrices(selectedCrop, city);
+    }
   };
 
   const getTrendIcon = (trend: string) => {
@@ -150,30 +175,58 @@ export const AIMarketBoard = () => {
           </p>
         </div>
 
-        {/* Crop Selector */}
-        <div className="max-w-md mx-auto mb-12">
-          <div className="relative">
-            <Select value={selectedCrop} onValueChange={handleCropSelect}>
-              <SelectTrigger className="h-14 text-lg bg-background/80 border-2 border-primary/20 hover:border-primary/40 transition-smooth">
-                <SelectValue placeholder="🌾 Select a crop to view prices" />
-              </SelectTrigger>
-              <SelectContent className="bg-background border-2 border-primary/20">
-                {crops.map((crop) => (
-                  <SelectItem key={crop.value} value={crop.value} className="text-lg hover:bg-primary/5">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl">{crop.emoji}</span>
-                      <span>{crop.label}</span>
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {loading && (
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                <RefreshCw className="w-5 h-5 text-primary animate-spin" />
-              </div>
-            )}
+        {/* City and Crop Selectors */}
+        <div className="max-w-4xl mx-auto mb-12 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* City Selector */}
+            <div className="relative">
+              <Select value={selectedCity} onValueChange={handleCitySelect}>
+                <SelectTrigger className="h-14 text-lg bg-background/80 border-2 border-accent/20 hover:border-accent/40 transition-smooth">
+                  <SelectValue placeholder="📍 Select City" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border-2 border-accent/20">
+                  {kenyanCities.map((city) => (
+                    <SelectItem key={city.value} value={city.value} className="text-lg hover:bg-accent/5">
+                      <div className="flex items-center gap-3">
+                        <MapPin className="w-4 h-4 text-accent" />
+                        <span>{city.label}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Crop Selector */}
+            <div className="relative">
+              <Select value={selectedCrop} onValueChange={handleCropSelect}>
+                <SelectTrigger className="h-14 text-lg bg-background/80 border-2 border-primary/20 hover:border-primary/40 transition-smooth">
+                  <SelectValue placeholder="🌾 Select Crop" />
+                </SelectTrigger>
+                <SelectContent className="bg-background border-2 border-primary/20">
+                  {crops.map((crop) => (
+                    <SelectItem key={crop.value} value={crop.value} className="text-lg hover:bg-primary/5">
+                      <div className="flex items-center gap-3">
+                        <span className="text-2xl">{crop.emoji}</span>
+                        <span>{crop.label}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {loading && (
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                  <RefreshCw className="w-5 h-5 text-primary animate-spin" />
+                </div>
+              )}
+            </div>
           </div>
+          
+          {(!selectedCity || !selectedCrop) && (
+            <div className="text-center text-sm text-muted-foreground animate-pulse">
+              👆 Select both city and crop to view market prices
+            </div>
+          )}
         </div>
 
         {/* Market Data Display */}
@@ -283,9 +336,20 @@ export const AIMarketBoard = () => {
             <h3 className="text-2xl font-semibold text-foreground mb-3">
               Ready to Analyze Markets
             </h3>
-            <p className="text-muted-foreground">
-              Select a crop above to get AI-powered market intelligence and real-time pricing data from across Kenya.
+            <p className="text-muted-foreground mb-4">
+              Select both a city and a crop above to get AI-powered market intelligence and real-time pricing data.
             </p>
+            <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-accent" />
+                <span>Choose Location</span>
+              </div>
+              <span>→</span>
+              <div className="flex items-center gap-2">
+                <span className="text-lg">🌾</span>
+                <span>Pick Crop</span>
+              </div>
+            </div>
           </div>
         )}
       </div>

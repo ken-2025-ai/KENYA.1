@@ -65,6 +65,22 @@ export const Marketplace = () => {
 
   useEffect(() => {
     fetchListings();
+    
+    // Set up real-time subscription for new listings
+    const channel = supabase
+      .channel('marketplace-changes')
+      .on('postgres_changes', 
+        { event: '*', schema: 'public', table: 'market_listings' },
+        () => {
+          console.log('Marketplace update detected, refreshing...');
+          fetchListings();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   useEffect(() => {

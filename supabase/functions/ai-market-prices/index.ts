@@ -21,7 +21,7 @@ serve(async (req) => {
   }
 
   try {
-    const { crop } = await req.json();
+    const { crop, city } = await req.json();
     
     if (!crop) {
       return new Response(JSON.stringify({ error: 'Crop parameter is required' }), {
@@ -38,18 +38,30 @@ serve(async (req) => {
       });
     }
 
-    console.log(`Fetching market prices for crop: ${crop}`);
+    console.log(`Fetching market prices for crop: ${crop}${city ? ` in ${city}` : ''}`);
+
+    // Filter locations based on city parameter or use all
+    const targetLocations = city 
+      ? kenyanLocations.filter(loc => loc.toLowerCase() === city.toLowerCase())
+      : kenyanLocations.slice(0, 12);
+
+    const locationContext = city 
+      ? `Focus specifically on ${city} and nearby markets.`
+      : `across major Kenyan markets including: ${targetLocations.join(', ')}.`;
 
     const systemPrompt = `You are a Kenyan agricultural market intelligence expert with deep knowledge of local farming markets, pricing trends, and crop trading across Kenya. Provide accurate, realistic market data for farmers.`;
 
-    const userPrompt = `Provide current market prices for ${crop} across major Kenyan markets. Include data for these locations: ${kenyanLocations.slice(0, 12).join(', ')}.
+    const userPrompt = `Provide current market prices for ${crop} ${locationContext}
 
 Consider:
 - Regional price variations based on proximity to markets
 - Seasonal factors affecting supply and demand
 - Transportation costs affecting rural vs urban prices
 - Current market trends in Kenya
-- Quality grades commonly used in Kenyan markets`;
+- Quality grades commonly used in Kenyan markets
+${city ? `- Specific market conditions and price dynamics in ${city}` : ''}
+
+Provide data for at least ${city ? '3-5 markets in the area' : '8-12 different locations'}.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',

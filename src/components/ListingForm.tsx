@@ -329,35 +329,50 @@ export const ListingForm = ({ isOpen, onClose, onSuccess, editListing, isEditing
               )}
             />
 
-            {/* Image Upload */}
+            {/* Image Upload - Enhanced UX */}
             <div className="space-y-2">
-              <Label>Product Image</Label>
+              <Label className="text-base font-semibold">Product Image</Label>
               {imagePreview ? (
-                <div className="relative">
+                <div className="relative group">
                   <img 
                     src={imagePreview} 
                     alt="Product preview" 
-                    className="w-full h-48 object-cover rounded-lg"
+                    className="w-full h-64 object-cover rounded-xl border-2 border-primary/20 shadow-medium transition-smooth group-hover:shadow-large"
                   />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="absolute top-2 right-2"
-                    onClick={removeImage}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-smooth rounded-xl flex items-center justify-center">
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="lg"
+                      className="shadow-large"
+                      onClick={removeImage}
+                    >
+                      <X className="w-5 h-5 mr-2" />
+                      Remove Image
+                    </Button>
+                  </div>
                 </div>
               ) : (
-                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                  <Upload className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                  <Label 
-                    htmlFor="image-upload" 
-                    className="cursor-pointer text-primary hover:text-primary/80"
-                  >
-                    Click to upload product image
-                  </Label>
+                <label 
+                  htmlFor="image-upload" 
+                  className="block border-2 border-dashed border-primary/30 hover:border-primary/60 rounded-xl p-12 text-center cursor-pointer transition-smooth hover:bg-primary/5 group"
+                >
+                  <div className="flex flex-col items-center gap-4">
+                    <div className="p-4 rounded-full bg-primary/10 group-hover:bg-primary/20 transition-smooth">
+                      <Upload className="w-12 h-12 text-primary" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-semibold text-foreground mb-1">
+                        Upload Product Image
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Click or drag and drop
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        PNG, JPG up to 5MB • Recommended: 1200x800px
+                      </p>
+                    </div>
+                  </div>
                   <Input
                     id="image-upload"
                     type="file"
@@ -365,10 +380,7 @@ export const ListingForm = ({ isOpen, onClose, onSuccess, editListing, isEditing
                     className="hidden"
                     onChange={handleImageChange}
                   />
-                  <p className="text-xs text-muted-foreground mt-2">
-                    PNG, JPG up to 5MB
-                  </p>
-                </div>
+                </label>
               )}
             </div>
 

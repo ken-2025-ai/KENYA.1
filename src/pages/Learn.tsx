@@ -22,7 +22,9 @@ import {
   Beef,
   Wheat,
   ExternalLink,
-  ArrowRight
+  ArrowRight,
+  Award,
+  ChevronRight
 } from "lucide-react";
 
 const learningCategories = [
@@ -534,6 +536,120 @@ const Learn = () => {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Sustainable Farming Section */}
+      <section className="py-20 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12 animate-slide-up">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <span className="text-5xl">🌱</span>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                Sustainable Farming Practices
+              </h2>
+            </div>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Learn eco-friendly farming methods that protect our environment while maximizing yields and profitability.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {[
+              {
+                icon: "♻️",
+                title: "Organic Farming",
+                description: "Master chemical-free farming techniques for healthier crops and better market prices",
+                topics: ["Natural pesticides", "Composting", "Soil health", "Certification"]
+              },
+              {
+                icon: "💧",
+                title: "Water Conservation",
+                description: "Smart irrigation methods to save water while maintaining optimal crop growth",
+                topics: ["Drip irrigation", "Rainwater harvesting", "Water-efficient crops", "Moisture monitoring"]
+              },
+              {
+                icon: "🌾",
+                title: "Soil Management",
+                description: "Build and maintain fertile soil for sustainable long-term productivity",
+                topics: ["Crop rotation", "Cover crops", "No-till farming", "Soil testing"]
+              },
+              {
+                icon: "🐝",
+                title: "Biodiversity",
+                description: "Create balanced ecosystems that support pollinators and natural pest control",
+                topics: ["Pollinator habitats", "Companion planting", "Hedge rows", "Native species"]
+              },
+              {
+                icon: "🌳",
+                title: "Agroforestry",
+                description: "Integrate trees with crops for improved yields and environmental benefits",
+                topics: ["Shade systems", "Wind breaks", "Carbon sequestration", "Multi-cropping"]
+              },
+              {
+                icon: "⚡",
+                title: "Carbon Credits",
+                description: "Earn additional income by participating in carbon offset programs",
+                topics: ["Carbon farming", "Credit markets", "Verification", "Best practices"]
+              }
+            ].map((topic, index) => (
+              <Card 
+                key={index}
+                className="group cursor-pointer transition-smooth hover:shadow-large hover:-translate-y-2 bg-card/80 backdrop-blur-sm border-2 border-green-200 dark:border-green-800 animate-slide-up"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <CardHeader>
+                  <div className="text-5xl mb-3 group-hover:scale-110 transition-smooth">{topic.icon}</div>
+                  <CardTitle className="text-xl text-foreground group-hover:text-primary transition-smooth">
+                    {topic.title}
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    {topic.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <p className="text-sm font-semibold text-foreground mb-2">What you'll learn:</p>
+                    <ul className="space-y-1">
+                      {topic.topics.map((item, i) => (
+                        <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
+                          <span className="text-green-600 dark:text-green-400">✓</span>
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <Button 
+                    className="w-full mt-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                    size="sm"
+                  >
+                    Start Learning
+                    <ChevronRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <Card className="max-w-2xl mx-auto bg-gradient-to-r from-green-600 to-emerald-600 text-white border-none shadow-large">
+              <CardContent className="p-8">
+                <h3 className="text-2xl font-bold mb-4">🏆 Get Certified</h3>
+                <p className="mb-6 opacity-90">
+                  Complete our sustainable farming courses and earn certificates recognized across Kenya. 
+                  Gain access to premium markets and better prices for your certified sustainable produce.
+                </p>
+                <Button 
+                  size="lg"
+                  variant="secondary"
+                  className="shadow-glow-accent"
+                >
+                  View Certification Programs
+                  <Award className="ml-2 w-5 h-5" />
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>
