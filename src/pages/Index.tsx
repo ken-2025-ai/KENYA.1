@@ -14,80 +14,65 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { usePWA } from "@/hooks/usePWA";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import heroImage from "@/assets/hero-agriculture-kenya.jpg";
-import { 
-  Smartphone, 
-  TrendingUp, 
-  Users, 
-  MapPin, 
-  CloudRain, 
-  BookOpen, 
-  ShieldCheck, 
-  DollarSign, 
-  Truck, 
-  ArrowRight,
-  Play,
-  Download,
-  Zap
-} from "lucide-react";
-
-const features = [
-  {
-    icon: Smartphone,
-    title: "Mobile-First Platform",
-    description: "Access markets, prices, and agricultural insights directly from your phone. Works on any device, anywhere in Kenya."
-  },
-  {
-    icon: TrendingUp,
-    title: "Real-Time Market Prices",
-    description: "Get live pricing data from major markets across Kenya. Make informed selling decisions with accurate, up-to-date information."
-  },
-  {
-    icon: Users,
-    title: "Direct Market Access",
-    description: "Connect directly with buyers and sellers. Eliminate middlemen and get fair prices for your produce."
-  },
-  {
-    icon: CloudRain,
-    title: "Weather & Farming Tips",
-    description: "Receive localized weather forecasts, seasonal planting guides, and expert agricultural advice for better yields.",
-    highlight: true
-  },
-  {
-    icon: DollarSign,
-    title: "M-Pesa Integration",
-    description: "Secure payments through M-Pesa and other mobile money platforms. Fast, safe transactions for all your trades."
-  },
-  {
-    icon: ShieldCheck,
-    title: "Quality Assurance",
-    description: "Verified farmers and buyers. Rating system ensures quality produce and reliable trading partners."
-  }
-];
-
+import { Smartphone, TrendingUp, Users, MapPin, CloudRain, BookOpen, ShieldCheck, DollarSign, Truck, ArrowRight, Play, Download, Zap } from "lucide-react";
+const features = [{
+  icon: Smartphone,
+  title: "Mobile-First Platform",
+  description: "Access markets, prices, and agricultural insights directly from your phone. Works on any device, anywhere in Kenya."
+}, {
+  icon: TrendingUp,
+  title: "Real-Time Market Prices",
+  description: "Get live pricing data from major markets across Kenya. Make informed selling decisions with accurate, up-to-date information."
+}, {
+  icon: Users,
+  title: "Direct Market Access",
+  description: "Connect directly with buyers and sellers. Eliminate middlemen and get fair prices for your produce."
+}, {
+  icon: CloudRain,
+  title: "Weather & Farming Tips",
+  description: "Receive localized weather forecasts, seasonal planting guides, and expert agricultural advice for better yields.",
+  highlight: true
+}, {
+  icon: DollarSign,
+  title: "M-Pesa Integration",
+  description: "Secure payments through M-Pesa and other mobile money platforms. Fast, safe transactions for all your trades."
+}, {
+  icon: ShieldCheck,
+  title: "Quality Assurance",
+  description: "Verified farmers and buyers. Rating system ensures quality produce and reliable trading partners."
+}];
 const Index = () => {
-  const [authModal, setAuthModal] = useState<{ isOpen: boolean; defaultTab: "login" | "signup" }>({
+  const [authModal, setAuthModal] = useState<{
+    isOpen: boolean;
+    defaultTab: "login" | "signup";
+  }>({
     isOpen: false,
     defaultTab: "signup"
   });
   const navigate = useNavigate();
   const isMobile = useIsMobile();
-  const { canInstall, installApp, registerServiceWorker } = usePWA();
-
+  const {
+    canInstall,
+    installApp,
+    registerServiceWorker
+  } = usePWA();
   useEffect(() => {
     // Register service worker on component mount
     registerServiceWorker();
   }, [registerServiceWorker]);
-
   const openAuthModal = (defaultTab: "login" | "signup") => {
-    setAuthModal({ isOpen: true, defaultTab });
+    setAuthModal({
+      isOpen: true,
+      defaultTab
+    });
   };
-
   const closeAuthModal = () => {
-    setAuthModal({ isOpen: false, defaultTab: "signup" });
+    setAuthModal({
+      isOpen: false,
+      defaultTab: "signup"
+    });
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
+  return <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background relative overflow-hidden">
       {/* Animated gradient mesh background */}
       <div className="fixed inset-0 gradient-mesh-bg pointer-events-none" />
       
@@ -96,10 +81,9 @@ const Index = () => {
       
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-hero">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
+        <div className="absolute inset-0 bg-cover bg-center bg-no-repeat" style={{
+          backgroundImage: `url(${heroImage})`
+        }} />
         <div className="absolute inset-0 bg-gradient-hero" />
         
         <div className="relative container mx-auto px-4 py-16 md:py-32">
@@ -108,73 +92,57 @@ const Index = () => {
               Connect. Trade. 
               <span className="text-accent-glow block sm:inline">Prosper.</span>
             </h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto animate-slide-up leading-relaxed" style={{ animationDelay: "0.2s" }}>
+            <p className="text-lg sm:text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto animate-slide-up leading-relaxed" style={{
+              animationDelay: "0.2s"
+            }}>
               Kenya's premier agricultural marketplace connecting farmers directly to markets. 
               Get fair prices, real-time market data, and expert farming insights.
             </p>
             
-            <div className="flex flex-col gap-4 justify-center items-center mb-8 animate-slide-up max-w-md mx-auto sm:max-w-none sm:flex-row" style={{ animationDelay: "0.4s" }}>
-              <Button 
-                variant="accent" 
-                size={isMobile ? "default" : "lg"} 
-                className="group w-full sm:w-auto min-h-[48px] touch-manipulation shadow-glow-accent hover:scale-105 transition-all duration-300"
-                onClick={() => {
-                  if ('vibrate' in navigator) {
-                    navigator.vibrate(100);
-                  }
-                  openAuthModal("signup");
-                }}
-              >
+            <div className="flex flex-col gap-4 justify-center items-center mb-8 animate-slide-up max-w-md mx-auto sm:max-w-none sm:flex-row" style={{
+              animationDelay: "0.4s"
+            }}>
+              <Button variant="accent" size={isMobile ? "default" : "lg"} className="group w-full sm:w-auto min-h-[48px] touch-manipulation shadow-glow-accent hover:scale-105 transition-all duration-300" onClick={() => {
+                if ('vibrate' in navigator) {
+                  navigator.vibrate(100);
+                }
+                openAuthModal("signup");
+              }}>
                 <Users className="w-5 h-5 mr-2" />
                 <span className="font-semibold">Start Selling Now</span>
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-smooth" />
               </Button>
               
               {/* Enhanced Mobile App Download Button */}
-              <Button 
-                variant="premium" 
-                size={isMobile ? "default" : "lg"}
-                className="w-full sm:w-auto min-h-[48px] touch-manipulation relative overflow-hidden group bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-sm border border-white/30 text-primary-foreground hover:from-white/30 hover:to-white/20 hover:scale-105 transition-all duration-300"
-                onClick={async () => {
-                  if ('vibrate' in navigator) {
-                    navigator.vibrate(100);
-                  }
-                  
-                  // Try PWA install first, fallback to app store
-                  if (canInstall) {
-                    const installed = await installApp();
-                    if (!installed) {
-                      window.open('https://play.google.com/store', '_blank');
-                    }
-                  } else {
+              <Button variant="premium" size={isMobile ? "default" : "lg"} className="w-full sm:w-auto min-h-[48px] touch-manipulation relative overflow-hidden group bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-sm border border-white/30 text-primary-foreground hover:from-white/30 hover:to-white/20 hover:scale-105 transition-all duration-300" onClick={async () => {
+                if ('vibrate' in navigator) {
+                  navigator.vibrate(100);
+                }
+
+                // Try PWA install first, fallback to app store
+                if (canInstall) {
+                  const installed = await installApp();
+                  if (!installed) {
                     window.open('https://play.google.com/store', '_blank');
                   }
-                }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                } else {
+                  window.open('https://play.google.com/store', '_blank');
+                }
+              }}>
+                
                 <Download className="w-5 h-5 mr-2 animate-bounce" />
-                <span className="relative z-10 font-semibold">
-                  {canInstall 
-                    ? (isMobile ? "Install App" : "Install App") 
-                    : (isMobile ? "Get Mobile App" : "Download Mobile App")
-                  }
-                </span>
+                
                 <Zap className="w-4 h-4 ml-2 text-accent-glow animate-pulse" />
               </Button>
               
-              <Button 
-                variant="outline" 
-                size={isMobile ? "default" : "lg"} 
-                className="w-full sm:w-auto min-h-[48px] touch-manipulation bg-white/10 text-primary-foreground border-white/30 hover:bg-white/20 group hidden sm:flex"
-              >
+              <Button variant="outline" size={isMobile ? "default" : "lg"} className="w-full sm:w-auto min-h-[48px] touch-manipulation bg-white/10 text-primary-foreground border-white/30 hover:bg-white/20 group hidden sm:flex">
                 <Play className="w-5 h-5 mr-2 group-hover:scale-110 transition-smooth" />
                 Watch Demo
               </Button>
             </div>
             
             {/* Mobile App Features Preview */}
-            {isMobile && (
-              <div className="mb-8 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 max-w-sm mx-auto">
+            {isMobile && <div className="mb-8 bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 max-w-sm mx-auto">
                 <h3 className="text-sm font-semibold mb-3 text-primary-foreground">
                   📱 Mobile Features
                 </h3>
@@ -196,8 +164,7 @@ const Index = () => {
                     Camera Scanner
                   </div>
                 </div>
-              </div>
-            )}
+              </div>}
 
             <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-sm text-primary-foreground/80">
               <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">
@@ -234,15 +201,7 @@ const Index = () => {
           </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto">
-            {features.map((feature, index) => (
-              <FeatureCard
-                key={index}
-                icon={feature.icon}
-                title={feature.title}
-                description={feature.description}
-                highlight={feature.highlight}
-              />
-            ))}
+            {features.map((feature, index) => <FeatureCard key={index} icon={feature.icon} title={feature.title} description={feature.description} highlight={feature.highlight} />)}
           </div>
         </div>
       </section>
@@ -274,17 +233,12 @@ const Index = () => {
                 Access expert agricultural knowledge, weather forecasts, and farming best practices 
                 to maximize your harvest and profits.
               </p>
-              <Button 
-                variant="hero" 
-                size={isMobile ? "default" : "lg"}
-                className="w-full sm:w-auto min-h-[48px] touch-manipulation shadow-glow-primary hover:scale-105 transition-all duration-300 font-bold"
-                onClick={() => {
-                  if ('vibrate' in navigator) {
-                    navigator.vibrate(50);
-                  }
-                  navigate("/learn");
-                }}
-              >
+              <Button variant="hero" size={isMobile ? "default" : "lg"} className="w-full sm:w-auto min-h-[48px] touch-manipulation shadow-glow-primary hover:scale-105 transition-all duration-300 font-bold" onClick={() => {
+                if ('vibrate' in navigator) {
+                  navigator.vibrate(50);
+                }
+                navigate("/learn");
+              }}>
                 <BookOpen className="w-5 h-5 mr-2" />
                 <span className="font-semibold">Explore Learning Resources</span>
               </Button>
@@ -351,14 +305,8 @@ const Index = () => {
 
       <InstallPrompt />
       
-        <AuthModal 
-          isOpen={authModal.isOpen} 
-          onClose={closeAuthModal}
-          defaultTab={authModal.defaultTab}
-        />
+        <AuthModal isOpen={authModal.isOpen} onClose={closeAuthModal} defaultTab={authModal.defaultTab} />
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
