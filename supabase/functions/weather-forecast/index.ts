@@ -92,7 +92,7 @@ serve(async (req) => {
       farmingTips.push("Perfect weather for maize planting - soil moisture is ideal");
     }
     
-    const upcomingRain = forecast.some(day => day.rain > 60);
+    const upcomingRain = forecast.some((day: any) => day.rain > 60);
     if (upcomingRain) {
       farmingTips.push("Consider harvesting mature vegetables before heavy rainfall");
     } else if (humidity < 40) {
@@ -114,7 +114,7 @@ serve(async (req) => {
     // Generate alerts based on weather
     const alerts: Array<{ type: "warning" | "info", message: string }> = [];
     
-    const heavyRain = forecast.find(day => day.rain > 70);
+    const heavyRain = forecast.find((day: any) => day.rain > 70);
     if (heavyRain) {
       alerts.push({
         type: "warning",

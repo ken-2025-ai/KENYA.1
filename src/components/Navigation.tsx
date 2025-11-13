@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, Smartphone, TrendingUp, BookOpen, Users, LogOut, X } from "lucide-react";
+import { Menu, Smartphone, TrendingUp, BookOpen, Users, LogOut, X, HelpCircle } from "lucide-react";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -87,6 +87,10 @@ export const Navigation = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate('/profile')}>
                       Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/support')}>
+                      <HelpCircle className="w-4 h-4 mr-2" />
+                      Support
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
@@ -192,6 +196,17 @@ export const Navigation = () => {
                         }}
                       >
                         Profile
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        className="justify-start"
+                        onClick={() => {
+                          navigate('/support');
+                          setMobileMenuOpen(false);
+                        }}
+                      >
+                        <HelpCircle className="w-4 h-4 mr-2" />
+                        Support
                       </Button>
                       <Button 
                         variant="destructive" 
