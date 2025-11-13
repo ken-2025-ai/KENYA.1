@@ -283,7 +283,7 @@ const Index = () => {
                 <li><a href="#" className="hover:text-accent transition-smooth">Farming Guides</a></li>
                 <li><a href="#" className="hover:text-accent transition-smooth">Weather Reports</a></li>
                 <li><a href="#" className="hover:text-accent transition-smooth">Success Stories</a></li>
-                <li><a href="#" className="hover:text-accent transition-smooth">Support</a></li>
+                <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('/support'); }} className="hover:text-accent transition-smooth cursor-pointer">Support</a></li>
               </ul>
             </div>
             
