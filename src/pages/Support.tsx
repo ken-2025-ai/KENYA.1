@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Search, Mail, Phone, MessageCircle, Book, Video, Users, HelpCircle, ChevronRight, Send, CheckCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Search, Mail, Phone, MessageCircle, Book, Video, Users, HelpCircle, ChevronRight, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { Navigation } from "@/components/Navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const Support = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [contactForm, setContactForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -106,6 +108,36 @@ const Support = () => {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      
+      {/* Submit Ticket Button */}
+      <section className="py-8 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5">
+        <div className="max-w-7xl mx-auto px-4">
+          <Card className="border-primary/20 shadow-glow-primary">
+            <CardContent className="p-8">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-3">
+                    <AlertCircle className="w-8 h-8 text-primary" />
+                    <h3 className="text-2xl font-bold">Need to Report an Issue?</h3>
+                  </div>
+                  <p className="text-muted-foreground">
+                    Submit a detailed ticket and our support team will respond within 72 hours. 
+                    We're here to help resolve any technical issues, complaints, or concerns.
+                  </p>
+                </div>
+                <Button 
+                  variant="hero" 
+                  size="lg" 
+                  onClick={() => navigate("/support-ticket")}
+                  className="shrink-0"
+                >
+                  Submit Issue or Complaint
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
       
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-primary/10 via-primary/5 to-background py-16 px-4">

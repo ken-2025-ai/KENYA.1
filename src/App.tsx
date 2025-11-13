@@ -10,6 +10,7 @@ import Learn from "./pages/Learn";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import Support from "./pages/Support";
+import SupportTicket from "./pages/SupportTicket";
 import NotFound from "./pages/NotFound";
 import CropManagement from "./pages/CropManagement";
 import WeatherClimate from "./pages/WeatherClimate";
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/support" element={<Support />} />
+            <Route path="/support-ticket" element={<SupportTicket />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
