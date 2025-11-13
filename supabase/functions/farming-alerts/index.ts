@@ -235,7 +235,7 @@ serve(async (req) => {
     console.error('Error generating farming alerts:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         alerts: []
       }),
       {
