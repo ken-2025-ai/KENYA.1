@@ -24,7 +24,8 @@ import {
   ExternalLink,
   ArrowRight,
   Award,
-  ChevronRight
+  ChevronRight,
+  Activity
 } from "lucide-react";
 
 const learningCategories = [
@@ -262,7 +263,7 @@ const Learn = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {/* Animal Husbandry Button */}
             <Card className="group relative overflow-hidden hover:shadow-glow-primary transition-all duration-500 border-2 border-primary/20 hover:border-primary/40">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -377,6 +378,66 @@ const Learn = () => {
                   <Wheat className="w-5 h-5 mr-3" />
                   <span className="relative z-10 font-bold">
                     Manage Crops
+                  </span>
+                  <ArrowRight className="w-5 h-5 ml-3 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Agricultural Health Center Button */}
+            <Card className="group relative overflow-hidden hover:shadow-glow-accent transition-all duration-500 border-2 border-blue-500/20 hover:border-blue-500/40">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-teal-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <ExternalLink className="w-5 h-5 text-primary" />
+              </div>
+              
+              <CardHeader className="relative z-10 pb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-teal-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Activity className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors duration-300">
+                  Agricultural Health Center
+                </CardTitle>
+                <CardDescription className="text-base">
+                  AI-powered diagnosis for plant diseases and animal health issues. Upload photos for instant analysis, treatment recommendations, and prevention tips.
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="relative z-10 pt-0">
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                    Plant Disease Diagnosis
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                    Animal Health Analysis
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                    Treatment Recommendations
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
+                    Prevention & Care Tips
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="hero"
+                  size="lg"
+                  className="w-full group/btn relative overflow-hidden bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white border-0 shadow-glow-accent hover:shadow-glow-primary transition-all duration-300 min-h-[52px]"
+                  onClick={() => {
+                    if ('vibrate' in navigator) {
+                      navigator.vibrate(100);
+                    }
+                    navigate('/learn/health-center');
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
+                  <Activity className="w-5 h-5 mr-3" />
+                  <span className="relative z-10 font-bold">
+                    Diagnose Health
                   </span>
                   <ArrowRight className="w-5 h-5 ml-3 group-hover/btn:translate-x-1 transition-transform duration-300" />
                 </Button>
