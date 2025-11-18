@@ -186,15 +186,51 @@ export type Database = {
         }
         Relationships: []
       }
+      support_tickets: {
+        Row: {
+          created_at: string
+          description: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          status: string
+          ticket_type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          status?: string
+          ticket_type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          status?: string
+          ticket_type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      cleanup_sold_listings: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
+      cleanup_sold_listings: { Args: never; Returns: undefined }
     }
     Enums: {
       [_ in never]: never

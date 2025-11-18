@@ -17,6 +17,7 @@ import WeatherClimate from "./pages/WeatherClimate";
 import PestControl from "./pages/PestControl";
 import FarmEquipment from "./pages/FarmEquipment";
 import MarketIntelligence from "./pages/MarketIntelligence";
+import HealthCenter from "./pages/HealthCenter";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/learn/pest-control" element={<PestControl />} />
             <Route path="/learn/farm-equipment" element={<FarmEquipment />} />
             <Route path="/learn/market-intelligence" element={<MarketIntelligence />} />
+            <Route path="/learn/health-center" element={<HealthCenter />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/support" element={<Support />} />
