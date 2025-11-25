@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +12,7 @@ import {
   X, 
   MessageCircle, 
   TrendingUp, 
+  TrendingDown,
   CloudRain, 
   Package, 
   DollarSign,
@@ -20,7 +22,8 @@ import {
   Info,
   MapPin,
   Sprout,
-  Droplets
+  Droplets,
+  Minus
 } from "lucide-react";
 
 interface Notification {
@@ -37,12 +40,19 @@ interface Notification {
   };
 }
 
-export const NotificationSystem = () => {
+interface NotificationSystemProps {
+  userLocation?: { name: string; lat: number; lng: number } | null;
+}
+
+export const NotificationSystem = ({ userLocation }: NotificationSystemProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [pushPermission, setPushPermission] = useState<NotificationPermission>('default');
-  const { location, latitude, longitude, loading: locationLoading, error: locationError } = useGeolocation();
+  const { location: geoLocation, latitude, longitude, loading: locationLoading, error: locationError } = useGeolocation();
   const { toast } = useToast();
+  const [showPriceModal, setShowPriceModal] = useState(false);
+  const [selectedCrop, setSelectedCrop] = useState<string>("");
+  const [marketPrices, setMarketPrices] = useState<any[]>([]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -196,12 +206,46 @@ export const NotificationSystem = () => {
     }
   };
 
+  const location = userLocation?.name || geoLocation;
+  const lat = userLocation?.lat || latitude;
+  const lng = userLocation?.lng || longitude;
+
+  // Fetch market prices for a specific crop
+  const fetchMarketPrices = async (crop: string) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('ai-market-prices', {
+        body: { 
+          crop,
+          city: location
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.prices) {
+        setMarketPrices(data.prices);
+        setSelectedCrop(crop);
+        setShowPriceModal(true);
+      }
+    } catch (error) {
+      console.error('Error fetching market prices:', error);
+      toast({
+        title: "Error",
+        description: "Could not fetch market prices. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
+
   // Fetch market insights and add them to notifications
   const fetchMarketInsights = async () => {
     try {
       const loc = location || "Eldoret, Kenya";
       const { data, error } = await supabase.functions.invoke('ai-market-insights', {
-        body: { location: loc }
+        body: { 
+          location: loc,
+          coordinates: lat && lng ? { lat, lng } : undefined
+        }
       });
 
       if (error) throw error;
@@ -217,7 +261,7 @@ export const NotificationSystem = () => {
           priority: insight.priority as 'low' | 'medium' | 'high',
           action: {
             label: 'View Prices',
-            onClick: () => console.log('View market prices')
+            onClick: () => fetchMarketPrices(insight.crop)
           }
         }));
 
@@ -234,14 +278,14 @@ export const NotificationSystem = () => {
 
   // Fetch farming alerts based on location
   const fetchFarmingAlerts = async () => {
-    if (!location || !latitude || !longitude) return;
+    if (!location || !lat || !lng) return;
 
     try {
       const { data, error } = await supabase.functions.invoke('farming-alerts', {
         body: { 
           location,
-          latitude,
-          longitude
+          latitude: lat,
+          longitude: lng
         }
       });
 
@@ -327,7 +371,7 @@ export const NotificationSystem = () => {
       clearInterval(farmingInterval);
       clearInterval(marketInterval);
     };
-  }, [location, latitude, longitude, locationLoading]);
+  }, [location, lat, lng, locationLoading]);
 
   // Show location error
   useEffect(() => {
@@ -404,6 +448,29 @@ export const NotificationSystem = () => {
   const removeNotification = (id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
   };
+
+  if (!isOpen) {
+    return (
+      <div className="fixed top-6 right-6 z-50">
+        <Button
+          onClick={() => setIsOpen(true)}
+          variant="ghost"
+          className="relative p-3 rounded-full bg-background border border-border hover:bg-primary/10 transition-smooth group"
+        >
+          {unreadCount > 0 ? (
+            <BellRing className="w-6 h-6 text-primary group-hover:scale-110 transition-smooth animate-pulse" />
+          ) : (
+            <Bell className="w-6 h-6 text-muted-foreground group-hover:text-primary group-hover:scale-110 transition-smooth" />
+          )}
+          {unreadCount > 0 && (
+            <Badge className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground min-w-[20px] h-5 flex items-center justify-center text-xs animate-pulse">
+              {unreadCount > 99 ? '99+' : unreadCount}
+            </Badge>
+          )}
+        </Button>
+      </div>
+    );
+  }
 
   if (!isOpen) {
     return (
@@ -577,7 +644,6 @@ export const NotificationSystem = () => {
                 size="sm"
                 className="text-xs text-muted-foreground hover:text-primary"
                 onClick={() => {
-                  // Clear all notifications
                   setNotifications([]);
                 }}
               >
@@ -587,6 +653,82 @@ export const NotificationSystem = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Market Prices Modal */}
+      <Dialog open={showPriceModal} onOpenChange={setShowPriceModal}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-primary" />
+              Market Prices - {selectedCrop}
+            </DialogTitle>
+            <DialogDescription>
+              {location ? `Current prices in ${location} and surrounding areas` : 'Current market prices across Kenya'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+            {marketPrices.map((price, index) => (
+              <Card key={index} className="glass-card">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <h3 className="font-semibold text-lg">{price.location}</h3>
+                      <p className="text-sm text-muted-foreground">{price.market}</p>
+                    </div>
+                    <Badge className={
+                      price.trend === 'up' ? 'bg-success/10 text-success border-success/20' :
+                      price.trend === 'down' ? 'bg-destructive/10 text-destructive border-destructive/20' :
+                      'bg-muted/10 text-muted-foreground border-muted/20'
+                    }>
+                      {price.trend} {price.change}
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-primary">
+                        KSh {price.price}/{price.unit}
+                      </span>
+                      {price.trend === 'up' ? (
+                        <TrendingUp className="w-5 h-5 text-success" />
+                      ) : price.trend === 'down' ? (
+                        <TrendingDown className="w-5 h-5 text-destructive" />
+                      ) : (
+                        <Minus className="w-5 h-5 text-muted-foreground" />
+                      )}
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Quality:</span>
+                      <Badge variant="outline">{price.quality}</Badge>
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">Availability:</span>
+                      <span className={
+                        price.availability === 'High' ? 'text-success' :
+                        price.availability === 'Low' ? 'text-destructive' :
+                        'text-warning'
+                      }>{price.availability}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+          
+          {marketPrices.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              Loading market prices...
+            </div>
+          )}
+          
+          <div className="mt-4 text-center text-sm text-muted-foreground">
+            Prices are updated in real-time from markets across Kenya
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

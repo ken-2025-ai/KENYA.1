@@ -10,6 +10,7 @@ import { ListingForm } from "@/components/ListingForm";
 import { WeatherWidget } from "@/components/WeatherWidget";
 import { ChatSystem } from "@/components/ChatSystem";
 import { NotificationSystem } from "@/components/NotificationSystem";
+import { LocationSelector } from "@/components/LocationSelector";
 import { 
   User, 
   Plus, 
@@ -67,6 +68,8 @@ const Dashboard = () => {
   const [loadingData, setLoadingData] = useState(true);
   const [isListingFormOpen, setIsListingFormOpen] = useState(false);
   const [editingListing, setEditingListing] = useState<MarketListing | null>(null);
+  const [isLocationSelectorOpen, setIsLocationSelectorOpen] = useState(false);
+  const [userLocation, setUserLocation] = useState<{ name: string; lat: number; lng: number } | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -228,6 +231,10 @@ const Dashboard = () => {
     setEditingListing(null);
   };
 
+  const handleLocationSelect = (location: string, lat: number, lng: number) => {
+    setUserLocation({ name: location, lat, lng });
+  };
+
   if (loading || loadingData) {
     return (
       <div className="min-h-screen bg-background">
@@ -250,8 +257,14 @@ const Dashboard = () => {
       <div className="fixed inset-0 gradient-mesh-bg pointer-events-none"></div>
       
       <Navigation />
-      <NotificationSystem />
+      <NotificationSystem userLocation={userLocation} />
       <ChatSystem />
+      <LocationSelector
+        isOpen={isLocationSelectorOpen}
+        onClose={() => setIsLocationSelectorOpen(false)}
+        onLocationSelect={handleLocationSelect}
+        currentLocation={userLocation?.name || profile?.location || undefined}
+      />
       
       <div className="container mx-auto px-4 py-8 relative z-10">
         {/* Enhanced Header - Mobile Responsive */}
@@ -265,9 +278,20 @@ const Dashboard = () => {
                 <h1 className="text-xl md:text-3xl font-bold text-foreground mb-1 truncate">
                   Welcome, {profile?.full_name || user?.email?.split('@')[0]}! 🌱
                 </h1>
-                <p className="text-sm md:text-base text-muted-foreground truncate">
-                  {profile?.location ? `Farming in ${profile.location}` : 'Complete your profile'}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm md:text-base text-muted-foreground truncate">
+                    {userLocation?.name || profile?.location ? `Farming in ${userLocation?.name || profile.location}` : 'Complete your profile'}
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsLocationSelectorOpen(true)}
+                    className="text-xs text-primary hover:bg-primary/10"
+                  >
+                    <MapPin className="w-3 h-3 mr-1" />
+                    Change
+                  </Button>
+                </div>
                 <div className="flex items-center gap-2 mt-2 flex-wrap">
                   <Badge className="bg-success/10 text-success border-success/20 text-xs">
                     <CheckCircle className="w-3 h-3 mr-1" />
@@ -404,7 +428,10 @@ const Dashboard = () => {
           {/* Right Sidebar */}
           <div className="space-y-6">
             <div className="animate-slide-up" style={{ animationDelay: "0.4s" }}>
-              <WeatherWidget userLocation={profile?.location} />
+              <WeatherWidget 
+                userLocation={userLocation?.name || profile?.location} 
+                coordinates={userLocation ? { lat: userLocation.lat, lng: userLocation.lng } : undefined}
+              />
             </div>
           </div>
         </div>

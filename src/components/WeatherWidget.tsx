@@ -41,19 +41,22 @@ interface WeatherData {
   }>;
 }
 
-export const WeatherWidget = ({ userLocation }: { userLocation?: string }) => {
+export const WeatherWidget = ({ userLocation, coordinates }: { userLocation?: string; coordinates?: { lat: number; lng: number } }) => {
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const { toast } = useToast();
 
-  const fetchWeather = async (location: string) => {
+  const fetchWeather = async (location: string, coords?: { lat: number; lng: number }) => {
     try {
       setLoading(true);
       console.log('Fetching weather for:', location);
       
       const { data, error } = await supabase.functions.invoke('weather-forecast', {
-        body: { location }
+        body: { 
+          location,
+          coordinates: coords
+        }
       });
 
       if (error) throw error;
@@ -75,12 +78,12 @@ export const WeatherWidget = ({ userLocation }: { userLocation?: string }) => {
 
   useEffect(() => {
     const location = userLocation || "Eldoret, Kenya";
-    fetchWeather(location);
-  }, [userLocation]);
+    fetchWeather(location, coordinates);
+  }, [userLocation, coordinates]);
 
   const refreshWeather = () => {
     const location = userLocation || weather?.location || "Eldoret, Kenya";
-    fetchWeather(location);
+    fetchWeather(location, coordinates);
   };
 
   const getWeatherIcon = (condition: string) => {
