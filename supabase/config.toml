@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.farming-assistant]
 verify_jwt = false
+
+[functions.health-diagnosis]
+verify_jwt = false
