@@ -109,51 +109,56 @@ const HealthCenter = () => {
 
     setIsAnalyzing(true);
     
-    // Simulate AI diagnosis (replace with actual AI API call)
-    setTimeout(() => {
-      const mockDiagnosis: DiagnosisResult = {
-        disease: activeTab === "plant" ? "Early Blight" : "Mastitis",
-        accuracy: 87.5,
-        symptoms: activeTab === "plant" 
-          ? ["Dark spots on leaves", "Yellowing around spots", "Leaf wilting"]
-          : ["Swollen udder", "Reduced milk production", "Fever"],
-        cause: activeTab === "plant"
-          ? "Fungal infection caused by Alternaria solani, thrives in warm, humid conditions"
-          : "Bacterial infection, usually caused by poor hygiene during milking",
-        treatment: activeTab === "plant"
-          ? "Apply fungicide containing chlorothalonil or mancozeb"
-          : "Antibiotic treatment (Penicillin or Cephalosporin) administered by veterinarian",
-        dosage: activeTab === "animal" ? "2ml per 50kg body weight, twice daily for 5 days" : undefined,
-        organicAlternative: activeTab === "plant" 
-          ? "Neem oil spray (2 tablespoons per liter of water)" 
-          : "Garlic and turmeric paste applied topically",
-        prevention: activeTab === "plant"
-          ? [
-              "Rotate crops every season",
-              "Remove infected plant debris",
-              "Ensure proper spacing for air circulation",
-              "Water at soil level, not overhead"
-            ]
-          : [
-              "Maintain clean milking environment",
-              "Sanitize equipment before and after use",
-              "Regular health checks",
-              "Proper nutrition and hydration"
-            ],
-        recommendedProducts: activeTab === "plant"
-          ? ["Dithane M-45", "Ridomil Gold", "Neem Oil Organic"]
-          : ["Penicillin G Injection", "Mastalone Cream", "Udder Clean Solution"],
-        severityLevel: "medium"
-      };
+    try {
+      // Convert image to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(selectedFile);
+      
+      const base64Image = await new Promise<string>((resolve, reject) => {
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+      });
 
-      setDiagnosis(mockDiagnosis);
+      // Call AI diagnosis edge function
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/health-diagnosis`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({
+            image: base64Image,
+            type: activeTab,
+            selectedType: selectedType
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Diagnosis failed');
+      }
+
+      const { diagnosis: aiDiagnosis } = await response.json();
+      
+      setDiagnosis(aiDiagnosis);
       setIsAnalyzing(false);
       
       toast({
         title: "Diagnosis Complete",
-        description: `${mockDiagnosis.disease} detected with ${mockDiagnosis.accuracy}% confidence`,
+        description: `${aiDiagnosis.disease} detected with ${aiDiagnosis.accuracy}% confidence`,
       });
-    }, 3000);
+    } catch (error) {
+      console.error('Diagnosis error:', error);
+      setIsAnalyzing(false);
+      toast({
+        title: "Diagnosis Failed",
+        description: error instanceof Error ? error.message : "Failed to analyze image. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const getSeverityColor = (level: string) => {
