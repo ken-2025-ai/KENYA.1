@@ -49,19 +49,66 @@ serve(async (req) => {
       ? `Focus specifically on ${city} and nearby markets.`
       : `across major Kenyan markets including: ${targetLocations.join(', ')}.`;
 
-    const systemPrompt = `You are a Kenyan agricultural market intelligence expert with deep knowledge of local farming markets, pricing trends, and crop trading across Kenya. Provide accurate, realistic market data for farmers.`;
+const systemPrompt = `You are a highly accurate Kenyan agricultural market intelligence AI with deep expertise in:
+- Real-time market pricing across all major Kenyan markets and counties
+- Seasonal crop patterns and regional variations in Kenya
+- Supply-demand dynamics affecting agricultural prices
+- Transportation and logistics costs within Kenya
+- Market days and trading patterns in different regions
+- Quality grading standards used in Kenyan agricultural markets
 
-    const userPrompt = `Provide current market prices for ${crop} ${locationContext}
+Your pricing data must be:
+1. Realistic and based on actual Kenyan market conditions
+2. Consider regional variations (coastal vs highland vs arid regions)
+3. Account for transportation costs from production to consumption centers
+4. Reflect seasonal availability and current harvest timing
+5. Include quality differentiation (Grade A, Grade B, Mixed)
+6. Show realistic price trends based on supply and demand
 
-Consider:
-- Regional price variations based on proximity to markets
-- Seasonal factors affecting supply and demand
-- Transportation costs affecting rural vs urban prices
-- Current market trends in Kenya
-- Quality grades commonly used in Kenyan markets
-${city ? `- Specific market conditions and price dynamics in ${city}` : ''}
+Consider the following Kenyan regional pricing patterns:
+- Nairobi: Usually highest prices (major consumption center, high transport costs)
+- Mombasa: Moderate prices for local crops, high for highland crops
+- Kisumu: Lower prices for locally grown produce
+- Eldoret: Lower prices for grains and vegetables (major production area)
+- Rural markets: Generally lower prices but vary by proximity to urban centers`;
 
-Provide data for at least ${city ? '3-5 markets in the area' : '8-12 different locations'}.`;
+    const userPrompt = `Provide ACCURATE and REALISTIC current market prices for ${crop} ${locationContext}
+
+CRITICAL REQUIREMENTS:
+1. Prices must reflect actual Kenyan market conditions (check recent trends if known)
+2. Consider the current month and season (planting vs harvest affects prices)
+3. Include regional price variations based on:
+   - Production areas (lower prices where grown)
+   - Consumption centers (higher prices in cities)
+   - Transportation distances and costs
+   - Local supply and demand
+
+4. Quality grades affect pricing:
+   - Grade A: Premium quality, 15-30% higher price
+   - Grade B: Standard quality, baseline price
+   - Mixed: Below standard, 20-40% lower price
+
+5. Price trends should reflect:
+   - Harvest season = prices DOWN (high supply)
+   - Off-season = prices UP (low supply)
+   - Rainy season start = prices UP (planting costs)
+   - Market day patterns
+
+${city ? `
+SPECIFIC FOR ${city}:
+- Consider ${city}'s role as production/consumption center
+- Account for local climate and growing conditions
+- Include nearby market influences
+- Reflect actual trading patterns in the area
+` : ''}
+
+Provide data for ${city ? '4-6 major markets in and around the area' : '10-15 diverse locations'} covering:
+- Major urban markets (Nairobi, Mombasa, Kisumu)
+- Regional trading centers (Eldoret, Nakuru, Thika)
+- Rural market towns
+- Border markets if relevant
+
+Make prices realistic - check what farmers actually receive vs consumer prices.`;
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
