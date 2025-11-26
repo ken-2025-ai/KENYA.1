@@ -135,29 +135,58 @@ export const NotificationSystem = ({ userLocation }: NotificationSystemProps) =>
     return outputArray;
   };
 
-  // Send browser notification with sound
-  const sendBrowserNotification = (notification: Notification) => {
-    if (Notification.permission === 'granted' && !document.hasFocus()) {
-      const browserNotif = new Notification(notification.title, {
-        body: notification.message,
-        icon: '/logo-192.png',
-        badge: '/logo-192.png',
-        tag: notification.type,
-        requireInteraction: notification.priority === 'high',
-        silent: false,
-      });
+  // Send push notification to user device
+  const sendBrowserNotification = async (notification: Notification) => {
+    // Check if notifications are supported and permitted
+    if (!('Notification' in window)) {
+      console.log('This browser does not support notifications');
+      return;
+    }
 
-      // Play notification sound
-      playNotificationSound(notification.priority);
-
-      browserNotif.onclick = () => {
-        window.focus();
-        setIsOpen(true);
-        browserNotif.close();
-      };
-    } else {
-      // Play sound even if tab is focused
-      playNotificationSound(notification.priority);
+    if (Notification.permission === 'granted') {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        
+        // Send push notification to service worker (this goes to the device)
+        await registration.showNotification(notification.title, {
+          body: notification.message,
+          icon: '/logo-192.png',
+          badge: '/logo-192.png',
+          tag: notification.id,
+          requireInteraction: notification.priority === 'high',
+          silent: false,
+          data: {
+            url: '/',
+            type: notification.type,
+            priority: notification.priority,
+            timestamp: notification.timestamp,
+            notification: notification,
+          },
+          actions: notification.action ? [
+            {
+              action: 'view',
+              title: 'View Details'
+            },
+            {
+              action: 'dismiss',
+              title: 'Dismiss'
+            }
+          ] : undefined,
+        } as NotificationOptions);
+        
+        // Play notification sound
+        playNotificationSound(notification.priority);
+        
+        console.log('Push notification delivered to device:', notification.title);
+      } catch (error) {
+        console.error('Error showing notification:', error);
+      }
+    } else if (Notification.permission === 'default') {
+      // Auto-request permission on first notification
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        sendBrowserNotification(notification);
+      }
     }
   };
 
@@ -334,38 +363,46 @@ export const NotificationSystem = ({ userLocation }: NotificationSystemProps) =>
   };
 
   useEffect(() => {
-    // Request notification permission on mount
-    if ('Notification' in window) {
-      setPushPermission(Notification.permission);
-      if (Notification.permission === 'default') {
-        // Don't auto-request, let user click button
-        toast({
-          title: "🔔 Enable Notifications",
-          description: "Get farming alerts based on your location",
-          action: (
-            <Button size="sm" onClick={requestPushPermission}>
-              Enable
-            </Button>
-          ),
-        });
-      } else if (Notification.permission === 'granted') {
-        subscribeToPushNotifications();
+    // Request notification permission and subscribe to push
+    const initNotifications = async () => {
+      if ('Notification' in window) {
+        setPushPermission(Notification.permission);
+        if (Notification.permission === 'default') {
+          toast({
+            title: "🔔 Enable Location-Based Notifications",
+            description: "Get realtime weather, market alerts, and farming tips for your exact location",
+            action: (
+              <Button size="sm" onClick={requestPushPermission}>
+                Enable
+              </Button>
+            ),
+          });
+        } else if (Notification.permission === 'granted') {
+          await subscribeToPushNotifications();
+        }
       }
-    }
+    };
+    initNotifications();
   }, []);
 
   useEffect(() => {
     if (!location || locationLoading) return;
 
-    // Fetch farming alerts when location is available
+    console.log('Fetching realtime notifications for:', location);
+    
+    // Fetch initial data
     fetchFarmingAlerts();
     fetchMarketInsights();
+
+    // Show toast confirmation with location
+    toast({
+      title: "📍 Location Set",
+      description: `Receiving realtime updates for ${location}`,
+    });
     
-    // Refresh farming alerts every hour
-    const farmingInterval = setInterval(fetchFarmingAlerts, 60 * 60 * 1000);
-    
-    // Refresh market insights every 2 hours
-    const marketInterval = setInterval(fetchMarketInsights, 2 * 60 * 60 * 1000);
+    // More frequent updates for realtime experience
+    const farmingInterval = setInterval(fetchFarmingAlerts, 3 * 60 * 1000); // Every 3 mins
+    const marketInterval = setInterval(fetchMarketInsights, 5 * 60 * 1000); // Every 5 mins
     
     return () => {
       clearInterval(farmingInterval);

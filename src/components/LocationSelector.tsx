@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MapPin, Search } from "lucide-react";
+import { MapPin, Search, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface LocationSelectorProps {
@@ -10,6 +10,13 @@ interface LocationSelectorProps {
   onClose: () => void;
   onLocationSelect: (location: string, lat: number, lng: number) => void;
   currentLocation?: string;
+}
+
+interface LocationSuggestion {
+  name: string;
+  lat: number;
+  lng: number;
+  display_name: string;
 }
 
 export const LocationSelector = ({ 
@@ -20,6 +27,7 @@ export const LocationSelector = ({
 }: LocationSelectorProps) => {
   const [searchQuery, setSearchQuery] = useState(currentLocation || "");
   const [isSearching, setIsSearching] = useState(false);
+  const [suggestions, setSuggestions] = useState<LocationSuggestion[]>([]);
   const { toast } = useToast();
 
   const kenyanLocations = [
@@ -49,6 +57,47 @@ export const LocationSelector = ({
     onClose();
   };
 
+  // Geocode search query using Nominatim API
+  useEffect(() => {
+    const searchLocation = async () => {
+      if (searchQuery.length < 3) {
+        setSuggestions([]);
+        return;
+      }
+
+      setIsSearching(true);
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            searchQuery + ", Kenya"
+          )}&limit=8&countrycodes=ke&addressdetails=1`
+        );
+        const data = await response.json();
+        
+        const locationSuggestions: LocationSuggestion[] = data.map((item: any) => ({
+          name: item.name || item.display_name.split(",")[0],
+          lat: parseFloat(item.lat),
+          lng: parseFloat(item.lon),
+          display_name: item.display_name,
+        }));
+        
+        setSuggestions(locationSuggestions);
+      } catch (error) {
+        console.error("Geocoding error:", error);
+        toast({
+          title: "Search Error",
+          description: "Failed to search location. Please try again.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsSearching(false);
+      }
+    };
+
+    const timeoutId = setTimeout(searchLocation, 500);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
   const handleCurrentLocation = () => {
     setIsSearching(true);
     if (navigator.geolocation) {
@@ -67,7 +116,7 @@ export const LocationSelector = ({
             onLocationSelect(locationName, latitude, longitude);
             toast({
               title: "Location Detected",
-              description: `Using your current location: ${locationName}`,
+              description: `Receiving realtime updates for ${locationName}`,
             });
             onClose();
           } catch (error) {
@@ -102,6 +151,10 @@ export const LocationSelector = ({
     loc.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const displayLocations = searchQuery.length >= 3 && suggestions.length > 0
+    ? suggestions
+    : filteredLocations;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl">
@@ -120,11 +173,14 @@ export const LocationSelector = ({
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
-              placeholder="Search for a location..."
+              placeholder="Type any location in Kenya (min 3 characters)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10"
             />
+            {isSearching && searchQuery.length >= 3 && (
+              <Loader2 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 animate-spin text-primary" />
+            )}
           </div>
 
           {/* Current Location Button */}
@@ -139,23 +195,36 @@ export const LocationSelector = ({
           </Button>
 
           {/* Location Grid */}
-          <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-            {filteredLocations.map((location) => (
+          <div className="space-y-2 max-h-96 overflow-y-auto">
+            {displayLocations.map((location, index) => (
               <Button
-                key={location.name}
+                key={`${location.name}-${index}`}
                 variant="outline"
-                className="justify-start hover:bg-primary/10 hover:border-primary"
+                className="w-full justify-start hover:bg-primary/10 hover:border-primary text-left h-auto py-3"
                 onClick={() => handleLocationClick(location.name, location.lat, location.lng)}
               >
-                <MapPin className="w-4 h-4 mr-2 text-primary" />
-                {location.name}
+                <MapPin className="w-4 h-4 mr-2 text-primary flex-shrink-0" />
+                <div className="flex flex-col items-start">
+                  <span className="font-medium">{location.name}</span>
+                  {'display_name' in location && location.display_name && (
+                    <span className="text-xs text-muted-foreground">
+                      {String(location.display_name)}
+                    </span>
+                  )}
+                </div>
               </Button>
             ))}
           </div>
 
-          {filteredLocations.length === 0 && (
+          {displayLocations.length === 0 && searchQuery.length < 3 && (
             <div className="text-center py-8 text-muted-foreground">
-              No locations found. Try a different search term.
+              Type at least 3 characters to search for any location in Kenya
+            </div>
+          )}
+          
+          {displayLocations.length === 0 && searchQuery.length >= 3 && !isSearching && (
+            <div className="text-center py-8 text-muted-foreground">
+              No locations found for "{searchQuery}"
             </div>
           )}
         </div>
