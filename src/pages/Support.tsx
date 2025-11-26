@@ -70,9 +70,9 @@ const Support = () => {
   ];
 
   const contactOptions = [
-    { icon: Mail, title: "Email Support", value: "support@eagriculture.co.ke", desc: "Response within 24 hours" },
-    { icon: Phone, title: "Phone Support", value: "+254 700 123 456", desc: "Mon-Fri, 8AM-6PM EAT" },
-    { icon: MessageCircle, title: "WhatsApp", value: "+254 700 123 456", desc: "Chat with us anytime" },
+    { icon: Mail, title: "Email Support", value: "kenkendagor2@gmail.com", desc: "Response within 24 hours", link: "mailto:kenkendagor2@gmail.com" },
+    { icon: Phone, title: "Phone Support", value: "+254768731991", desc: "Mon-Fri, 8AM-6PM EAT", link: "tel:+254768731991" },
+    { icon: MessageCircle, title: "WhatsApp", value: "+254768731991", desc: "Chat with us anytime", link: "https://wa.me/254768731991" },
   ];
 
   const helpCategories = [
@@ -295,14 +295,20 @@ const Support = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {contactOptions.map((option) => (
-                      <div key={option.title} className="flex items-start gap-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                      <a 
+                        key={option.title}
+                        href={option.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-start gap-4 p-4 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer"
+                      >
                         <option.icon className="h-6 w-6 text-primary mt-1" />
                         <div className="flex-1">
                           <h3 className="font-semibold mb-1">{option.title}</h3>
                           <p className="text-sm font-mono text-primary mb-1">{option.value}</p>
                           <p className="text-xs text-muted-foreground">{option.desc}</p>
                         </div>
-                      </div>
+                      </a>
                     ))}
                   </CardContent>
                 </Card>
