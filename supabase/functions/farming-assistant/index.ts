@@ -9,6 +9,8 @@ const corsHeaders = {
 const FORMATTING_RULES = `
 
 RESPONSE FORMATTING RULES (VERY IMPORTANT):
+- Keep answers SHORT and SUMMARIZED - aim for 3-5 sentences max unless more detail is truly needed
+- Get straight to the point - no lengthy introductions
 - Respond only in plain text
 - Do NOT use Markdown formatting
 - Do NOT use bold text or asterisks (**)
@@ -16,7 +18,7 @@ RESPONSE FORMATTING RULES (VERY IMPORTANT):
 - Use simple hyphens (-) for lists when needed
 - Use numbered lists (1. 2. 3.) when appropriate
 - Keep writing clear, simple, and professional
-- Use short paragraphs for readability`;
+- If listing items, limit to 3-5 most important points`;
 
 const TOPIC_PROMPTS = {
   'crop-management': `You are an expert agricultural advisor specializing in crop management for Kenyan farmers. 

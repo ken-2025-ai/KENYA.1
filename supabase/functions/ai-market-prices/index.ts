@@ -73,6 +73,7 @@ Consider the following Kenyan regional pricing patterns:
 - Rural markets: Generally lower prices but vary by proximity to urban centers
 
 RESPONSE FORMATTING RULES (VERY IMPORTANT):
+- Keep answers SHORT and SUMMARIZED - be concise and direct
 - Respond only in plain text
 - Do NOT use Markdown formatting
 - Do NOT use bold text or asterisks (**)
