@@ -312,59 +312,90 @@ const HealthCenter = () => {
 
     const userMessage = chatInput.trim();
     setChatInput("");
-    setChatMessages(prev => [...prev, { role: "user", content: userMessage }]);
+    
+    // Build context message if diagnosis exists
+    let contextMessage = userMessage;
+    if (diagnosis && chatMessages.length === 0) {
+      contextMessage = `I have a ${activeTab} (${selectedType}) diagnosed with ${diagnosis.disease} (${diagnosis.accuracy}% confidence, ${diagnosis.severityLevel} severity). Symptoms: ${diagnosis.symptoms.join(', ')}. Treatment suggested: ${diagnosis.treatment}. My question: ${userMessage}`;
+    }
+    
+    const newMessages = [...chatMessages, { role: "user" as const, content: userMessage }];
+    setChatMessages(newMessages);
     setIsChatLoading(true);
 
-    // Simulate AI response (replace with actual Lovable AI integration)
-    setTimeout(() => {
-      let response = "";
-      
-      if (userMessage.toLowerCase().includes("agrovet") || userMessage.toLowerCase().includes("nearest")) {
-        response = `Based on your location, here are the nearest agrovets:
+    try {
+      const response = await fetch(
+        `https://lfipxpoypivbiraavtkw.supabase.co/functions/v1/farming-assistant`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+            topic: 'health-center'
+          }),
+        }
+      );
 
-**1. Farmkey Agrovet**
-- Distance: 2.3 km
-- Location: Opposite Total Petrol Station, Main Road
-- Opening Hours: Mon-Sat 8AM-6PM
-- Contact: +254 712 345 678
-
-**2. Green Valley Agro-Supplies**
-- Distance: 3.8 km
-- Location: Next to Equity Bank, Town Center
-- Opening Hours: Mon-Sun 7AM-7PM
-- Contact: +254 722 456 789
-
-Would you like directions to any of these?`;
-      } else if (diagnosis) {
-        response = `Based on the diagnosis of **${diagnosis.disease}**, here's my advice:
-
-${diagnosis.treatment}
-
-${diagnosis.dosage ? `**Dosage:** ${diagnosis.dosage}` : ''}
-
-**Organic Alternative:**
-${diagnosis.organicAlternative}
-
-**Prevention Tips:**
-${diagnosis.prevention.map(tip => `• ${tip}`).join('\n')}
-
-Would you like more specific advice about treatment application or prevention methods?`;
-      } else {
-        response = `Hello! I'm your AI Agronomist assistant. I can help you with:
-
-• Plant disease diagnosis and treatment
-• Animal health issues and medications
-• Organic farming alternatives
-• Prevention strategies
-• Finding nearest agrovets
-• Dosage recommendations
-
-Please upload an image first for diagnosis, or describe the symptoms you're observing in your crops or animals.`;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to get response');
       }
 
-      setChatMessages(prev => [...prev, { role: "assistant", content: response }]);
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let assistantMessage = "";
+
+      if (reader) {
+        // Add empty assistant message to update
+        setChatMessages(prev => [...prev, { role: "assistant", content: "" }]);
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split('\n');
+
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6).trim();
+              if (data === '[DONE]') continue;
+
+              try {
+                const parsed = JSON.parse(data);
+                const content = parsed.choices?.[0]?.delta?.content;
+                if (content) {
+                  assistantMessage += content;
+                  setChatMessages(prev => {
+                    const updated = [...prev];
+                    updated[updated.length - 1] = { role: "assistant", content: assistantMessage };
+                    return updated;
+                  });
+                }
+              } catch {
+                // Skip invalid JSON
+              }
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      setChatMessages(prev => [...prev, { 
+        role: "assistant", 
+        content: "I'm sorry, I encountered an error. Please try again or describe your symptoms in more detail." 
+      }]);
+      toast({
+        title: "Chat Error",
+        description: error instanceof Error ? error.message : "Failed to get AI response",
+        variant: "destructive",
+      });
+    } finally {
       setIsChatLoading(false);
-    }, 1500);
+    }
   };
 
   const handleFindAgrovets = () => {
