@@ -51,12 +51,14 @@ SAFETY RULES:
 - Always suggest consulting a veterinarian/agronomist for serious cases
 
 RESPONSE FORMATTING RULES (VERY IMPORTANT):
+- Keep answers SHORT and SUMMARIZED - be concise and direct
 - Respond only in plain text
 - Do NOT use Markdown formatting
 - Do NOT use bold text or asterisks (**)
 - Do NOT use special characters or symbols for formatting
 - Use simple hyphens (-) for lists when needed
-- Keep writing clear, simple, and professional`;
+- Keep writing clear, simple, and professional
+- Limit lists to 3-5 most important points`;
 
     const userPrompt = type === 'plant' 
       ? `Analyze this ${selectedType} plant image for diseases or health issues. Identify any visible problems, explain the cause, and provide comprehensive treatment recommendations including both chemical and organic options suitable for Kenyan farmers.`
