@@ -40,7 +40,15 @@ serve(async (req) => {
     const cropsToAnalyze = crops || commonCrops.slice(0, 5);
     console.log(`Analyzing market insights for ${location}, crops: ${cropsToAnalyze.join(', ')}`);
 
-    const systemPrompt = `You are a Kenyan agricultural market analyst with expertise in price trends, seasonal patterns, and market conditions. Provide actionable insights for farmers to maximize their profits.`;
+    const systemPrompt = `You are a Kenyan agricultural market analyst with expertise in price trends, seasonal patterns, and market conditions. Provide actionable insights for farmers to maximize their profits.
+
+RESPONSE FORMATTING RULES (VERY IMPORTANT):
+- Respond only in plain text
+- Do NOT use Markdown formatting
+- Do NOT use bold text or asterisks (**)
+- Do NOT use special characters or symbols for formatting
+- Use simple hyphens (-) for lists when needed
+- Keep writing clear, simple, and professional`;
 
     const userPrompt = `Analyze current market conditions in ${location}, Kenya for these crops: ${cropsToAnalyze.join(', ')}.
 

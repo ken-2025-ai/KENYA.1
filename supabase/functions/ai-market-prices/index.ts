@@ -70,7 +70,15 @@ Consider the following Kenyan regional pricing patterns:
 - Mombasa: Moderate prices for local crops, high for highland crops
 - Kisumu: Lower prices for locally grown produce
 - Eldoret: Lower prices for grains and vegetables (major production area)
-- Rural markets: Generally lower prices but vary by proximity to urban centers`;
+- Rural markets: Generally lower prices but vary by proximity to urban centers
+
+RESPONSE FORMATTING RULES (VERY IMPORTANT):
+- Respond only in plain text
+- Do NOT use Markdown formatting
+- Do NOT use bold text or asterisks (**)
+- Do NOT use special characters or symbols for formatting
+- Use simple hyphens (-) for lists when needed
+- Keep writing clear, simple, and professional`;
 
     const userPrompt = `Provide ACCURATE and REALISTIC current market prices for ${crop} ${locationContext}
 
