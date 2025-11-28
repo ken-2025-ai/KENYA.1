@@ -48,7 +48,15 @@ DIAGNOSIS REQUIREMENTS:
 SAFETY RULES:
 - Never recommend banned pesticides or harmful chemicals
 - If uncertain, provide possible diagnoses and ask for more information
-- Always suggest consulting a veterinarian/agronomist for serious cases`;
+- Always suggest consulting a veterinarian/agronomist for serious cases
+
+RESPONSE FORMATTING RULES (VERY IMPORTANT):
+- Respond only in plain text
+- Do NOT use Markdown formatting
+- Do NOT use bold text or asterisks (**)
+- Do NOT use special characters or symbols for formatting
+- Use simple hyphens (-) for lists when needed
+- Keep writing clear, simple, and professional`;
 
     const userPrompt = type === 'plant' 
       ? `Analyze this ${selectedType} plant image for diseases or health issues. Identify any visible problems, explain the cause, and provide comprehensive treatment recommendations including both chemical and organic options suitable for Kenyan farmers.`
