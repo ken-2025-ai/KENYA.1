@@ -18,6 +18,7 @@ import PestControl from "./pages/PestControl";
 import FarmEquipment from "./pages/FarmEquipment";
 import MarketIntelligence from "./pages/MarketIntelligence";
 import HealthCenter from "./pages/HealthCenter";
+import CropPlanner from "./pages/CropPlanner";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/learn/farm-equipment" element={<FarmEquipment />} />
             <Route path="/learn/market-intelligence" element={<MarketIntelligence />} />
             <Route path="/learn/health-center" element={<HealthCenter />} />
+            <Route path="/learn/crop-planner" element={<CropPlanner />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/support" element={<Support />} />

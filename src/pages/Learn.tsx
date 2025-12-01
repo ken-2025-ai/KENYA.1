@@ -25,7 +25,8 @@ import {
   ArrowRight,
   Award,
   ChevronRight,
-  Activity
+  Activity,
+  Map
 } from "lucide-react";
 
 const learningCategories = [
@@ -263,7 +264,7 @@ const Learn = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
             {/* Animal Husbandry Button */}
             <Card className="group relative overflow-hidden hover:shadow-glow-primary transition-all duration-500 border-2 border-primary/20 hover:border-primary/40">
               <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -438,6 +439,66 @@ const Learn = () => {
                   <Activity className="w-5 h-5 mr-3" />
                   <span className="relative z-10 font-bold">
                     Diagnose Health
+                  </span>
+                  <ArrowRight className="w-5 h-5 ml-3 group-hover/btn:translate-x-1 transition-transform duration-300" />
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Regional Crop Planner Button */}
+            <Card className="group relative overflow-hidden hover:shadow-glow-accent transition-all duration-500 border-2 border-purple-500/20 hover:border-purple-500/40">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <ExternalLink className="w-5 h-5 text-purple-500" />
+              </div>
+              
+              <CardHeader className="relative z-10 pb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <Map className="w-8 h-8 text-white" />
+                </div>
+                <CardTitle className="text-2xl font-bold text-foreground group-hover:text-purple-500 transition-colors duration-300">
+                  Regional Crop Planner
+                </CardTitle>
+                <CardDescription className="text-base">
+                  Get personalized crop recommendations, planting calendars, and complete farming guides tailored to your county's climate and soil conditions.
+                </CardDescription>
+              </CardHeader>
+              
+              <CardContent className="relative z-10 pt-0">
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+                    Top 10 Crops for Your Region
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+                    Seed Varieties & Suppliers
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+                    Planting Calendar & Guides
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+                    Pest Control & Chemicals
+                  </div>
+                </div>
+                
+                <Button 
+                  variant="hero"
+                  size="lg"
+                  className="w-full group/btn relative overflow-hidden bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-glow-accent hover:shadow-glow-primary transition-all duration-300 min-h-[52px]"
+                  onClick={() => {
+                    if ('vibrate' in navigator) {
+                      navigator.vibrate(100);
+                    }
+                    navigate('/learn/crop-planner');
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 to-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700" />
+                  <Map className="w-5 h-5 mr-3" />
+                  <span className="relative z-10 font-bold">
+                    Plan My Crops
                   </span>
                   <ArrowRight className="w-5 h-5 ml-3 group-hover/btn:translate-x-1 transition-transform duration-300" />
                 </Button>
