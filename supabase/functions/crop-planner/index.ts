@@ -130,9 +130,7 @@ ALWAYS:
 - Mention local seed suppliers when possible
 - Consider market demand and profitability
 - Warn against counterfeit seeds
-- Recommend certified seeds
-
-${FORMATTING_RULES}`;
+- Recommend certified seeds`;
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
