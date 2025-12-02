@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { CropPlanRenderer } from "@/components/CropPlanRenderer";
 import { 
   MapPin, 
   Loader2,
@@ -19,7 +20,9 @@ import {
   Sprout,
   Download,
   ArrowLeft,
-  Play
+  Play,
+  BookOpen,
+  MessageSquare
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -45,6 +48,8 @@ const CropPlanner = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
+  const [viewMode, setViewMode] = useState<"page" | "chat">("page");
+  const [generatedContent, setGeneratedContent] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -126,6 +131,7 @@ const CropPlanner = () => {
                 const content = parsed.choices?.[0]?.delta?.content;
                 if (content) {
                   assistantMessage += content;
+                  setGeneratedContent(assistantMessage);
                   setMessages(prev => {
                     const updated = [...prev];
                     updated[updated.length - 1] = { role: "assistant", content: assistantMessage };
@@ -348,14 +354,38 @@ const CropPlanner = () => {
               </Button>
 
               {hasGenerated && (
-                <Button 
-                  variant="outline" 
-                  onClick={handleSavePlan}
-                  className="w-full"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Save for Offline
-                </Button>
+                <>
+                  <Button 
+                    variant="outline" 
+                    onClick={handleSavePlan}
+                    className="w-full"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Save for Offline
+                  </Button>
+                  
+                  {/* View Mode Toggle */}
+                  <div className="flex gap-2">
+                    <Button
+                      variant={viewMode === "page" ? "default" : "outline"}
+                      onClick={() => setViewMode("page")}
+                      className="flex-1"
+                      size="sm"
+                    >
+                      <BookOpen className="w-4 h-4 mr-1" />
+                      Page View
+                    </Button>
+                    <Button
+                      variant={viewMode === "chat" ? "default" : "outline"}
+                      onClick={() => setViewMode("chat")}
+                      className="flex-1"
+                      size="sm"
+                    >
+                      <MessageSquare className="w-4 h-4 mr-1" />
+                      Chat View
+                    </Button>
+                  </div>
+                </>
               )}
 
               {/* Features */}
@@ -403,7 +433,7 @@ const CropPlanner = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <ScrollArea className="h-[500px] pr-4">
+              <ScrollArea className="h-[600px] pr-4">
                 {messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground py-12">
                     <Sprout className="w-16 h-16 mb-4 text-green-500/50" />
@@ -413,6 +443,8 @@ const CropPlanner = () => {
                       crop recommendations and farming guides for your region.
                     </p>
                   </div>
+                ) : viewMode === "page" && generatedContent ? (
+                  <CropPlanRenderer content={generatedContent} county={selectedCounty} />
                 ) : (
                   <div className="space-y-4">
                     {messages.map((message, index) => (
