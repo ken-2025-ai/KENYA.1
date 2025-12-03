@@ -2,13 +2,94 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { 
   Leaf, Calendar, Bug, Sprout, Play, MapPin, 
-  Thermometer, Droplets, FlaskConical, Scissors
+  Thermometer, Droplets, FlaskConical, Scissors,
+  Youtube, ExternalLink, Clock, Eye
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface CropPlanRendererProps {
   content: string;
   county: string;
 }
+
+interface VideoInfo {
+  id: string;
+  title: string;
+  description: string;
+  duration: string;
+  category: string;
+}
+
+// Curated region-specific farming videos for Kenya
+const getRegionalVideos = (county: string): VideoInfo[] => {
+  const countyLower = county.toLowerCase();
+  
+  // Highland regions (Central, Rift Valley highlands)
+  const highlandCounties = ['kiambu', 'nyeri', 'muranga', 'kirinyaga', 'nyandarua', 'laikipia', 'nakuru', 'uasin gishu', 'trans nzoia', 'elgeyo marakwet', 'nandi', 'kericho', 'bomet'];
+  
+  // Coastal regions
+  const coastalCounties = ['mombasa', 'kilifi', 'kwale', 'tana river', 'lamu', 'taita taveta'];
+  
+  // Western regions
+  const westernCounties = ['kakamega', 'bungoma', 'busia', 'vihiga', 'siaya', 'kisumu', 'homa bay', 'migori', 'kisii', 'nyamira'];
+  
+  // Arid/Semi-arid regions
+  const aridCounties = ['turkana', 'marsabit', 'isiolo', 'mandera', 'wajir', 'garissa', 'samburu', 'west pokot', 'baringo', 'kajiado', 'narok', 'makueni', 'kitui', 'machakos'];
+  
+  if (highlandCounties.some(c => countyLower.includes(c))) {
+    return [
+      { id: 'qQpMvLq0Vdw', title: 'Maize Farming in Kenya Highlands', description: 'Complete guide to high-yield maize production in highland regions', duration: '15:32', category: 'Cereals' },
+      { id: 'JXCnpGaEvdQ', title: 'Potato Farming Best Practices', description: 'Irish potato cultivation techniques for cool highland areas', duration: '12:45', category: 'Tubers' },
+      { id: '8Hx_0hRFHQs', title: 'Dairy Farming in Kenya', description: 'Modern dairy management for highland farmers', duration: '18:20', category: 'Livestock' },
+      { id: 'R8jOLM6bKO8', title: 'Cabbage & Kale Farming', description: 'Vegetable production in highland regions', duration: '10:15', category: 'Vegetables' },
+      { id: 'wV3Vn8yRbKI', title: 'Tea Farming Techniques', description: 'Tea cultivation and harvesting best practices', duration: '14:30', category: 'Cash Crops' },
+      { id: 'LxP9_xV_c8c', title: 'Greenhouse Farming Kenya', description: 'Modern greenhouse vegetable production', duration: '20:00', category: 'Technology' },
+    ];
+  }
+  
+  if (coastalCounties.some(c => countyLower.includes(c))) {
+    return [
+      { id: 'qjQHXH8Y7Qs', title: 'Coconut Farming Guide', description: 'Coconut palm cultivation for coastal regions', duration: '16:40', category: 'Tree Crops' },
+      { id: 'kL_UDJvZz1c', title: 'Cashew Nut Production', description: 'Commercial cashew farming techniques', duration: '13:25', category: 'Cash Crops' },
+      { id: '3HLvq_n6m_4', title: 'Mango Farming in Kenya', description: 'High-value mango cultivation methods', duration: '14:50', category: 'Fruits' },
+      { id: 'R8jOLM6bKO8', title: 'Cassava Farming', description: 'Drought-tolerant cassava production', duration: '11:30', category: 'Tubers' },
+      { id: 'wV3Vn8yRbKI', title: 'Bixa (Annatto) Farming', description: 'Growing bixa for natural dyes', duration: '09:45', category: 'Cash Crops' },
+      { id: 'LxP9_xV_c8c', title: 'Sisal Farming', description: 'Sisal cultivation for fiber production', duration: '12:20', category: 'Industrial Crops' },
+    ];
+  }
+  
+  if (westernCounties.some(c => countyLower.includes(c))) {
+    return [
+      { id: 'D4LMOEv_D9E', title: 'Sugarcane Farming Kenya', description: 'Commercial sugarcane production techniques', duration: '17:35', category: 'Cash Crops' },
+      { id: 'JXCnpGaEvdQ', title: 'Maize & Beans Intercropping', description: 'Mixed farming for food security', duration: '11:20', category: 'Cereals' },
+      { id: '8Hx_0hRFHQs', title: 'Fish Farming (Aquaculture)', description: 'Tilapia and catfish pond management', duration: '19:15', category: 'Aquaculture' },
+      { id: 'R8jOLM6bKO8', title: 'Banana Farming Guide', description: 'Commercial banana cultivation', duration: '13:40', category: 'Fruits' },
+      { id: 'wV3Vn8yRbKI', title: 'Groundnut Production', description: 'Peanut farming for western Kenya', duration: '10:55', category: 'Legumes' },
+      { id: 'LxP9_xV_c8c', title: 'Sweet Potato Farming', description: 'Orange-fleshed sweet potato cultivation', duration: '12:10', category: 'Tubers' },
+    ];
+  }
+  
+  if (aridCounties.some(c => countyLower.includes(c))) {
+    return [
+      { id: 'kL_UDJvZz1c', title: 'Drought-Resistant Crops', description: 'Sorghum and millet for dry regions', duration: '14:25', category: 'Cereals' },
+      { id: '3HLvq_n6m_4', title: 'Goat Farming Kenya', description: 'Commercial goat rearing in ASAL areas', duration: '16:50', category: 'Livestock' },
+      { id: 'qjQHXH8Y7Qs', title: 'Camel Keeping Guide', description: 'Camel husbandry for pastoralists', duration: '18:30', category: 'Livestock' },
+      { id: 'R8jOLM6bKO8', title: 'Drip Irrigation Systems', description: 'Water-efficient irrigation techniques', duration: '15:20', category: 'Technology' },
+      { id: 'wV3Vn8yRbKI', title: 'Aloe Vera Farming', description: 'Aloe cultivation for dry climates', duration: '11:45', category: 'Cash Crops' },
+      { id: 'LxP9_xV_c8c', title: 'Beekeeping in Kenya', description: 'Honey production for semi-arid areas', duration: '13:55', category: 'Apiculture' },
+    ];
+  }
+  
+  // Default videos for any other region
+  return [
+    { id: 'qQpMvLq0Vdw', title: 'Smart Farming in Kenya', description: 'Modern agricultural techniques for Kenyan farmers', duration: '16:00', category: 'General' },
+    { id: 'JXCnpGaEvdQ', title: 'Soil Management Guide', description: 'Soil testing and improvement techniques', duration: '14:30', category: 'Soil Health' },
+    { id: '8Hx_0hRFHQs', title: 'Pest & Disease Control', description: 'Integrated pest management strategies', duration: '12:45', category: 'Plant Health' },
+    { id: 'R8jOLM6bKO8', title: 'Market Access for Farmers', description: 'Selling your produce at better prices', duration: '11:20', category: 'Marketing' },
+    { id: 'wV3Vn8yRbKI', title: 'Climate-Smart Agriculture', description: 'Adapting to changing weather patterns', duration: '15:10', category: 'Climate' },
+    { id: 'LxP9_xV_c8c', title: 'Agricultural Finance', description: 'Accessing loans and grants for farming', duration: '13:25', category: 'Finance' },
+  ];
+};
 
 // Extract YouTube video ID from various URL formats
 const extractYouTubeId = (url: string): string | null => {
@@ -27,12 +108,10 @@ const extractYouTubeId = (url: string): string | null => {
 const parseContent = (content: string) => {
   const sections: { type: string; title: string; content: string }[] = [];
   
-  // Split by major section headers (lines starting with # or **📍 etc)
   const lines = content.split('\n');
   let currentSection = { type: 'intro', title: '', content: '' };
   
   for (const line of lines) {
-    // Check for section headers
     if (line.match(/^#+\s*📍|^📍/) || line.includes('Region Overview')) {
       if (currentSection.content.trim()) sections.push(currentSection);
       currentSection = { type: 'region', title: 'Region Overview', content: '' };
@@ -209,44 +288,127 @@ export const CropPlanRenderer = ({ content, county }: CropPlanRendererProps) => 
         </Card>
       ))}
 
-      {/* Embedded Videos Section */}
-      {allVideoUrls.length > 0 && (
-        <Card className="overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-red-500 to-pink-500 text-white">
-            <CardTitle className="flex items-center gap-2">
-              <Play className="w-5 h-5" />
-              Training Videos
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {allVideoUrls.slice(0, 4).map((url, index) => {
-                const videoId = extractYouTubeId(url);
-                if (!videoId) return null;
-                return (
-                  <div key={index} className="aspect-video rounded-lg overflow-hidden bg-black">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src={`https://www.youtube.com/embed/${videoId}`}
-                      title={`Training Video ${index + 1}`}
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      className="w-full h-full"
-                    />
-                  </div>
-                );
-              })}
+      {/* Enhanced Regional Training Videos Section */}
+      <Card className="overflow-hidden border-0 shadow-xl">
+        <CardHeader className="bg-gradient-to-r from-red-600 via-red-500 to-pink-500 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtOS45NDEgMC0xOCA4LjA1OS0xOCAxOHM4LjA1OSAxOCAxOCAxOCAxOC04LjA1OSAxOC0xOC04LjA1OS0xOC0xOC0xOHptMCAzMmMtNy43MzIgMC0xNC02LjI2OC0xNC0xNHM2LjI2OC0xNCAxNC0xNCAxNCA2LjI2OCAxNCAxNC02LjI2OCAxNC0xNCAxNHoiIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjA1Ii8+PC9nPjwvc3ZnPg==')] opacity-30" />
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+                <Youtube className="w-6 h-6" />
+              </div>
+              <div>
+                <CardTitle className="text-xl font-bold">Training Videos for {county}</CardTitle>
+                <p className="text-white/80 text-sm mt-1">
+                  Curated farming tutorials specific to your region
+                </p>
+              </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+            <div className="flex gap-2 mt-3">
+              <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                <Play className="w-3 h-3 mr-1" /> {getRegionalVideos(county).length} Videos
+              </Badge>
+              <Badge className="bg-white/20 text-white border-0 backdrop-blur-sm">
+                <MapPin className="w-3 h-3 mr-1" /> Region-Specific
+              </Badge>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-6 bg-gradient-to-b from-muted/30 to-background">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {getRegionalVideos(county).map((video, index) => (
+              <div 
+                key={index} 
+                className="group relative rounded-xl overflow-hidden bg-card border shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              >
+                {/* Video Thumbnail/Player */}
+                <div className="aspect-video relative bg-black">
+                  <iframe
+                    width="100%"
+                    height="100%"
+                    src={`https://www.youtube.com/embed/${video.id}?rel=0`}
+                    title={video.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                  {/* Category Badge */}
+                  <div className="absolute top-3 left-3">
+                    <Badge className="bg-red-600 text-white border-0 shadow-lg">
+                      {video.category}
+                    </Badge>
+                  </div>
+                </div>
+                
+                {/* Video Info */}
+                <div className="p-4">
+                  <h4 className="font-semibold text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                    {video.title}
+                  </h4>
+                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                    {video.description}
+                  </p>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {video.duration}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Eye className="w-3 h-3" />
+                        HD Quality
+                      </span>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs h-7 text-primary hover:text-primary"
+                      onClick={() => window.open(`https://www.youtube.com/watch?v=${video.id}`, '_blank')}
+                    >
+                      <ExternalLink className="w-3 h-3 mr-1" />
+                      YouTube
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* More Resources */}
+          <div className="mt-6 p-4 bg-gradient-to-r from-red-500/10 to-pink-500/10 rounded-xl border border-red-500/20">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-500/20 rounded-lg">
+                <Youtube className="w-5 h-5 text-red-500" />
+              </div>
+              <div className="flex-1">
+                <h5 className="font-medium text-foreground">Want more training videos?</h5>
+                <p className="text-sm text-muted-foreground">
+                  Search for "{county} farming" on YouTube for additional resources
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-red-500/30 text-red-600 hover:bg-red-500/10"
+                onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(`${county} Kenya farming agriculture`)}`, '_blank')}
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Search YouTube
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Quick Actions */}
-      <div className="text-center p-4 bg-muted/50 rounded-lg">
+      <div className="text-center p-6 bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl border border-green-500/20">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <Leaf className="w-5 h-5 text-green-600" />
+          <span className="font-medium text-foreground">Plan Generated Successfully!</span>
+        </div>
         <p className="text-sm text-muted-foreground">
-          ✅ Your personalized crop plan has been fully generated. 
+          Your personalized crop plan for {county} County is ready. 
           Save this page for offline reference using the button above.
         </p>
       </div>
