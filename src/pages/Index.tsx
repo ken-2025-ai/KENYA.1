@@ -13,8 +13,10 @@ import { CTASection } from "@/components/CTASection";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePWA } from "@/hooks/usePWA";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { Logo } from "@/components/Logo";
+import { MainMarktButton } from "@/components/MainMarktButton";
 import heroImage from "@/assets/hero-agriculture-kenya.jpg";
-import { Smartphone, TrendingUp, Users, MapPin, CloudRain, BookOpen, ShieldCheck, DollarSign, Truck, ArrowRight, Play, Download, Zap } from "lucide-react";
+import { Smartphone, TrendingUp, Users, MapPin, CloudRain, BookOpen, ShieldCheck, DollarSign, Truck, ArrowRight, Play, Download, Zap, Leaf } from "lucide-react";
 const features = [{
   icon: Smartphone,
   title: "Mobile-First Platform",
@@ -166,7 +168,12 @@ const Index = () => {
                 </div>
               </div>}
 
-            <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-sm text-primary-foreground/80">
+            {/* MainMarkt Button - Prominent Position */}
+            <div className="mb-8 animate-slide-up" style={{ animationDelay: "0.5s" }}>
+              <MainMarktButton />
+            </div>
+
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-8 text-sm text-primary-foreground/80 mt-12">
               <div className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full backdrop-blur-sm">
                 <ShieldCheck className="w-4 h-4" />
                 <span className="hidden sm:inline">Verified Farmers</span>
@@ -256,11 +263,20 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-accent-foreground" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 relative">
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-accent via-success to-accent opacity-50 blur-sm" />
+                  <div className="w-10 h-10 relative bg-gradient-to-br from-accent via-success to-primary-glow rounded-xl flex items-center justify-center shadow-lg">
+                    <div className="relative flex items-center justify-center">
+                      <Leaf className="w-4 h-4 text-white absolute transform -rotate-12 -translate-x-0.5 translate-y-0.5 opacity-70" />
+                      <TrendingUp className="w-5 h-5 text-white relative z-10" />
+                    </div>
+                  </div>
                 </div>
-                <span className="font-bold text-lg">Kenya Pulse Connect</span>
+                <div className="flex flex-col">
+                  <span className="font-bold text-lg text-primary-foreground">Kenya Pulse</span>
+                  <span className="text-xs text-primary-foreground/60 font-medium tracking-wider uppercase">Connect</span>
+                </div>
               </div>
               <p className="text-primary-foreground/80 text-sm">
                 Empowering Kenyan farmers with direct market access and agricultural insights.
