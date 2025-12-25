@@ -19,6 +19,8 @@ import FarmEquipment from "./pages/FarmEquipment";
 import MarketIntelligence from "./pages/MarketIntelligence";
 import HealthCenter from "./pages/HealthCenter";
 import CropPlanner from "./pages/CropPlanner";
+import Machinery from "./pages/Machinery";
+import MyMachinery from "./pages/MyMachinery";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +45,8 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/support" element={<Support />} />
             <Route path="/support-ticket" element={<SupportTicket />} />
+            <Route path="/machinery" element={<Machinery />} />
+            <Route path="/my-machinery" element={<MyMachinery />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
