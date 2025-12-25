@@ -49,6 +49,182 @@ export type Database = {
           },
         ]
       }
+      machinery_bookings: {
+        Row: {
+          created_at: string
+          end_date: string
+          farmer_id: string
+          farmer_notes: string | null
+          id: string
+          machinery_id: string
+          owner_id: string
+          owner_notes: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["booking_status"]
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          end_date: string
+          farmer_id: string
+          farmer_notes?: string | null
+          id?: string
+          machinery_id: string
+          owner_id: string
+          owner_notes?: string | null
+          start_date: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          total_amount: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          end_date?: string
+          farmer_id?: string
+          farmer_notes?: string | null
+          id?: string
+          machinery_id?: string
+          owner_id?: string
+          owner_notes?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machinery_bookings_machinery_id_fkey"
+            columns: ["machinery_id"]
+            isOneToOne: false
+            referencedRelation: "machinery_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      machinery_listings: {
+        Row: {
+          brand: string | null
+          capacity: string | null
+          category: Database["public"]["Enums"]["machinery_category"]
+          county: string
+          created_at: string
+          description: string | null
+          horsepower: number | null
+          id: string
+          image_urls: string[] | null
+          is_available: boolean | null
+          is_verified: boolean | null
+          latitude: number | null
+          longitude: number | null
+          model: string | null
+          owner_id: string
+          rating_average: number | null
+          rental_period: Database["public"]["Enums"]["rental_period"]
+          rental_rate: number
+          review_count: number | null
+          title: string
+          town: string | null
+          updated_at: string
+          year_manufactured: number | null
+        }
+        Insert: {
+          brand?: string | null
+          capacity?: string | null
+          category?: Database["public"]["Enums"]["machinery_category"]
+          county: string
+          created_at?: string
+          description?: string | null
+          horsepower?: number | null
+          id?: string
+          image_urls?: string[] | null
+          is_available?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          model?: string | null
+          owner_id: string
+          rating_average?: number | null
+          rental_period?: Database["public"]["Enums"]["rental_period"]
+          rental_rate: number
+          review_count?: number | null
+          title: string
+          town?: string | null
+          updated_at?: string
+          year_manufactured?: number | null
+        }
+        Update: {
+          brand?: string | null
+          capacity?: string | null
+          category?: Database["public"]["Enums"]["machinery_category"]
+          county?: string
+          created_at?: string
+          description?: string | null
+          horsepower?: number | null
+          id?: string
+          image_urls?: string[] | null
+          is_available?: boolean | null
+          is_verified?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          model?: string | null
+          owner_id?: string
+          rating_average?: number | null
+          rental_period?: Database["public"]["Enums"]["rental_period"]
+          rental_rate?: number
+          review_count?: number | null
+          title?: string
+          town?: string | null
+          updated_at?: string
+          year_manufactured?: number | null
+        }
+        Relationships: []
+      }
+      machinery_reviews: {
+        Row: {
+          booking_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          machinery_id: string
+          rating: number
+          reviewer_id: string
+        }
+        Insert: {
+          booking_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          machinery_id: string
+          rating: number
+          reviewer_id: string
+        }
+        Update: {
+          booking_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          machinery_id?: string
+          rating?: number
+          reviewer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "machinery_reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "machinery_bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "machinery_reviews_machinery_id_fkey"
+            columns: ["machinery_id"]
+            isOneToOne: false
+            referencedRelation: "machinery_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_listings: {
         Row: {
           category: string
@@ -153,6 +329,7 @@ export type Database = {
           farming_type: string | null
           full_name: string | null
           id: string
+          is_equipment_owner: boolean | null
           location: string | null
           phone: string | null
           updated_at: string
@@ -166,6 +343,7 @@ export type Database = {
           farming_type?: string | null
           full_name?: string | null
           id?: string
+          is_equipment_owner?: boolean | null
           location?: string | null
           phone?: string | null
           updated_at?: string
@@ -179,6 +357,7 @@ export type Database = {
           farming_type?: string | null
           full_name?: string | null
           id?: string
+          is_equipment_owner?: boolean | null
           location?: string | null
           phone?: string | null
           updated_at?: string
@@ -233,7 +412,24 @@ export type Database = {
       cleanup_sold_listings: { Args: never; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      booking_status:
+        | "pending"
+        | "approved"
+        | "rejected"
+        | "in_progress"
+        | "completed"
+        | "cancelled"
+      machinery_category:
+        | "tractor"
+        | "harvester"
+        | "plough"
+        | "sprayer"
+        | "pump"
+        | "seeder"
+        | "thresher"
+        | "trailer"
+        | "other"
+      rental_period: "hourly" | "daily" | "weekly" | "per_acre"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -360,6 +556,27 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      booking_status: [
+        "pending",
+        "approved",
+        "rejected",
+        "in_progress",
+        "completed",
+        "cancelled",
+      ],
+      machinery_category: [
+        "tractor",
+        "harvester",
+        "plough",
+        "sprayer",
+        "pump",
+        "seeder",
+        "thresher",
+        "trailer",
+        "other",
+      ],
+      rental_period: ["hourly", "daily", "weekly", "per_acre"],
+    },
   },
 } as const
