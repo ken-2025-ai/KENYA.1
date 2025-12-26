@@ -16,7 +16,8 @@ import { InstallPrompt } from "@/components/InstallPrompt";
 import { Logo } from "@/components/Logo";
 import { MainMarktButton } from "@/components/MainMarktButton";
 import heroImage from "@/assets/hero-agriculture-kenya.jpg";
-import { Smartphone, TrendingUp, Users, MapPin, CloudRain, BookOpen, ShieldCheck, DollarSign, Truck, ArrowRight, Play, Download, Zap, Leaf } from "lucide-react";
+import { Smartphone, TrendingUp, Users, MapPin, CloudRain, BookOpen, ShieldCheck, DollarSign, Truck, ArrowRight, Play, Download, Zap, Leaf, Tractor } from "lucide-react";
+import { Link } from "react-router-dom";
 const features = [{
   icon: Smartphone,
   title: "Mobile-First Platform",
@@ -34,6 +35,10 @@ const features = [{
   title: "Weather & Farming Tips",
   description: "Receive localized weather forecasts, seasonal planting guides, and expert agricultural advice for better yields.",
   highlight: true
+}, {
+  icon: Tractor,
+  title: "Equipment Leasing",
+  description: "Access tractors, harvesters, and farm machinery from owners near you. Rent what you need, when you need it."
 }, {
   icon: DollarSign,
   title: "M-Pesa Integration",
@@ -289,7 +294,7 @@ const Index = () => {
                 <li><a href="#" className="hover:text-accent transition-smooth">For Farmers</a></li>
                 <li><a href="#" className="hover:text-accent transition-smooth">For Buyers</a></li>
                 <li><a href="#" className="hover:text-accent transition-smooth">Market Prices</a></li>
-                <li><a href="#" className="hover:text-accent transition-smooth">Mobile App</a></li>
+                <li><Link to="/machinery" className="hover:text-accent transition-smooth">Equipment Leasing</Link></li>
               </ul>
             </div>
             

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, Smartphone, TrendingUp, BookOpen, Users, LogOut, X, HelpCircle } from "lucide-react";
+import { Menu, Smartphone, TrendingUp, BookOpen, Users, LogOut, X, HelpCircle, Tractor } from "lucide-react";
+import { Link } from "react-router-dom";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -60,6 +61,10 @@ export const Navigation = () => {
           <div className="hidden md:flex items-center gap-6">
             <a href="#features" className="text-muted-foreground hover:text-primary transition-smooth">Features</a>
             <a href="#prices" className="text-muted-foreground hover:text-primary transition-smooth">Market Prices</a>
+            <Link to="/machinery" className="text-muted-foreground hover:text-primary transition-smooth flex items-center gap-1.5">
+              <Tractor className="w-4 h-4" />
+              Equipment
+            </Link>
             <a href="#education" className="text-muted-foreground hover:text-primary transition-smooth">Learn</a>
             <a href="#community" className="text-muted-foreground hover:text-primary transition-smooth">Community</a>
           </div>
@@ -160,6 +165,14 @@ export const Navigation = () => {
                   >
                     Market Prices
                   </a>
+                  <Link 
+                    to="/machinery" 
+                    className="text-muted-foreground hover:text-primary transition-smooth py-2 text-left border-b border-border flex items-center gap-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <Tractor className="w-4 h-4" />
+                    Equipment Leasing
+                  </Link>
                   <a 
                     href="#education" 
                     className="text-muted-foreground hover:text-primary transition-smooth py-2 text-left border-b border-border"
