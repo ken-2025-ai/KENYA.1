@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, Plus, Upload, X, Tractor } from "lucide-react";
+import { Loader2, Upload, X, Tractor, ImagePlus } from "lucide-react";
 
 interface AddMachineryModalProps {
   isOpen: boolean;
@@ -59,12 +59,18 @@ const RENTAL_PERIODS = [
   { value: "per_acre", label: "Per Acre" },
 ];
 
+interface ImageFile {
+  file: File;
+  preview: string;
+}
+
 const AddMachineryModal = ({ isOpen, onClose, onSuccess }: AddMachineryModalProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [newImageUrl, setNewImageUrl] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageFiles, setImageFiles] = useState<ImageFile[]>([]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -85,15 +91,32 @@ const AddMachineryModal = ({ isOpen, onClose, onSuccess }: AddMachineryModalProp
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleAddImage = () => {
-    if (newImageUrl && !imageUrls.includes(newImageUrl)) {
-      setImageUrls((prev) => [...prev, newImageUrl]);
-      setNewImageUrl("");
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const newFiles: ImageFile[] = [];
+    Array.from(files).forEach((file) => {
+      if (file.type.startsWith("image/")) {
+        newFiles.push({
+          file,
+          preview: URL.createObjectURL(file),
+        });
+      }
+    });
+
+    setImageFiles((prev) => [...prev, ...newFiles].slice(0, 5)); // Max 5 images
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
-  const handleRemoveImage = (url: string) => {
-    setImageUrls((prev) => prev.filter((u) => u !== url));
+  const handleRemoveImage = (index: number) => {
+    setImageFiles((prev) => {
+      const removed = prev[index];
+      URL.revokeObjectURL(removed.preview);
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,6 +142,35 @@ const AddMachineryModal = ({ isOpen, onClose, onSuccess }: AddMachineryModalProp
 
     setIsSubmitting(true);
     try {
+      // Upload images to Supabase Storage
+      const uploadedUrls: string[] = [];
+      
+      if (imageFiles.length > 0) {
+        setIsUploading(true);
+        for (const imageFile of imageFiles) {
+          const fileExt = imageFile.file.name.split('.').pop();
+          const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+          
+          const { error: uploadError, data } = await supabase.storage
+            .from("machinery-images")
+            .upload(fileName, imageFile.file);
+
+          if (uploadError) {
+            console.error("Upload error:", uploadError);
+            continue;
+          }
+
+          const { data: urlData } = supabase.storage
+            .from("machinery-images")
+            .getPublicUrl(fileName);
+
+          if (urlData?.publicUrl) {
+            uploadedUrls.push(urlData.publicUrl);
+          }
+        }
+        setIsUploading(false);
+      }
+
       const { error } = await supabase.from("machinery_listings").insert({
         owner_id: user.id,
         title: formData.title,
@@ -133,7 +185,7 @@ const AddMachineryModal = ({ isOpen, onClose, onSuccess }: AddMachineryModalProp
         rental_period: formData.rental_period as any,
         county: formData.county,
         town: formData.town || null,
-        image_urls: imageUrls,
+        image_urls: uploadedUrls,
       });
 
       if (error) throw error;
@@ -164,7 +216,9 @@ const AddMachineryModal = ({ isOpen, onClose, onSuccess }: AddMachineryModalProp
         county: "",
         town: "",
       });
-      setImageUrls([]);
+      // Clean up previews
+      imageFiles.forEach((img) => URL.revokeObjectURL(img.preview));
+      setImageFiles([]);
       onSuccess();
     } catch (error: any) {
       toast({
@@ -355,29 +409,39 @@ const AddMachineryModal = ({ isOpen, onClose, onSuccess }: AddMachineryModalProp
 
           {/* Images */}
           <div className="space-y-4">
-            <h4 className="font-medium">Images</h4>
-            <div className="flex gap-2">
-              <Input
-                placeholder="Paste image URL..."
-                value={newImageUrl}
-                onChange={(e) => setNewImageUrl(e.target.value)}
-              />
-              <Button type="button" variant="outline" onClick={handleAddImage}>
-                <Plus className="h-4 w-4" />
-              </Button>
+            <h4 className="font-medium">Images (Max 5)</h4>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
+            >
+              <ImagePlus className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <p className="text-sm text-muted-foreground">
+                Click to upload photos of your equipment
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                JPG, PNG up to 5MB each
+              </p>
             </div>
-            {imageUrls.length > 0 && (
+            {imageFiles.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {imageUrls.map((url, idx) => (
+                {imageFiles.map((img, idx) => (
                   <div key={idx} className="relative group">
                     <img
-                      src={url}
+                      src={img.preview}
                       alt={`Equipment ${idx + 1}`}
                       className="h-20 w-20 object-cover rounded-lg border"
                     />
                     <button
                       type="button"
-                      onClick={() => handleRemoveImage(url)}
+                      onClick={() => handleRemoveImage(idx)}
                       className="absolute -top-2 -right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <X className="h-3 w-3" />
@@ -398,10 +462,10 @@ const AddMachineryModal = ({ isOpen, onClose, onSuccess }: AddMachineryModalProp
               className="bg-gradient-primary"
               disabled={isSubmitting}
             >
-              {isSubmitting ? (
+            {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Listing...
+                  {isUploading ? "Uploading images..." : "Listing..."}
                 </>
               ) : (
                 "List Equipment"
