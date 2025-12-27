@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/Navigation";
 import { AuthModal } from "@/components/auth/AuthModal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FeatureCard } from "@/components/FeatureCard";
 import { StatsSection } from "@/components/StatsSection";
 import { PriceBoard } from "@/components/PriceBoard";
@@ -13,11 +13,10 @@ import { CTASection } from "@/components/CTASection";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePWA } from "@/hooks/usePWA";
 import { InstallPrompt } from "@/components/InstallPrompt";
-import { Logo } from "@/components/Logo";
 import { MainMarktButton } from "@/components/MainMarktButton";
+import { EquipmentPreview } from "@/components/EquipmentPreview";
 import heroImage from "@/assets/hero-agriculture-kenya.jpg";
-import { Smartphone, TrendingUp, Users, MapPin, CloudRain, BookOpen, ShieldCheck, DollarSign, Truck, ArrowRight, Play, Download, Zap, Leaf, Tractor } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Smartphone, TrendingUp, Users, BookOpen, ShieldCheck, DollarSign, ArrowRight, Play, Download, Zap, Leaf, Tractor } from "lucide-react";
 const features = [{
   icon: Smartphone,
   title: "Mobile-First Platform",
@@ -31,14 +30,10 @@ const features = [{
   title: "Direct Market Access",
   description: "Connect directly with buyers and sellers. Eliminate middlemen and get fair prices for your produce."
 }, {
-  icon: CloudRain,
-  title: "Weather & Farming Tips",
-  description: "Receive localized weather forecasts, seasonal planting guides, and expert agricultural advice for better yields.",
-  highlight: true
-}, {
   icon: Tractor,
   title: "Equipment Leasing",
-  description: "Access tractors, harvesters, and farm machinery from owners near you. Rent what you need, when you need it."
+  description: "Access tractors, harvesters, and farm machinery from owners near you. Rent what you need, when you need it.",
+  highlight: true
 }, {
   icon: DollarSign,
   title: "M-Pesa Integration",
@@ -258,6 +253,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Equipment Preview Section */}
+      <EquipmentPreview />
 
       <TestimonialsSection />
 
