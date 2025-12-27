@@ -11,6 +11,7 @@ import { WeatherWidget } from "@/components/WeatherWidget";
 import { ChatSystem } from "@/components/ChatSystem";
 import { NotificationSystem } from "@/components/NotificationSystem";
 import { LocationSelector } from "@/components/LocationSelector";
+import { MachineryOwnerWidget } from "@/components/MachineryOwnerWidget";
 import { 
   User, 
   Plus, 
@@ -427,6 +428,9 @@ const Dashboard = () => {
 
           {/* Right Sidebar */}
           <div className="space-y-6">
+            <div className="animate-slide-up" style={{ animationDelay: "0.3s" }}>
+              <MachineryOwnerWidget />
+            </div>
             <div className="animate-slide-up" style={{ animationDelay: "0.4s" }}>
               <WeatherWidget 
                 userLocation={userLocation?.name || profile?.location} 
