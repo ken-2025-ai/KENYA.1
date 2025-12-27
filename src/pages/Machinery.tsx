@@ -15,16 +15,22 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Label } from "@/components/ui/label";
+import {
   Tractor,
   Search,
   MapPin,
   Star,
-  Clock,
   Filter,
   Plus,
   Loader2,
   Shield,
-  ChevronRight,
+  DollarSign,
+  X,
 } from "lucide-react";
 import MachineryCard from "@/components/machinery/MachineryCard";
 import MachineryDetailModal from "@/components/machinery/MachineryDetailModal";
@@ -78,9 +84,14 @@ const Machinery = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedMachinery, setSelectedMachinery] = useState<Machinery | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [minPrice, setMinPrice] = useState<string>("");
+  const [maxPrice, setMaxPrice] = useState<string>("");
+  const [priceFilterOpen, setPriceFilterOpen] = useState(false);
+
+  const hasPriceFilter = minPrice !== "" || maxPrice !== "";
 
   const { data: machineryList, isLoading, refetch } = useQuery({
-    queryKey: ["machinery", selectedCounty, selectedCategory, searchQuery],
+    queryKey: ["machinery", selectedCounty, selectedCategory, searchQuery, minPrice, maxPrice],
     queryFn: async () => {
       let query = supabase
         .from("machinery_listings")
@@ -100,14 +111,23 @@ const Machinery = () => {
         query = query.or(`title.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%,brand.ilike.%${searchQuery}%`);
       }
 
+      if (minPrice !== "") {
+        query = query.gte("rental_rate", parseFloat(minPrice));
+      }
+
+      if (maxPrice !== "") {
+        query = query.lte("rental_rate", parseFloat(maxPrice));
+      }
+
       const { data, error } = await query;
       if (error) throw error;
       return data as Machinery[];
     },
   });
 
-  const getCategoryIcon = (category: string) => {
-    return <Tractor className="h-5 w-5" />;
+  const clearPriceFilter = () => {
+    setMinPrice("");
+    setMaxPrice("");
   };
 
   return (
@@ -193,6 +213,75 @@ const Machinery = () => {
                 ))}
               </SelectContent>
             </Select>
+
+            <Popover open={priceFilterOpen} onOpenChange={setPriceFilterOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={hasPriceFilter ? "default" : "outline"}
+                  className={`w-full md:w-auto ${hasPriceFilter ? "bg-primary text-primary-foreground" : ""}`}
+                >
+                  <DollarSign className="h-4 w-4 mr-2" />
+                  {hasPriceFilter
+                    ? `KES ${minPrice || "0"} - ${maxPrice || "∞"}`
+                    : "Price Range"}
+                  {hasPriceFilter && (
+                    <X
+                      className="h-4 w-4 ml-2 hover:text-destructive"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        clearPriceFilter();
+                      }}
+                    />
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-72 bg-popover border shadow-lg z-50" align="end">
+                <div className="space-y-4">
+                  <h4 className="font-medium text-foreground">Price Range (KES)</h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="min-price" className="text-sm text-muted-foreground">Min</Label>
+                      <Input
+                        id="min-price"
+                        type="number"
+                        placeholder="0"
+                        value={minPrice}
+                        onChange={(e) => setMinPrice(e.target.value)}
+                        className="bg-background"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="max-price" className="text-sm text-muted-foreground">Max</Label>
+                      <Input
+                        id="max-price"
+                        type="number"
+                        placeholder="No limit"
+                        value={maxPrice}
+                        onChange={(e) => setMaxPrice(e.target.value)}
+                        className="bg-background"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1"
+                      onClick={clearPriceFilter}
+                    >
+                      Clear
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="flex-1"
+                      onClick={() => setPriceFilterOpen(false)}
+                    >
+                      Apply
+                    </Button>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
 
             {user && (
               <Button
