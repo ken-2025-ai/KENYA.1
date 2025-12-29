@@ -216,7 +216,8 @@ const Index = () => {
       {/* Marketplace Section */}
       <Marketplace />
 
-      <StatsSection />
+      {/* Equipment Preview Section */}
+      <EquipmentPreview />
 
       {/* AI Market Board Section */}
       <AIMarketBoard />
@@ -254,8 +255,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Equipment Preview Section */}
-      <EquipmentPreview />
+      <StatsSection />
 
       <TestimonialsSection />
 
