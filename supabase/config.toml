@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.crop-planner]
 verify_jwt = false
+
+[functions.notify-expiring-listings]
+verify_jwt = false
