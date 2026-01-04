@@ -17,28 +17,52 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    console.log('Starting cleanup of sold listings older than 2 hours...')
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
 
-    // Delete listings marked as sold more than 2 hours ago
-    const { count, error } = await supabaseClient
+    console.log('Starting cleanup of listings...')
+    console.log(`Current date: ${today}`)
+
+    // 1. Delete listings that have expired (expiry_date has passed)
+    console.log('Cleaning up expired listings...')
+    const { count: expiredCount, error: expiredError } = await supabaseClient
+      .from('market_listings')
+      .delete({ count: 'exact' })
+      .lt('expiry_date', today)
+      .not('expiry_date', 'is', null)
+
+    if (expiredError) {
+      console.error('Error cleaning up expired listings:', expiredError)
+      throw expiredError
+    }
+
+    const deletedExpiredCount = expiredCount || 0
+    console.log(`Successfully cleaned up ${deletedExpiredCount} expired listings`)
+
+    // 2. Delete listings marked as sold more than 2 hours ago
+    console.log('Cleaning up sold listings older than 2 hours...')
+    const { count: soldCount, error: soldError } = await supabaseClient
       .from('market_listings')
       .delete({ count: 'exact' })
       .lte('sold_at', new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString())
       .not('sold_at', 'is', null)
 
-    if (error) {
-      console.error('Error cleaning up sold listings:', error)
-      throw error
+    if (soldError) {
+      console.error('Error cleaning up sold listings:', soldError)
+      throw soldError
     }
 
-    const deletedCount = count || 0
-    console.log(`Successfully cleaned up ${deletedCount} sold listings`)
+    const deletedSoldCount = soldCount || 0
+    console.log(`Successfully cleaned up ${deletedSoldCount} sold listings`)
+
+    const totalDeleted = deletedExpiredCount + deletedSoldCount
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        deletedCount,
-        message: `Cleaned up ${deletedCount} sold listings older than 2 hours`
+        deletedExpiredCount,
+        deletedSoldCount,
+        totalDeleted,
+        message: `Cleaned up ${deletedExpiredCount} expired listings and ${deletedSoldCount} sold listings`
       }),
       { 
         headers: { 
