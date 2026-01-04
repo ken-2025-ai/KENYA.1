@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
@@ -5,19 +6,33 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tractor, ArrowRight, Star, MapPin } from "lucide-react";
 
+const KENYA_COUNTIES = [
+  "Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret", "Machakos", "Meru", "Nyeri",
+  "Kakamega", "Kisii", "Thika", "Malindi", "Kitale", "Garissa", "Naivasha", "Embu",
+  "Kericho", "Bungoma", "Migori", "Narok", "Uasin Gishu", "Trans Nzoia", "Kiambu", "Muranga"
+];
+
 export const EquipmentPreview = () => {
+  const [selectedCounty, setSelectedCounty] = useState<string>("");
+
   const { data: equipment, isLoading } = useQuery({
-    queryKey: ["equipment-preview"],
+    queryKey: ["equipment-preview", selectedCounty],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("machinery_listings")
         .select("*")
         .eq("is_available", true)
         .order("created_at", { ascending: false })
         .limit(4);
 
+      if (selectedCounty) {
+        query = query.ilike("county", `%${selectedCounty}%`);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data;
     },
@@ -44,7 +59,7 @@ export const EquipmentPreview = () => {
   return (
     <section className="py-16 md:py-20 bg-gradient-to-br from-muted/50 via-background to-muted/50">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
             <Tractor className="w-5 h-5 text-primary" />
             <span className="text-sm font-semibold text-primary">Equipment Leasing</span>
@@ -55,6 +70,36 @@ export const EquipmentPreview = () => {
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Access quality farm machinery from verified owners. Rent tractors, harvesters, and more.
           </p>
+        </div>
+
+        {/* Location Filter */}
+        <div className="flex justify-center mb-8">
+          <div className="flex items-center gap-3 bg-card border border-border rounded-lg p-2">
+            <MapPin className="w-5 h-5 text-primary ml-2" />
+            <Select value={selectedCounty} onValueChange={setSelectedCounty}>
+              <SelectTrigger className="w-[200px] border-0 bg-transparent focus:ring-0">
+                <SelectValue placeholder="Filter by location" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Locations</SelectItem>
+                {KENYA_COUNTIES.map((county) => (
+                  <SelectItem key={county} value={county}>
+                    {county}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedCounty && selectedCounty !== "all" && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedCounty("")}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Clear
+              </Button>
+            )}
+          </div>
         </div>
 
         {isLoading ? (
