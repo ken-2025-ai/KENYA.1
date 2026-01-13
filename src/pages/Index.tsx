@@ -5,7 +5,7 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { useNavigate, Link } from "react-router-dom";
 import { FeatureCard } from "@/components/FeatureCard";
 import { StatsSection } from "@/components/StatsSection";
-import { PriceBoard } from "@/components/PriceBoard";
+
 import { Marketplace } from "@/components/Marketplace";
 import { AIMarketBoard } from "@/components/AIMarketBoard";
 import { TestimonialsSection } from "@/components/TestimonialsSection";
@@ -222,10 +222,6 @@ const Index = () => {
       {/* AI Market Board Section */}
       <AIMarketBoard />
 
-      {/* Market Prices Section */}
-      <section id="prices">
-        <PriceBoard />
-      </section>
 
       {/* Education Section */}
       <section id="education" className="py-16 md:py-20 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5 relative overflow-hidden">
