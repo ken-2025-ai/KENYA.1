@@ -21,6 +21,7 @@ import HealthCenter from "./pages/HealthCenter";
 import CropPlanner from "./pages/CropPlanner";
 import Machinery from "./pages/Machinery";
 import MyMachinery from "./pages/MyMachinery";
+import MyBookings from "./pages/MyBookings";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/support-ticket" element={<SupportTicket />} />
             <Route path="/machinery" element={<Machinery />} />
             <Route path="/my-machinery" element={<MyMachinery />} />
+            <Route path="/my-bookings" element={<MyBookings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
