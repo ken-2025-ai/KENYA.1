@@ -3,12 +3,20 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -36,9 +44,17 @@ import {
   Trash2,
   ToggleLeft,
   ToggleRight,
+  Search,
+  Filter,
+  Phone,
+  CalendarDays,
+  PlayCircle,
+  MessageSquare,
+  ArrowRight,
 } from "lucide-react";
 import AddMachineryModal from "@/components/machinery/AddMachineryModal";
-import { format } from "date-fns";
+import BookingDetailModal from "@/components/machinery/BookingDetailModal";
+import { format, differenceInDays, isAfter, isToday } from "date-fns";
 
 const MyMachinery = () => {
   const { user, loading: authLoading } = useAuth();
@@ -46,6 +62,9 @@ const MyMachinery = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   // Fetch my listings
   const { data: myListings, isLoading: listingsLoading } = useQuery({
@@ -70,13 +89,25 @@ const MyMachinery = () => {
         .from("machinery_bookings")
         .select(`
           *,
-          machinery:machinery_listings(title, category),
-          farmer:profiles!machinery_bookings_farmer_id_fkey(full_name, phone)
+          machinery:machinery_listings(id, title, category, brand, model, image_urls, county, town, rental_rate, rental_period)
         `)
         .eq("owner_id", user!.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return data;
+
+      // Fetch farmer profiles separately
+      const farmerIds = [...new Set(data.map(b => b.farmer_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, phone, location")
+        .in("user_id", farmerIds);
+      
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+      
+      return data.map(booking => ({
+        ...booking,
+        farmer: profileMap.get(booking.farmer_id) || null
+      }));
     },
     enabled: !!user,
   });
@@ -456,6 +487,19 @@ const MyMachinery = () => {
           queryClient.invalidateQueries({ queryKey: ["my-machinery"] });
         }}
       />
+
+      {/* Booking Detail Modal */}
+      {selectedBooking && (
+        <BookingDetailModal
+          booking={selectedBooking}
+          isOpen={!!selectedBooking}
+          onClose={() => setSelectedBooking(null)}
+          userRole="owner"
+          onStatusChange={() => {
+            queryClient.invalidateQueries({ queryKey: ["machinery-booking-requests"] });
+          }}
+        />
+      )}
     </div>
   );
 };
