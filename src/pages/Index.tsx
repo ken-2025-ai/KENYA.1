@@ -13,6 +13,7 @@ import { CTASection } from "@/components/CTASection";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePWA } from "@/hooks/usePWA";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { Logo } from "@/components/Logo";
 import { MainMarktButton } from "@/components/MainMarktButton";
 import { EquipmentPreview } from "@/components/EquipmentPreview";
 import heroImage from "@/assets/hero-agriculture-kenya.jpg";
@@ -222,6 +223,10 @@ const Index = () => {
       {/* AI Market Board Section */}
       <AIMarketBoard />
 
+      {/* App Icon Section */}
+      <section className="py-12 flex justify-center items-center">
+        <Logo size="large" />
+      </section>
 
       {/* Education Section */}
       <section id="education" className="py-16 md:py-20 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5 relative overflow-hidden">
