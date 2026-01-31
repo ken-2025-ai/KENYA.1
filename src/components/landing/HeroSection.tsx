@@ -3,7 +3,7 @@ import { Users, ArrowRight, Play, Download, Zap, ShieldCheck, Smartphone, Dollar
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePWA } from "@/hooks/usePWA";
 import { MainMarktButton } from "@/components/MainMarktButton";
-import heroImage from "@/assets/hero-agriculture-kenya.jpg";
+import heroImage from "@/assets/hero-kenya-farmland.jpg";
 
 interface HeroSectionProps {
   onOpenAuth: (tab: "login" | "signup") => void;
