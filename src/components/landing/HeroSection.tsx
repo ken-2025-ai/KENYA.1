@@ -31,8 +31,8 @@ export const HeroSection = ({ onOpenAuth }: HeroSectionProps) => {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/85 to-primary-glow/80" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-accent/20 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/70 via-primary/50 to-primary-glow/40" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-accent/15 via-transparent to-transparent" />
       </div>
 
       {/* Decorative elements */}
