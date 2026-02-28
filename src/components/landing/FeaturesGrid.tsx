@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Smartphone, TrendingUp, Users, DollarSign, ShieldCheck, Tractor, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ScrollReveal } from "@/hooks/useScrollReveal";
 
 const features = [
   {
@@ -52,7 +53,7 @@ export const FeaturesGrid = () => {
 
       <div className="container mx-auto px-4 relative">
         {/* Section header */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <ScrollReveal className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-6">
             <span className="text-sm font-semibold text-primary">Platform Features</span>
           </div>
@@ -66,36 +67,37 @@ export const FeaturesGrid = () => {
             From market access to agricultural insights, we provide comprehensive tools 
             to help Kenyan farmers thrive in the digital economy.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Features grid */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {features.map((feature, index) => {
             const Icon = feature.icon;
+            const directions = ["up", "up", "up", "up", "up", "up"] as const;
 
             const cardContent = (
-              <Card className={`h-full transition-all duration-300 hover:shadow-medium hover:-translate-y-1 cursor-pointer border-2 ${feature.highlight ? 'border-accent/30 bg-gradient-to-br from-accent/5 to-transparent' : 'border-transparent hover:border-primary/20'}`}>
+              <Card className={`h-full transition-all duration-500 hover:shadow-medium hover:-translate-y-2 cursor-pointer border-2 ${feature.highlight ? 'border-accent/30 bg-gradient-to-br from-accent/5 to-transparent' : 'border-transparent hover:border-primary/20'}`}>
                 <CardContent className="p-6">
                   {/* Icon */}
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-5 group-hover:scale-110 group-hover:shadow-glow-primary transition-all duration-300`}>
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-5 group-hover:scale-110 group-hover:shadow-glow-primary transition-all duration-500 group-hover:rotate-3`}>
                     <Icon className="w-7 h-7 text-primary-foreground" />
                   </div>
 
                   {/* Content */}
-                  <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
-                      {feature.title}
-                      {feature.highlight && (
-                        <span className="ml-2 text-xs bg-accent/20 text-accent px-2 py-0.5 rounded-full font-medium">
-                          NEW
-                        </span>
-                      )}
-                    </h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      {feature.description}
-                    </p>
+                  <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                    {feature.title}
+                    {feature.highlight && (
+                      <span className="ml-2 text-xs bg-accent/20 text-accent px-2 py-0.5 rounded-full font-medium animate-pulse">
+                        NEW
+                      </span>
+                    )}
+                  </h3>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
 
                   {/* Arrow indicator */}
-                  <div className="mt-4 flex items-center text-primary font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="mt-4 flex items-center text-primary font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
                     <span className="text-sm">Learn more</span>
                     <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </div>
@@ -103,14 +105,18 @@ export const FeaturesGrid = () => {
               </Card>
             );
 
-            return feature.link ? (
-              <Link key={index} to={feature.link} className="group">
-                {cardContent}
-              </Link>
-            ) : (
-              <div key={index} className="group">
-                {cardContent}
-              </div>
+            return (
+              <ScrollReveal key={index} delay={index * 0.1} direction={directions[index]}>
+                {feature.link ? (
+                  <Link to={feature.link} className="group block h-full">
+                    {cardContent}
+                  </Link>
+                ) : (
+                  <div className="group h-full">
+                    {cardContent}
+                  </div>
+                )}
+              </ScrollReveal>
             );
           })}
         </div>

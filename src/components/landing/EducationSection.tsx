@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { BookOpen, ArrowRight, Sprout, Cloud, Bug } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ScrollReveal } from "@/hooks/useScrollReveal";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 
 const topics = [
   { icon: Sprout, label: "Crop Management", color: "text-success" },
@@ -12,6 +14,7 @@ const topics = [
 export const EducationSection = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const { ref: progressRef, isVisible: progressVisible } = useScrollReveal();
 
   return (
     <section id="education" className="py-20 md:py-28 relative overflow-hidden">
@@ -23,7 +26,7 @@ export const EducationSection = () => {
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Content */}
-            <div>
+            <ScrollReveal direction="left">
               <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-6">
                 <BookOpen className="w-4 h-4 text-primary" />
                 <span className="text-sm font-semibold text-primary">Learning Hub</span>
@@ -44,10 +47,12 @@ export const EducationSection = () => {
               {/* Topic pills */}
               <div className="flex flex-wrap gap-3 mb-8">
                 {topics.map((topic, i) => (
-                  <div key={i} className="flex items-center gap-2 bg-background border border-border px-4 py-2 rounded-full">
-                    <topic.icon className={`w-4 h-4 ${topic.color}`} />
-                    <span className="text-sm font-medium text-foreground">{topic.label}</span>
-                  </div>
+                  <ScrollReveal key={i} delay={0.1 * i} direction="up">
+                    <div className="flex items-center gap-2 bg-background border border-border px-4 py-2 rounded-full hover:border-primary/40 hover:shadow-soft transition-all duration-300">
+                      <topic.icon className={`w-4 h-4 ${topic.color}`} />
+                      <span className="text-sm font-medium text-foreground">{topic.label}</span>
+                    </div>
+                  </ScrollReveal>
                 ))}
               </div>
 
@@ -64,41 +69,46 @@ export const EducationSection = () => {
                 Explore Learning Resources
                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
-            </div>
+            </ScrollReveal>
 
             {/* Right: Visual card */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl blur-3xl" />
-              
-              <div className="relative bg-card border border-border rounded-3xl p-8 shadow-strong">
-                {/* Mock learning cards */}
-                <div className="space-y-4">
-                  {[
-                    { title: "Soil Management", progress: 85, color: "bg-success" },
-                    { title: "Irrigation Methods", progress: 60, color: "bg-primary" },
-                    { title: "Pest Prevention", progress: 40, color: "bg-accent" },
-                  ].map((course, i) => (
-                    <div key={i} className="bg-muted/50 rounded-xl p-4">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium text-foreground">{course.title}</span>
-                        <span className="text-sm text-muted-foreground">{course.progress}%</span>
+            <ScrollReveal direction="right" delay={0.2}>
+              <div className="relative" ref={progressRef}>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/20 rounded-3xl blur-3xl" />
+                
+                <div className="relative bg-card border border-border rounded-3xl p-8 shadow-strong">
+                  {/* Mock learning cards */}
+                  <div className="space-y-4">
+                    {[
+                      { title: "Soil Management", progress: 85, color: "bg-success" },
+                      { title: "Irrigation Methods", progress: 60, color: "bg-primary" },
+                      { title: "Pest Prevention", progress: 40, color: "bg-accent" },
+                    ].map((course, i) => (
+                      <div key={i} className="bg-muted/50 rounded-xl p-4 hover:bg-muted/80 transition-colors duration-300">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-medium text-foreground">{course.title}</span>
+                          <span className="text-sm text-muted-foreground">{course.progress}%</span>
+                        </div>
+                        <div className="h-2 bg-muted rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full ${course.color} rounded-full`}
+                            style={{
+                              width: progressVisible ? `${course.progress}%` : "0%",
+                              transition: `width 1.2s cubic-bezier(0.16, 1, 0.3, 1) ${0.3 + i * 0.2}s`,
+                            }}
+                          />
+                        </div>
                       </div>
-                      <div className="h-2 bg-muted rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full ${course.color} rounded-full transition-all duration-1000`}
-                          style={{ width: `${course.progress}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
 
-                {/* Decorative badge */}
-                <div className="absolute -top-4 -right-4 bg-accent text-accent-foreground px-4 py-2 rounded-full shadow-lg font-semibold text-sm">
-                  Free Access
+                  {/* Decorative badge */}
+                  <div className="absolute -top-4 -right-4 bg-accent text-accent-foreground px-4 py-2 rounded-full shadow-lg font-semibold text-sm animate-float">
+                    Free Access
+                  </div>
                 </div>
               </div>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </div>

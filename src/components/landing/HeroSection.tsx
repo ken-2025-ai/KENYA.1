@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { Users, ArrowRight, Play, Download, Zap, ShieldCheck, Smartphone, DollarSign } from "lucide-react";
+import { Users, ArrowRight, Download, Zap, ShieldCheck, Smartphone, DollarSign } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePWA } from "@/hooks/usePWA";
 import { MainMarktButton } from "@/components/MainMarktButton";
-import heroImage from "@/assets/hero-kenya-farmland.jpg";
+import { useRef, useEffect } from "react";
 
 interface HeroSectionProps {
   onOpenAuth: (tab: "login" | "signup") => void;
@@ -12,6 +12,14 @@ interface HeroSectionProps {
 export const HeroSection = ({ onOpenAuth }: HeroSectionProps) => {
   const isMobile = useIsMobile();
   const { canInstall, installApp } = usePWA();
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    // Ensure video plays on mobile
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
 
   const handleInstall = async () => {
     if ('vibrate' in navigator) navigator.vibrate(100);
@@ -25,13 +33,20 @@ export const HeroSection = ({ onOpenAuth }: HeroSectionProps) => {
 
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden">
-      {/* Background layers */}
+      {/* Video Background */}
       <div className="absolute inset-0">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/70 via-primary/50 to-primary-glow/40" />
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover scale-105"
+          poster="/placeholder.svg"
+        >
+          <source src="/hero-agriculture.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/75 via-primary/55 to-primary-glow/45" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-accent/15 via-transparent to-transparent" />
       </div>
 

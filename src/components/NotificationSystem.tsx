@@ -101,11 +101,11 @@ export const NotificationSystem = ({ userLocation }: NotificationSystemProps) =>
         const registration = await navigator.serviceWorker.ready;
         
         // Check if already subscribed
-        let subscription = await registration.pushManager.getSubscription();
+        let subscription = await (registration as any).pushManager?.getSubscription();
         
         if (!subscription) {
           // Subscribe to push notifications
-          subscription = await registration.pushManager.subscribe({
+          subscription = await (registration as any).pushManager?.subscribe({
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(
               // VAPID public key - in production, this should come from environment
