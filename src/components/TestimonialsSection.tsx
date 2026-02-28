@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Quote } from "lucide-react";
+import { ScrollReveal } from "@/hooks/useScrollReveal";
 
 const testimonials = [
   {
@@ -27,36 +28,38 @@ export const TestimonialsSection = () => {
   return (
     <section className="py-16 bg-muted/50">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <ScrollReveal className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             What Our Community Says
           </h2>
           <p className="text-xl text-muted-foreground">
             Real stories from farmers and buyers across Kenya
           </p>
-        </div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {testimonials.map((testimonial, index) => (
-            <Card key={index} className="group hover:shadow-medium transition-smooth animate-slide-up" style={{ animationDelay: `${index * 0.2}s` }}>
-              <CardContent className="p-6">
-                <Quote className="w-8 h-8 text-primary mb-4 group-hover:text-accent transition-smooth" />
-                <p className="text-muted-foreground leading-relaxed mb-6">
-                  "{testimonial.content}"
-                </p>
-                <div className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarFallback className="bg-gradient-primary text-primary-foreground font-semibold">
-                      {testimonial.avatar}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-foreground">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+            <ScrollReveal key={index} delay={index * 0.15} direction="up">
+              <Card className="group hover:shadow-medium hover:-translate-y-1 transition-all duration-500 h-full">
+                <CardContent className="p-6">
+                  <Quote className="w-8 h-8 text-primary mb-4 group-hover:text-accent group-hover:scale-110 transition-all duration-300" />
+                  <p className="text-muted-foreground leading-relaxed mb-6">
+                    "{testimonial.content}"
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <Avatar>
+                      <AvatarFallback className="bg-gradient-primary text-primary-foreground font-semibold">
+                        {testimonial.avatar}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold text-foreground">{testimonial.name}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </ScrollReveal>
           ))}
         </div>
       </div>
