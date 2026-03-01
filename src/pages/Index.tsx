@@ -42,36 +42,45 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background relative">
+    <div className="min-h-screen bg-background relative overflow-x-hidden">
       {/* Subtle background texture */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,_hsl(var(--primary)/0.05),_transparent)] pointer-events-none" />
+      <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,_hsl(var(--primary)/0.03),_transparent)] pointer-events-none" />
       
       <div className="relative z-10">
         <Navigation />
         
-        {/* Hero - Above the fold */}
+        {/* Hero - Full viewport cinematic */}
         <HeroSection onOpenAuth={openAuthModal} />
+
+        {/* Section divider */}
+        <div className="section-divider mx-auto max-w-4xl" />
 
         {/* Features - Core value proposition */}
         <FeaturesGrid />
 
         {/* Marketplace - Show real products */}
-        <section className="py-8">
-          <Marketplace />
+        <section className="py-12 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/20 to-transparent" />
+          <div className="relative">
+            <Marketplace />
+          </div>
         </section>
 
-        {/* Equipment Preview - New feature highlight */}
+        {/* Equipment Preview */}
         <EquipmentPreview />
 
+        {/* Section divider */}
+        <div className="section-divider mx-auto max-w-4xl my-4" />
+
         {/* AI Market Intelligence */}
-        <section id="prices" className="py-8">
+        <section id="prices" className="py-12">
           <AIMarketBoard />
         </section>
 
         {/* Education - Value add */}
         <EducationSection />
 
-        {/* Social Proof - Stats & Testimonials */}
+        {/* Social Proof */}
         <StatsSection />
         <TestimonialsSection />
 
