@@ -682,36 +682,42 @@ const Learn = () => {
               {
                 icon: "♻️",
                 title: "Organic Farming",
+                slug: "organic-farming",
                 description: "Master chemical-free farming techniques for healthier crops and better market prices",
                 topics: ["Natural pesticides", "Composting", "Soil health", "Certification"]
               },
               {
                 icon: "💧",
                 title: "Water Conservation",
+                slug: "water-conservation",
                 description: "Smart irrigation methods to save water while maintaining optimal crop growth",
                 topics: ["Drip irrigation", "Rainwater harvesting", "Water-efficient crops", "Moisture monitoring"]
               },
               {
                 icon: "🌾",
                 title: "Soil Management",
+                slug: "soil-management",
                 description: "Build and maintain fertile soil for sustainable long-term productivity",
                 topics: ["Crop rotation", "Cover crops", "No-till farming", "Soil testing"]
               },
               {
                 icon: "🐝",
                 title: "Biodiversity",
+                slug: "biodiversity",
                 description: "Create balanced ecosystems that support pollinators and natural pest control",
                 topics: ["Pollinator habitats", "Companion planting", "Hedge rows", "Native species"]
               },
               {
                 icon: "🌳",
                 title: "Agroforestry",
+                slug: "agroforestry",
                 description: "Integrate trees with crops for improved yields and environmental benefits",
                 topics: ["Shade systems", "Wind breaks", "Carbon sequestration", "Multi-cropping"]
               },
               {
                 icon: "⚡",
                 title: "Carbon Credits",
+                slug: "carbon-credits",
                 description: "Earn additional income by participating in carbon offset programs",
                 topics: ["Carbon farming", "Credit markets", "Verification", "Best practices"]
               }
@@ -720,6 +726,7 @@ const Learn = () => {
                 key={index}
                 className="group cursor-pointer transition-smooth hover:shadow-large hover:-translate-y-2 bg-card/80 backdrop-blur-sm border-2 border-green-200 dark:border-green-800 animate-slide-up"
                 style={{ animationDelay: `${index * 0.1}s` }}
+                onClick={() => navigate(`/learn/course/${topic.slug}`)}
               >
                 <CardHeader>
                   <div className="text-5xl mb-3 group-hover:scale-110 transition-smooth">{topic.icon}</div>
@@ -745,6 +752,10 @@ const Learn = () => {
                   <Button 
                     className="w-full mt-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                     size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/learn/course/${topic.slug}`);
+                    }}
                   >
                     Start Learning
                     <ChevronRight className="ml-2 w-4 h-4" />
