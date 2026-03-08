@@ -10,6 +10,7 @@ import { useLmsProgress } from "@/hooks/useLmsProgress";
 import { LmsSidebar } from "@/components/lms/LmsSidebar";
 import { LmsLessonView } from "@/components/lms/LmsLessonView";
 import { LmsCertificate } from "@/components/lms/LmsCertificate";
+import { LmsSearch } from "@/components/lms/LmsSearch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft,
@@ -22,9 +23,10 @@ import {
   Play,
   BarChart3,
   Target,
+  Search,
 } from "lucide-react";
 
-type TabType = "learn" | "overview" | "bookmarks" | "certificate";
+type TabType = "learn" | "overview" | "bookmarks" | "certificate" | "search";
 
 export default function LmsCourse() {
   const { slug } = useParams<{ slug: string }>();
@@ -185,6 +187,7 @@ export default function LmsCourse() {
             {[
               { id: "overview" as TabType, label: "Overview", icon: BarChart3 },
               { id: "learn" as TabType, label: "Lessons", icon: Play },
+              { id: "search" as TabType, label: "Search", icon: Search },
               { id: "bookmarks" as TabType, label: "Bookmarks", icon: Bookmark },
               { id: "certificate" as TabType, label: "Certificate", icon: Award },
             ].map((tab) => (
@@ -407,6 +410,15 @@ export default function LmsCourse() {
               </div>
             )}
           </div>
+        )}
+
+        {/* SEARCH TAB */}
+        {activeTab === "search" && (
+          <LmsSearch
+            course={course}
+            completedLessons={progress.completedLessons}
+            onSelectLesson={handleSelectLesson}
+          />
         )}
 
         {/* CERTIFICATE TAB */}
