@@ -22,6 +22,7 @@ import CropPlanner from "./pages/CropPlanner";
 import Machinery from "./pages/Machinery";
 import MyMachinery from "./pages/MyMachinery";
 import MyBookings from "./pages/MyBookings";
+import LmsCourse from "./pages/LmsCourse";
 
 const queryClient = new QueryClient();
 
