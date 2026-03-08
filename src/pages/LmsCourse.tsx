@@ -187,6 +187,7 @@ export default function LmsCourse() {
             {[
               { id: "overview" as TabType, label: "Overview", icon: BarChart3 },
               { id: "learn" as TabType, label: "Lessons", icon: Play },
+              { id: "search" as TabType, label: "Search", icon: Search },
               { id: "bookmarks" as TabType, label: "Bookmarks", icon: Bookmark },
               { id: "certificate" as TabType, label: "Certificate", icon: Award },
             ].map((tab) => (
