@@ -26,7 +26,8 @@ import {
   Award,
   ChevronRight,
   Activity,
-  Map
+  Map,
+  BarChart3
 } from "lucide-react";
 
 const learningCategories = [
