@@ -412,6 +412,15 @@ export default function LmsCourse() {
           </div>
         )}
 
+        {/* SEARCH TAB */}
+        {activeTab === "search" && (
+          <LmsSearch
+            course={course}
+            completedLessons={progress.completedLessons}
+            onSelectLesson={handleSelectLesson}
+          />
+        )}
+
         {/* CERTIFICATE TAB */}
         {activeTab === "certificate" && (
           <div className="max-w-2xl mx-auto">
