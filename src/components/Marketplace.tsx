@@ -214,8 +214,8 @@ export const Marketplace = () => {
               Loading fresh produce from farmers across Kenya...
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+             {[...Array(8)].map((_, i) => (
               <Card key={i} className="animate-pulse">
                 <CardHeader>
                   <div className="h-4 bg-muted rounded w-3/4"></div>
