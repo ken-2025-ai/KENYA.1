@@ -26,7 +26,7 @@ import {
   Search,
 } from "lucide-react";
 
-type TabType = "learn" | "overview" | "bookmarks" | "certificate";
+type TabType = "learn" | "overview" | "bookmarks" | "certificate" | "search";
 
 export default function LmsCourse() {
   const { slug } = useParams<{ slug: string }>();
