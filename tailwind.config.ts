@@ -86,8 +86,10 @@ export default {
 				soft: 'var(--shadow-soft)',
 				medium: 'var(--shadow-medium)',
 				strong: 'var(--shadow-strong)',
+				elevated: 'var(--shadow-elevated)',
 				'glow-primary': 'var(--glow-primary)',
-				'glow-accent': 'var(--glow-accent)'
+				'glow-accent': 'var(--glow-accent)',
+				'glow-gold': 'var(--glow-gold)'
 			},
 			transitionTimingFunction: {
 				smooth: 'var(--transition-smooth)',
