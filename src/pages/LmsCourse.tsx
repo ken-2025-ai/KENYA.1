@@ -23,6 +23,7 @@ import {
   Play,
   BarChart3,
   Target,
+  Search,
 } from "lucide-react";
 
 type TabType = "learn" | "overview" | "bookmarks" | "certificate";
