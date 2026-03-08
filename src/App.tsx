@@ -23,6 +23,7 @@ import Machinery from "./pages/Machinery";
 import MyMachinery from "./pages/MyMachinery";
 import MyBookings from "./pages/MyBookings";
 import LmsCourse from "./pages/LmsCourse";
+import LearnerDashboard from "./pages/LearnerDashboard";
 
 const queryClient = new QueryClient();
 
