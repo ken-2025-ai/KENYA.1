@@ -46,13 +46,17 @@ export default {
 					foreground: 'hsl(var(--accent-foreground))',
 					glow: 'hsl(var(--accent-glow))'
 				},
-				success: {
+			success: {
 					DEFAULT: 'hsl(var(--success))',
 					foreground: 'hsl(var(--success-foreground))'
 				},
 				warning: {
 					DEFAULT: 'hsl(var(--warning))',
 					foreground: 'hsl(var(--warning-foreground))'
+				},
+				gold: {
+					DEFAULT: 'hsl(var(--gold))',
+					foreground: 'hsl(var(--gold-foreground))'
 				},
 				popover: {
 					DEFAULT: 'hsl(var(--popover))',
@@ -82,8 +86,10 @@ export default {
 				soft: 'var(--shadow-soft)',
 				medium: 'var(--shadow-medium)',
 				strong: 'var(--shadow-strong)',
+				elevated: 'var(--shadow-elevated)',
 				'glow-primary': 'var(--glow-primary)',
-				'glow-accent': 'var(--glow-accent)'
+				'glow-accent': 'var(--glow-accent)',
+				'glow-gold': 'var(--glow-gold)'
 			},
 			transitionTimingFunction: {
 				smooth: 'var(--transition-smooth)',
