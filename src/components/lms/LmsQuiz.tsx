@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, XCircle, HelpCircle, RotateCcw } from "lucide-react";
+import { CheckCircle, XCircle, HelpCircle, RotateCcw, Sparkles } from "lucide-react";
 import type { Quiz } from "@/data/lmsCourses";
 
 interface LmsQuizProps {
@@ -31,22 +31,35 @@ export function LmsQuiz({ quiz, onComplete, previousResult }: LmsQuizProps) {
   };
 
   return (
-    <Card className="border-2 border-primary/20 bg-primary/5">
-      <CardHeader className="pb-3">
-        <div className="flex items-center gap-2">
-          <HelpCircle className="w-5 h-5 text-primary" />
-          <CardTitle className="text-base">Knowledge Check</CardTitle>
+    <div className="relative overflow-hidden rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 via-card to-primary/5">
+      <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+      
+      <div className="relative p-6">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] flex items-center justify-center shadow-sm">
+            <HelpCircle className="w-4 h-4 text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-black text-foreground">Knowledge Check</h3>
+            <p className="text-[10px] text-muted-foreground font-semibold">Test your understanding</p>
+          </div>
           {submitted && (
-            <Badge className={isCorrect ? "bg-green-500" : "bg-red-500"}>
-              {isCorrect ? "Correct!" : "Incorrect"}
+            <Badge className={`font-bold text-xs px-3 py-1 ${
+              isCorrect 
+                ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] border-[hsl(var(--success))]/20" 
+                : "bg-destructive/10 text-destructive border-destructive/20"
+            }`}>
+              {isCorrect ? "✓ Correct!" : "✗ Incorrect"}
             </Badge>
           )}
         </div>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="font-semibold text-sm">{quiz.question}</p>
 
-        <div className="space-y-2">
+        {/* Question */}
+        <p className="font-bold text-foreground mb-4">{quiz.question}</p>
+
+        {/* Options */}
+        <div className="space-y-2.5">
           {quiz.options.map((option, i) => {
             const isSelected = selected === i;
             const showCorrect = submitted && i === quiz.correctIndex;
@@ -57,46 +70,67 @@ export function LmsQuiz({ quiz, onComplete, previousResult }: LmsQuizProps) {
                 key={i}
                 onClick={() => !submitted && setSelected(i)}
                 disabled={submitted}
-                className={`w-full text-left p-3 rounded-lg border-2 text-sm transition-all ${
+                className={`w-full text-left p-4 rounded-xl border-2 text-sm font-medium transition-all ${
                   showCorrect
-                    ? "border-green-500 bg-green-500/10 text-green-700 dark:text-green-400"
+                    ? "border-[hsl(var(--success))] bg-[hsl(var(--success))]/8 text-foreground ring-2 ring-[hsl(var(--success))]/20"
                     : showWrong
-                    ? "border-red-500 bg-red-500/10 text-red-700 dark:text-red-400"
+                    ? "border-destructive bg-destructive/8 text-foreground ring-2 ring-destructive/20"
                     : isSelected
-                    ? "border-primary bg-primary/10"
-                    : "border-border hover:border-primary/40 hover:bg-muted/50"
+                    ? "border-primary bg-primary/8 text-foreground ring-2 ring-primary/20"
+                    : "border-border/60 hover:border-primary/30 hover:bg-muted/30"
                 } ${submitted ? "cursor-default" : "cursor-pointer"}`}
               >
-                <div className="flex items-center gap-2">
-                  {showCorrect && <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />}
-                  {showWrong && <XCircle className="w-4 h-4 text-red-500 flex-shrink-0" />}
-                  <span className="font-medium text-muted-foreground mr-2">{String.fromCharCode(65 + i)}.</span>
-                  {option}
+                <div className="flex items-center gap-3">
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-black flex-shrink-0 ${
+                    showCorrect
+                      ? "bg-[hsl(var(--success))] text-white"
+                      : showWrong
+                      ? "bg-destructive text-white"
+                      : isSelected
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                  }`}>
+                    {showCorrect ? <CheckCircle className="w-4 h-4" /> : showWrong ? <XCircle className="w-4 h-4" /> : String.fromCharCode(65 + i)}
+                  </div>
+                  <span>{option}</span>
                 </div>
               </button>
             );
           })}
         </div>
 
+        {/* Explanation */}
         {submitted && (
-          <div className={`p-3 rounded-lg text-sm ${isCorrect ? "bg-green-500/10 text-green-700 dark:text-green-400" : "bg-amber-500/10 text-amber-700 dark:text-amber-400"}`}>
-            <p className="font-medium">{quiz.explanation}</p>
+          <div className={`mt-4 p-4 rounded-xl text-sm ${
+            isCorrect 
+              ? "bg-[hsl(var(--success))]/8 border border-[hsl(var(--success))]/20" 
+              : "bg-[hsl(var(--accent))]/8 border border-[hsl(var(--accent))]/20"
+          }`}>
+            <div className="flex items-start gap-2">
+              <Sparkles className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isCorrect ? "text-[hsl(var(--success))]" : "text-[hsl(var(--accent))]"}`} />
+              <p className="text-muted-foreground font-medium leading-relaxed">{quiz.explanation}</p>
+            </div>
           </div>
         )}
 
-        <div className="flex gap-2">
+        {/* Actions */}
+        <div className="flex gap-3 mt-5">
           {!submitted && (
-            <Button onClick={handleSubmit} disabled={selected === null} size="sm" className="w-full">
+            <Button 
+              onClick={handleSubmit} 
+              disabled={selected === null} 
+              className="w-full rounded-xl bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] text-primary-foreground font-bold shadow-sm"
+            >
               Submit Answer
             </Button>
           )}
           {submitted && !isCorrect && (
-            <Button onClick={handleRetry} variant="outline" size="sm" className="w-full">
-              <RotateCcw className="w-3 h-3 mr-1" /> Try Again
+            <Button onClick={handleRetry} variant="outline" className="w-full rounded-xl font-bold border-border/50">
+              <RotateCcw className="w-4 h-4 mr-2" /> Try Again
             </Button>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

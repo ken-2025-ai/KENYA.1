@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,10 @@ import {
   BarChart3,
   Target,
   Search,
+  Layers,
+  Sparkles,
+  TrendingUp,
+  CheckCircle,
 } from "lucide-react";
 
 type TabType = "learn" | "overview" | "bookmarks" | "certificate" | "search";
@@ -48,7 +52,6 @@ export default function LmsCourse() {
   const [activeTab, setActiveTab] = useState<TabType>("overview");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Flatten all lessons
   const allLessons = useMemo(() => {
     if (!course) return [];
     return course.modules.flatMap((m) => m.lessons.map((l) => ({ ...l, moduleTitle: m.title })));
@@ -121,91 +124,121 @@ export default function LmsCourse() {
     />
   );
 
+  const tabs = [
+    { id: "overview" as TabType, label: "Overview", icon: Layers },
+    { id: "learn" as TabType, label: "Lessons", icon: Play },
+    { id: "search" as TabType, label: "Search", icon: Search },
+    { id: "bookmarks" as TabType, label: "Saved", icon: Bookmark },
+    { id: "certificate" as TabType, label: "Certificate", icon: Award },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
+    <div className="min-h-screen bg-background">
       <Navigation />
 
-      {/* Course Header */}
-      <div className={`bg-gradient-to-r ${course.color} py-6`}>
-        <div className="container mx-auto px-4">
-          <div className="flex items-center gap-3 mb-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/learn")}
-              className="text-white/80 hover:text-white hover:bg-white/10"
-            >
-              <ArrowLeft className="w-4 h-4 mr-1" /> Learn
-            </Button>
-          </div>
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-3xl">{course.icon}</span>
-                <h1 className="text-2xl md:text-3xl font-bold text-white">{course.title}</h1>
+      {/* ═══════ PREMIUM HERO HEADER ═══════ */}
+      <div className="relative overflow-hidden">
+        {/* Background layers */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${course.color}`} />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMwMC5vcmcvMjAwMC9zdmciPjxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PGcgZmlsbD0iI2ZmZiIgZmlsbC1vcGFjaXR5PSIwLjAzIj48cGF0aCBkPSJNMzYgMzRoLTJWMGgydjM0em0tNCAwSDI4VjBoNHYzNHptLTggMEgyMFYwaDR2MzR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-40" />
+        
+        {/* Floating decorative elements */}
+        <div className="absolute top-6 right-[10%] w-32 h-32 rounded-full bg-white/5 blur-2xl" />
+        <div className="absolute bottom-4 left-[15%] w-24 h-24 rounded-full bg-white/5 blur-xl" />
+
+        <div className="relative container mx-auto px-4 py-8 md:py-12">
+          {/* Breadcrumb */}
+          <button
+            onClick={() => navigate("/learn")}
+            className="inline-flex items-center gap-1.5 text-white/60 hover:text-white text-xs font-medium mb-6 transition-colors group"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+            <span>Learning Hub</span>
+            <span className="mx-1">/</span>
+            <span className="text-white/80">Course</span>
+          </button>
+
+          <div className="flex items-start justify-between gap-6">
+            <div className="flex-1">
+              {/* Course icon + title */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/15 backdrop-blur-sm flex items-center justify-center text-3xl md:text-4xl shadow-lg border border-white/10">
+                  {course.icon}
+                </div>
+                <div>
+                  <h1 className="text-2xl md:text-4xl font-black text-white tracking-tight leading-tight">
+                    {course.title}
+                  </h1>
+                  <p className="text-white/70 text-sm md:text-base mt-1 font-medium">{course.tagline}</p>
+                </div>
               </div>
-              <p className="text-white/80 text-sm max-w-2xl">{course.tagline}</p>
-              <div className="flex items-center gap-4 mt-3 flex-wrap">
-                <Badge className="bg-white/20 text-white border-0">{course.level}</Badge>
-                <div className="flex items-center gap-1 text-white/70 text-xs">
+
+              {/* Meta pills */}
+              <div className="flex items-center gap-3 mt-5 flex-wrap">
+                <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white/90 text-xs font-semibold px-3 py-1.5 rounded-full border border-white/10">
+                  <Sparkles className="w-3 h-3" /> {course.level}
+                </div>
+                <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white/90 text-xs font-semibold px-3 py-1.5 rounded-full border border-white/10">
                   <Clock className="w-3 h-3" /> {course.duration}
                 </div>
-                <div className="flex items-center gap-1 text-white/70 text-xs">
-                  <BookOpen className="w-3 h-3" /> {allLessons.length} lessons
+                <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white/90 text-xs font-semibold px-3 py-1.5 rounded-full border border-white/10">
+                  <BookOpen className="w-3 h-3" /> {allLessons.length} Lessons
                 </div>
-                <div className="flex items-center gap-1 text-white/70 text-xs">
-                  <Target className="w-3 h-3" /> {course.modules.length} modules
+                <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-sm text-white/90 text-xs font-semibold px-3 py-1.5 rounded-full border border-white/10">
+                  <Target className="w-3 h-3" /> {course.modules.length} Modules
                 </div>
               </div>
             </div>
-            <div className="text-center flex-shrink-0 hidden md:block">
-              <div className="relative w-16 h-16">
-                <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-                  <circle cx="32" cy="32" r="28" stroke="rgba(255,255,255,0.2)" strokeWidth="4" fill="none" />
+
+            {/* Progress ring - desktop */}
+            <div className="hidden md:flex flex-col items-center gap-2">
+              <div className="relative w-24 h-24">
+                <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
+                  <circle cx="48" cy="48" r="40" stroke="rgba(255,255,255,0.12)" strokeWidth="6" fill="none" />
                   <circle
-                    cx="32" cy="32" r="28"
+                    cx="48" cy="48" r="40"
                     stroke="white"
-                    strokeWidth="4"
+                    strokeWidth="6"
                     fill="none"
-                    strokeDasharray={`${progressPercent * 1.76} 176`}
+                    strokeDasharray={`${progressPercent * 2.51} 251`}
                     strokeLinecap="round"
+                    className="transition-all duration-1000 ease-out"
                   />
                 </svg>
-                <span className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm">
-                  {progressPercent}%
-                </span>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-black text-white">{progressPercent}%</span>
+                </div>
               </div>
+              <span className="text-white/50 text-[10px] font-semibold uppercase tracking-widest">Complete</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="border-b border-border/50 bg-card/80 backdrop-blur-sm sticky top-0 z-20">
+      {/* ═══════ TAB NAVIGATION ═══════ */}
+      <div className="sticky top-0 z-30 bg-card/95 backdrop-blur-xl border-b border-border/60 shadow-sm">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-1 overflow-x-auto">
-            {[
-              { id: "overview" as TabType, label: "Overview", icon: BarChart3 },
-              { id: "learn" as TabType, label: "Lessons", icon: Play },
-              { id: "search" as TabType, label: "Search", icon: Search },
-              { id: "bookmarks" as TabType, label: "Bookmarks", icon: Bookmark },
-              { id: "certificate" as TabType, label: "Certificate", icon: Award },
-            ].map((tab) => (
+          <div className="flex items-center gap-0.5 overflow-x-auto scrollbar-none -mb-px">
+            {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                className={`relative flex items-center gap-2 px-5 py-3.5 text-sm font-semibold transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? "border-primary text-primary"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
+                    ? "text-primary"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
-                {tab.label}
+                <span className="hidden sm:inline">{tab.label}</span>
                 {tab.id === "bookmarks" && progress.bookmarkedLessons.length > 0 && (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                  <span className="w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
                     {progress.bookmarkedLessons.length}
-                  </Badge>
+                  </span>
+                )}
+                {activeTab === tab.id && (
+                  <div className="absolute bottom-0 left-2 right-2 h-[3px] bg-primary rounded-t-full" />
                 )}
               </button>
             ))}
@@ -227,92 +260,138 @@ export default function LmsCourse() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-6">
+      {/* ═══════ MAIN CONTENT ═══════ */}
+      <div className="container mx-auto px-4 py-8">
         {/* OVERVIEW TAB */}
         {activeTab === "overview" && (
-          <div className="max-w-4xl mx-auto space-y-6">
-            {/* Welcome Card */}
-            <Card className={`border-2 border-${course.colorAccent}-500/20 bg-gradient-to-br from-${course.colorAccent}-500/5 to-transparent`}>
-              <CardContent className="p-6">
-                <h2 className="text-xl font-bold mb-3">About This Course</h2>
-                <p className="text-sm text-muted-foreground leading-relaxed mb-4">{course.description}</p>
-                <Button
-                  onClick={handleStartLearning}
-                  className={`bg-gradient-to-r ${course.color} text-white`}
-                  size="lg"
-                >
-                  <Play className="w-4 h-4 mr-2" />
-                  {progress.completedLessons.length > 0 ? "Continue Learning" : "Start Learning"}
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
+            {/* Hero CTA Card */}
+            <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card shadow-[var(--shadow-medium)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+              <div className="relative p-8 md:p-10">
+                <div className="flex items-start gap-5">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-[var(--glow-primary)] flex-shrink-0">
+                    <BookOpen className="w-7 h-7 text-primary-foreground" />
+                  </div>
+                  <div className="flex-1">
+                    <h2 className="text-2xl font-black text-foreground mb-2">About This Course</h2>
+                    <p className="text-muted-foreground leading-relaxed mb-6 max-w-2xl">{course.description}</p>
+                    <Button
+                      onClick={handleStartLearning}
+                      size="lg"
+                      className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] text-primary-foreground shadow-[var(--glow-primary)] hover:shadow-[var(--shadow-elevated)] hover:scale-[1.02] transition-all duration-300 font-bold px-8"
+                    >
+                      <Play className="w-5 h-5 mr-2" />
+                      {progress.completedLessons.length > 0 ? "Continue Learning" : "Start Learning"}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-            {/* Stats */}
+            {/* Stats Grid */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { icon: BookOpen, label: "Lessons", value: allLessons.length, color: "text-blue-500" },
-                { icon: Target, label: "Modules", value: course.modules.length, color: "text-purple-500" },
-                { icon: GraduationCap, label: "Completed", value: progress.completedLessons.length, color: "text-green-500" },
-                { icon: BarChart3, label: "Progress", value: `${progressPercent}%`, color: "text-amber-500" },
+                { icon: BookOpen, label: "Total Lessons", value: allLessons.length, gradient: "from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))]" },
+                { icon: Layers, label: "Modules", value: course.modules.length, gradient: "from-[hsl(var(--accent))] to-[hsl(var(--accent-glow))]" },
+                { icon: CheckCircle, label: "Completed", value: progress.completedLessons.length, gradient: "from-[hsl(var(--success))] to-[hsl(145,50%,45%)]" },
+                { icon: TrendingUp, label: "Progress", value: `${progressPercent}%`, gradient: "from-[hsl(var(--gold))] to-[hsl(32,85%,62%)]" },
               ].map((stat, i) => (
-                <Card key={i}>
-                  <CardContent className="p-4 text-center">
-                    <stat.icon className={`w-6 h-6 mx-auto mb-2 ${stat.color}`} />
-                    <p className="text-2xl font-bold">{stat.value}</p>
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
+                <Card key={i} className="group relative overflow-hidden border border-border/50 hover:border-border hover:shadow-[var(--shadow-soft)] transition-all duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <CardContent className="relative p-5 text-center">
+                    <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center mx-auto mb-3 shadow-sm`}>
+                      <stat.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="text-3xl font-black text-foreground">{stat.value}</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mt-1">{stat.label}</p>
                   </CardContent>
                 </Card>
               ))}
             </div>
 
             {/* Curriculum */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Curriculum</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {course.modules.map((module, mi) => (
-                  <div key={module.id} className="border border-border/50 rounded-lg overflow-hidden">
-                    <div className="bg-muted/30 p-4">
-                      <h3 className="font-bold text-sm">
-                        Module {mi + 1}: {module.title}
-                      </h3>
-                      <p className="text-xs text-muted-foreground">{module.description}</p>
-                    </div>
-                    <div className="divide-y divide-border/30">
-                      {module.lessons.map((lesson) => {
-                        const isCompleted = progress.completedLessons.includes(lesson.id);
-                        return (
-                          <button
-                            key={lesson.id}
-                            onClick={() => handleSelectLesson(lesson.id)}
-                            className="w-full flex items-center gap-3 p-3 hover:bg-muted/30 transition-colors text-left"
-                          >
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                              isCompleted
-                                ? "bg-green-500 text-white"
-                                : "border-2 border-muted-foreground/30"
-                            }`}>
-                              {isCompleted && <span className="text-xs">✓</span>}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">{lesson.title}</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              {lesson.quiz && (
-                                <Badge variant="outline" className="text-[10px]">Quiz</Badge>
-                              )}
-                              <span className="text-xs text-muted-foreground">{lesson.duration}</span>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <div>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] flex items-center justify-center">
+                  <Layers className="w-4 h-4 text-white" />
+                </div>
+                <h2 className="text-xl font-black text-foreground">Course Curriculum</h2>
+              </div>
+
+              <div className="space-y-4">
+                {course.modules.map((module, mi) => {
+                  const moduleCompleted = module.lessons.every((l) =>
+                    progress.completedLessons.includes(l.id)
+                  );
+                  const moduleProgress = module.lessons.filter((l) =>
+                    progress.completedLessons.includes(l.id)
+                  ).length;
+
+                  return (
+                    <Card key={module.id} className="overflow-hidden border border-border/50 hover:border-border/80 transition-colors shadow-sm">
+                      {/* Module header */}
+                      <div className="bg-gradient-to-r from-muted/50 to-muted/20 px-5 py-4 flex items-center gap-4">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black ${
+                          moduleCompleted
+                            ? "bg-gradient-to-br from-[hsl(var(--success))] to-[hsl(145,50%,45%)] text-white shadow-[var(--glow-success)]"
+                            : "bg-muted text-muted-foreground border border-border"
+                        }`}>
+                          {moduleCompleted ? <CheckCircle className="w-5 h-5" /> : mi + 1}
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-foreground">{module.title}</h3>
+                          <p className="text-xs text-muted-foreground mt-0.5">{module.description}</p>
+                        </div>
+                        <Badge variant="secondary" className="text-xs font-bold">
+                          {moduleProgress}/{module.lessons.length}
+                        </Badge>
+                      </div>
+
+                      {/* Lessons list */}
+                      <div className="divide-y divide-border/30">
+                        {module.lessons.map((lesson, li) => {
+                          const isCompleted = progress.completedLessons.includes(lesson.id);
+                          return (
+                            <button
+                              key={lesson.id}
+                              onClick={() => handleSelectLesson(lesson.id)}
+                              className="w-full flex items-center gap-4 px-5 py-3.5 hover:bg-muted/40 transition-all text-left group"
+                            >
+                              <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+                                isCompleted
+                                  ? "bg-[hsl(var(--success))] text-white shadow-sm"
+                                  : "border-2 border-border group-hover:border-primary/40"
+                              }`}>
+                                {isCompleted ? (
+                                  <CheckCircle className="w-4 h-4" />
+                                ) : (
+                                  <span className="text-[10px] font-bold text-muted-foreground">{li + 1}</span>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                                  {lesson.title}
+                                </p>
+                              </div>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                {lesson.quiz && (
+                                  <Badge className="bg-[hsl(var(--accent))]/10 text-[hsl(var(--accent))] border-[hsl(var(--accent))]/20 text-[10px] font-bold">
+                                    Quiz
+                                  </Badge>
+                                )}
+                                <span className="text-xs text-muted-foreground font-medium">{lesson.duration}</span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </Card>
+                  );
+                })}
+              </div>
+            </div>
 
             {/* Certificate Preview */}
             <LmsCertificate
@@ -327,17 +406,14 @@ export default function LmsCourse() {
 
         {/* LEARN TAB */}
         {activeTab === "learn" && (
-          <div className="flex gap-6">
-            {/* Desktop Sidebar */}
+          <div className="flex gap-8 animate-fade-in">
             {!isMobile && (
-              <div className="w-72 flex-shrink-0">
-                <div className="sticky top-16 border border-border/50 rounded-lg bg-card overflow-hidden max-h-[calc(100vh-120px)]">
+              <div className="w-80 flex-shrink-0">
+                <div className="sticky top-16 rounded-2xl border border-border/50 bg-card overflow-hidden max-h-[calc(100vh-100px)] shadow-[var(--shadow-soft)]">
                   {sidebarContent}
                 </div>
               </div>
             )}
-
-            {/* Lesson Content */}
             <div className="flex-1 min-w-0">
               {currentLessonData ? (
                 <LmsLessonView
@@ -358,12 +434,20 @@ export default function LmsCourse() {
                   totalLessons={allLessons.length}
                 />
               ) : (
-                <div className="text-center py-20">
-                  <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                  <h2 className="text-xl font-bold mb-2">Ready to learn?</h2>
-                  <p className="text-muted-foreground mb-4">Select a lesson from the sidebar or start from the beginning.</p>
-                  <Button onClick={handleStartLearning} className={`bg-gradient-to-r ${course.color}`}>
-                    <Play className="w-4 h-4 mr-2" /> Start Learning
+                <div className="text-center py-24">
+                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mx-auto mb-6">
+                    <BookOpen className="w-10 h-10 text-primary" />
+                  </div>
+                  <h2 className="text-2xl font-black mb-2">Ready to learn?</h2>
+                  <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                    Select a lesson from the sidebar or jump right in from the beginning.
+                  </p>
+                  <Button
+                    onClick={handleStartLearning}
+                    size="lg"
+                    className="bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] text-primary-foreground shadow-[var(--glow-primary)] font-bold px-8"
+                  >
+                    <Play className="w-5 h-5 mr-2" /> Start Learning
                   </Button>
                 </div>
               )}
@@ -373,36 +457,47 @@ export default function LmsCourse() {
 
         {/* BOOKMARKS TAB */}
         {activeTab === "bookmarks" && (
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <Bookmark className="w-5 h-5 text-amber-500" />
-              Bookmarked Lessons
-            </h2>
+          <div className="max-w-4xl mx-auto animate-fade-in">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--accent-glow))] flex items-center justify-center">
+                <Bookmark className="w-4 h-4 text-white" />
+              </div>
+              <h2 className="text-xl font-black text-foreground">Saved Lessons</h2>
+            </div>
             {bookmarkedLessonsData.length === 0 ? (
-              <Card>
-                <CardContent className="p-12 text-center">
-                  <Bookmark className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-muted-foreground">No bookmarked lessons yet. Bookmark lessons to quickly find them later.</p>
-                </CardContent>
-              </Card>
+              <div className="text-center py-20 bg-card rounded-2xl border border-border/50 shadow-sm">
+                <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
+                  <Bookmark className="w-8 h-8 text-muted-foreground" />
+                </div>
+                <h3 className="font-bold text-lg mb-2">No saved lessons yet</h3>
+                <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                  Bookmark lessons while studying to quickly find them here later.
+                </p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {bookmarkedLessonsData.map((lesson) => (
                   <Card
                     key={lesson.id}
-                    className="cursor-pointer hover:shadow-md transition-all hover:border-primary/20"
+                    className="group cursor-pointer hover:shadow-[var(--shadow-soft)] transition-all border border-border/50 hover:border-primary/20"
                     onClick={() => handleSelectLesson(lesson.id)}
                   >
                     <CardContent className="p-4 flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${course.color} flex items-center justify-center`}>
+                      <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${course.color} flex items-center justify-center shadow-sm`}>
                         <BookOpen className="w-5 h-5 text-white" />
                       </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm">{lesson.title}</p>
-                        <p className="text-xs text-muted-foreground">{lesson.moduleTitle} • {lesson.duration}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-sm group-hover:text-primary transition-colors">{lesson.title}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{lesson.moduleTitle} • {lesson.duration}</p>
                       </div>
-                      <Badge variant={progress.completedLessons.includes(lesson.id) ? "default" : "outline"}>
-                        {progress.completedLessons.includes(lesson.id) ? "Completed" : "In Progress"}
+                      <Badge
+                        className={`text-[10px] font-bold ${
+                          progress.completedLessons.includes(lesson.id)
+                            ? "bg-[hsl(var(--success))]/10 text-[hsl(var(--success))]"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {progress.completedLessons.includes(lesson.id) ? "✓ Done" : "In Progress"}
                       </Badge>
                     </CardContent>
                   </Card>
@@ -414,16 +509,18 @@ export default function LmsCourse() {
 
         {/* SEARCH TAB */}
         {activeTab === "search" && (
-          <LmsSearch
-            course={course}
-            completedLessons={progress.completedLessons}
-            onSelectLesson={handleSelectLesson}
-          />
+          <div className="animate-fade-in">
+            <LmsSearch
+              course={course}
+              completedLessons={progress.completedLessons}
+              onSelectLesson={handleSelectLesson}
+            />
+          </div>
         )}
 
         {/* CERTIFICATE TAB */}
         {activeTab === "certificate" && (
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl mx-auto animate-fade-in">
             <LmsCertificate
               course={course}
               completedLessons={progress.completedLessons.length}
