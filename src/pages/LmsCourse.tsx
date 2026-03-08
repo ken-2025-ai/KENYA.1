@@ -10,6 +10,7 @@ import { useLmsProgress } from "@/hooks/useLmsProgress";
 import { LmsSidebar } from "@/components/lms/LmsSidebar";
 import { LmsLessonView } from "@/components/lms/LmsLessonView";
 import { LmsCertificate } from "@/components/lms/LmsCertificate";
+import { LmsSearch } from "@/components/lms/LmsSearch";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
   ArrowLeft,
