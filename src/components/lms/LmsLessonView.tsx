@@ -13,6 +13,7 @@ import {
   StickyNote,
   Clock,
   ArrowRight,
+  Layers,
 } from "lucide-react";
 import type { Lesson, Course } from "@/data/lmsCourses";
 import { LmsQuiz } from "./LmsQuiz";
@@ -59,12 +60,12 @@ export function LmsLessonView({
     onSaveNote(localNote);
   };
 
-  // Parse content for rendering (basic markdown-like formatting)
   const renderContent = (content: string) => {
     return content.split("\n\n").map((block, i) => {
       if (block.startsWith("**") && block.endsWith("**")) {
         return (
-          <h3 key={i} className="text-lg font-bold text-foreground mt-6 mb-2">
+          <h3 key={i} className="text-lg font-black text-foreground mt-8 mb-3 flex items-center gap-2">
+            <div className="w-1 h-5 bg-primary rounded-full" />
             {block.replace(/\*\*/g, "")}
           </h3>
         );
@@ -74,12 +75,12 @@ export function LmsLessonView({
         const headers = rows[0]?.split("|").filter(Boolean).map((h) => h.trim());
         const data = rows.slice(1).map((r) => r.split("|").filter(Boolean).map((c) => c.trim()));
         return (
-          <div key={i} className="overflow-x-auto my-4">
-            <table className="w-full text-sm border-collapse">
+          <div key={i} className="overflow-x-auto my-5 rounded-xl border border-border/50 shadow-sm">
+            <table className="w-full text-sm">
               <thead>
-                <tr>
+                <tr className="bg-muted/60">
                   {headers?.map((h, hi) => (
-                    <th key={hi} className="border border-border/50 bg-muted/50 px-3 py-2 text-left font-semibold">
+                    <th key={hi} className="px-4 py-3 text-left font-bold text-foreground text-xs uppercase tracking-wider border-b border-border/50">
                       {h}
                     </th>
                   ))}
@@ -87,9 +88,9 @@ export function LmsLessonView({
               </thead>
               <tbody>
                 {data.map((row, ri) => (
-                  <tr key={ri}>
+                  <tr key={ri} className="hover:bg-muted/20 transition-colors">
                     {row.map((cell, ci) => (
-                      <td key={ci} className="border border-border/50 px-3 py-2">
+                      <td key={ci} className="px-4 py-3 border-b border-border/30 text-muted-foreground">
                         {cell}
                       </td>
                     ))}
@@ -100,36 +101,38 @@ export function LmsLessonView({
           </div>
         );
       }
-      // Handle numbered lists
       if (block.match(/^\d+\./m)) {
         const items = block.split("\n").filter(Boolean);
         return (
-          <ol key={i} className="list-decimal list-inside space-y-1.5 my-3 text-sm text-muted-foreground">
+          <ol key={i} className="space-y-2 my-4 pl-1">
             {items.map((item, li) => (
-              <li key={li} dangerouslySetInnerHTML={{ __html: formatInline(item.replace(/^\d+\.\s*/, "")) }} />
+              <li key={li} className="flex items-start gap-3 text-sm text-muted-foreground">
+                <span className="w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+                  {li + 1}
+                </span>
+                <span className="pt-0.5" dangerouslySetInnerHTML={{ __html: formatInline(item.replace(/^\d+\.\s*/, "")) }} />
+              </li>
             ))}
           </ol>
         );
       }
-      // Handle bullet lists
       if (block.match(/^-\s/m)) {
         const items = block.split("\n").filter(Boolean);
         return (
-          <ul key={i} className="space-y-1.5 my-3">
+          <ul key={i} className="space-y-2 my-4">
             {items.map((item, li) => (
-              <li key={li} className="flex items-start gap-2 text-sm text-muted-foreground">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+              <li key={li} className="flex items-start gap-3 text-sm text-muted-foreground">
+                <div className="w-2 h-2 rounded-full bg-gradient-to-br from-primary to-primary-glow mt-2 flex-shrink-0" />
                 <span dangerouslySetInnerHTML={{ __html: formatInline(item.replace(/^-\s*/, "")) }} />
               </li>
             ))}
           </ul>
         );
       }
-      // Regular paragraph
       return (
         <p
           key={i}
-          className="text-sm text-muted-foreground leading-relaxed my-2"
+          className="text-sm text-muted-foreground leading-[1.8] my-3"
           dangerouslySetInnerHTML={{ __html: formatInline(block) }}
         />
       );
@@ -138,43 +141,54 @@ export function LmsLessonView({
 
   const formatInline = (text: string) => {
     return text
-      .replace(/\*\*(.+?)\*\*/g, '<strong class="text-foreground font-semibold">$1</strong>')
-      .replace(/`(.+?)`/g, '<code class="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">$1</code>');
+      .replace(/\*\*(.+?)\*\*/g, '<strong class="text-foreground font-bold">$1</strong>')
+      .replace(/`(.+?)`/g, '<code class="bg-primary/8 text-primary px-1.5 py-0.5 rounded-md text-xs font-mono font-semibold">$1</code>');
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto animate-fade-in">
       {/* Lesson Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
-          <Badge variant="outline" className="text-[10px]">{moduleTitle}</Badge>
-          <span>•</span>
-          <div className="flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            {lesson.duration}
+      <div className="mb-8">
+        {/* Breadcrumb bar */}
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-1.5 bg-primary/8 text-primary px-2.5 py-1 rounded-full font-bold">
+              <Layers className="w-3 h-3" />
+              {moduleTitle}
+            </div>
+            <span className="text-border">•</span>
+            <div className="flex items-center gap-1">
+              <Clock className="w-3 h-3" />
+              {lesson.duration}
+            </div>
+            <span className="text-border">•</span>
+            <span className="font-semibold">{lessonIndex + 1}/{totalLessons}</span>
           </div>
-          <span>•</span>
-          <span>Lesson {lessonIndex + 1} of {totalLessons}</span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleBookmark}
+            className={`rounded-full transition-all ${isBookmarked ? "text-[hsl(var(--accent))] bg-[hsl(var(--accent))]/10" : "text-muted-foreground hover:text-foreground"}`}
+          >
+            {isBookmarked ? <BookmarkCheck className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
+            <span className="text-xs ml-1">{isBookmarked ? "Saved" : "Save"}</span>
+          </Button>
         </div>
 
-        <div className="flex items-start justify-between gap-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">{lesson.title}</h1>
-          <div className="flex gap-2 flex-shrink-0">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToggleBookmark}
-              className={isBookmarked ? "text-amber-500" : "text-muted-foreground"}
-            >
-              {isBookmarked ? <BookmarkCheck className="w-5 h-5" /> : <Bookmark className="w-5 h-5" />}
-            </Button>
-          </div>
+        {/* Progress bar for lesson position */}
+        <div className="h-1 bg-muted rounded-full overflow-hidden mb-5">
+          <div
+            className="h-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] rounded-full transition-all duration-500"
+            style={{ width: `${((lessonIndex + 1) / totalLessons) * 100}%` }}
+          />
         </div>
+
+        <h1 className="text-2xl md:text-3xl font-black text-foreground leading-tight tracking-tight">{lesson.title}</h1>
       </div>
 
-      {/* Video if available */}
+      {/* Video */}
       {lesson.videoId && (
-        <div className="relative w-full aspect-video rounded-xl overflow-hidden mb-6 shadow-lg">
+        <div className="relative w-full aspect-video rounded-2xl overflow-hidden mb-8 shadow-[var(--shadow-medium)] ring-1 ring-border/30">
           <iframe
             width="100%"
             height="100%"
@@ -189,73 +203,79 @@ export function LmsLessonView({
       )}
 
       {/* Lesson Content */}
-      <Card className="mb-6">
-        <CardContent className="p-6 md:p-8">
-          {renderContent(lesson.content)}
-        </CardContent>
-      </Card>
+      <div className="bg-card rounded-2xl border border-border/50 p-7 md:p-10 mb-8 shadow-sm">
+        <div className="prose-custom">{renderContent(lesson.content)}</div>
+      </div>
 
       {/* Pro Tips */}
       {lesson.tips.length > 0 && (
-        <Card className="mb-6 border-2 border-amber-500/20 bg-amber-500/5">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-3">
-              <Lightbulb className="w-5 h-5 text-amber-500" />
-              <h3 className="font-bold text-sm">Pro Tips</h3>
+        <div className="relative overflow-hidden rounded-2xl border-2 border-[hsl(var(--accent))]/20 bg-gradient-to-br from-[hsl(var(--accent))]/5 to-[hsl(var(--gold))]/5 p-6 mb-8">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[hsl(var(--accent))]/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl" />
+          <div className="relative">
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--gold))] flex items-center justify-center shadow-sm">
+                <Lightbulb className="w-4 h-4 text-white" />
+              </div>
+              <h3 className="font-black text-foreground">Pro Tips</h3>
             </div>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {lesson.tips.map((tip, i) => (
-                <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <span className="text-amber-500 font-bold">💡</span>
-                  <span>{tip}</span>
+                <div key={i} className="flex items-start gap-3 text-sm">
+                  <div className="w-6 h-6 rounded-full bg-[hsl(var(--accent))]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Lightbulb className="w-3 h-3 text-[hsl(var(--accent))]" />
+                  </div>
+                  <span className="text-muted-foreground leading-relaxed">{tip}</span>
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
       {/* Quiz */}
       {lesson.quiz && (
-        <div className="mb-6">
+        <div className="mb-8">
           <LmsQuiz quiz={lesson.quiz} onComplete={onQuizComplete} previousResult={quizResult} />
         </div>
       )}
 
-      {/* Notes Section */}
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <button
-            onClick={() => setShowNotes(!showNotes)}
-            className="flex items-center gap-2 w-full text-left"
-          >
+      {/* Notes */}
+      <div className="rounded-2xl border border-border/50 bg-card overflow-hidden mb-8 shadow-sm">
+        <button
+          onClick={() => setShowNotes(!showNotes)}
+          className="flex items-center gap-3 w-full text-left px-6 py-4 hover:bg-muted/30 transition-colors"
+        >
+          <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center">
             <StickyNote className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold">My Notes</span>
-            {localNote && <Badge variant="secondary" className="text-[10px]">Saved</Badge>}
-          </button>
-          {showNotes && (
-            <div className="mt-3 space-y-2">
-              <Textarea
-                value={localNote}
-                onChange={(e) => setLocalNote(e.target.value)}
-                placeholder="Write your notes for this lesson..."
-                className="min-h-[100px] text-sm"
-              />
-              <Button size="sm" onClick={handleSaveNote} variant="outline">
-                Save Notes
-              </Button>
-            </div>
+          </div>
+          <span className="font-bold text-sm text-foreground flex-1">My Notes</span>
+          {localNote && (
+            <Badge className="bg-[hsl(var(--success))]/10 text-[hsl(var(--success))] text-[10px] font-bold">Saved</Badge>
           )}
-        </CardContent>
-      </Card>
+          <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${showNotes ? "rotate-90" : ""}`} />
+        </button>
+        {showNotes && (
+          <div className="px-6 pb-5 pt-1 space-y-3 border-t border-border/30">
+            <Textarea
+              value={localNote}
+              onChange={(e) => setLocalNote(e.target.value)}
+              placeholder="Write your notes for this lesson..."
+              className="min-h-[120px] text-sm border-border/50 focus:border-primary/30 rounded-xl resize-none"
+            />
+            <Button size="sm" onClick={handleSaveNote} className="bg-primary/10 text-primary hover:bg-primary/20 font-semibold">
+              Save Notes
+            </Button>
+          </div>
+        )}
+      </div>
 
-      {/* Navigation & Completion */}
-      <div className="flex items-center justify-between gap-4 pb-8">
+      {/* Navigation */}
+      <div className="flex items-center justify-between gap-4 pb-10">
         <Button
           variant="outline"
           onClick={onPrev ?? undefined}
           disabled={!onPrev}
-          className="gap-1"
+          className="gap-1.5 rounded-xl font-semibold border-border/50 hover:border-border disabled:opacity-30"
         >
           <ChevronLeft className="w-4 h-4" /> Previous
         </Button>
@@ -265,7 +285,11 @@ export function LmsLessonView({
             onComplete();
             if (onNext) onNext();
           }}
-          className={`gap-2 ${isCompleted ? "bg-green-600 hover:bg-green-700" : `bg-gradient-to-r ${course.color}`}`}
+          className={`gap-2 rounded-xl font-bold shadow-sm px-6 ${
+            isCompleted
+              ? "bg-[hsl(var(--success))] hover:bg-[hsl(145,65%,30%)] text-white"
+              : "bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] text-primary-foreground shadow-[var(--glow-primary)]"
+          }`}
         >
           {isCompleted ? (
             <>
@@ -282,7 +306,7 @@ export function LmsLessonView({
           variant="outline"
           onClick={onNext ?? undefined}
           disabled={!onNext}
-          className="gap-1"
+          className="gap-1.5 rounded-xl font-semibold border-border/50 hover:border-border disabled:opacity-30"
         >
           Next <ChevronRight className="w-4 h-4" />
         </Button>
