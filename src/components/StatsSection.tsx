@@ -31,7 +31,7 @@ export const StatsSection = () => {
   const { ref, isVisible } = useScrollReveal();
 
   return (
-    <section className="py-24 md:py-32 relative overflow-hidden" ref={ref}>
+    <section className="py-14 md:py-20 relative overflow-hidden" ref={ref}>
       {/* Warm gradient background */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-[hsl(38,30%,96%)] to-background" />
       

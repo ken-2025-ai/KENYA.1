@@ -17,7 +17,7 @@ export const EducationSection = () => {
   const { ref: progressRef, isVisible: progressVisible } = useScrollReveal();
 
   return (
-    <section id="education" className="py-28 md:py-36 relative overflow-hidden">
+    <section id="education" className="py-14 md:py-20 relative overflow-hidden">
       {/* Warm background */}
       <div className="absolute inset-0 section-warm" />
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
