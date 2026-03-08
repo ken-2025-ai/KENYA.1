@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Users, ArrowRight, Download, Zap, ShieldCheck, Smartphone, DollarSign } from "lucide-react";
+import { Users, ArrowRight, Download, Zap, ShieldCheck, Smartphone, DollarSign, Leaf } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { usePWA } from "@/hooks/usePWA";
 import { MainMarktButton } from "@/components/MainMarktButton";
@@ -19,7 +19,6 @@ export const HeroSection = ({ onOpenAuth }: HeroSectionProps) => {
     if (videoRef.current) {
       videoRef.current.play().catch(() => {});
     }
-    // Trigger entrance animations after mount
     const t = setTimeout(() => setLoaded(true), 100);
     return () => clearTimeout(t);
   }, []);
@@ -36,85 +35,85 @@ export const HeroSection = ({ onOpenAuth }: HeroSectionProps) => {
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Video Background with cinematic layers */}
+      {/* Video Background */}
       <div className="absolute inset-0">
         <video
           ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover scale-110"
+          autoPlay muted loop playsInline
+          className="absolute inset-0 w-full h-full object-cover scale-105"
           poster="/placeholder.svg"
         >
           <source src="/hero-agriculture.mp4" type="video/mp4" />
         </video>
-        {/* Multi-layer cinematic overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-primary/50 to-black/80" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-primary/30" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_30%,_black/50_100%)]" />
+        {/* Deep cinematic overlays — warm earth tones */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/75 via-[hsl(145,65%,18%,0.55)] to-black/85" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-[hsl(28,92%,50%,0.12)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,_hsl(42,90%,55%,0.08),_transparent_60%)]" />
       </div>
 
-      {/* Animated orbs */}
-      <div className="absolute top-20 right-[10%] w-[400px] h-[400px] bg-accent/15 rounded-full blur-[100px] animate-drift" />
-      <div className="absolute bottom-20 left-[5%] w-[500px] h-[500px] bg-primary-glow/15 rounded-full blur-[120px] animate-drift" style={{ animationDelay: '-3s' }} />
-      <div className="absolute top-[40%] left-[40%] w-[300px] h-[300px] bg-accent-glow/10 rounded-full blur-[80px] animate-orb" />
+      {/* Organic floating shapes */}
+      <div className="absolute top-16 right-[8%] w-[350px] h-[350px] organic-blob bg-[hsl(28,92%,50%,0.08)] blur-[80px]" />
+      <div className="absolute bottom-20 left-[3%] w-[500px] h-[500px] organic-blob bg-[hsl(145,50%,38%,0.1)] blur-[100px]" style={{ animationDelay: '-4s' }} />
+      <div className="absolute top-[45%] left-[55%] w-[200px] h-[200px] rounded-full bg-[hsl(42,90%,55%,0.06)] blur-[60px] animate-drift" />
 
       {/* Grain texture */}
       <div className="absolute inset-0 noise-bg pointer-events-none" />
 
       {/* Content */}
-      <div className="relative container mx-auto px-4 py-24 md:py-32">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left: Text content with staggered reveals */}
-            <div className="text-center lg:text-left">
+      <div className="relative container mx-auto px-4 py-20 md:py-28">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            {/* Left: Text — 7 cols for asymmetric layout */}
+            <div className="lg:col-span-7 text-center lg:text-left">
               {/* Badge */}
               <div 
-                className={`inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-full mb-8 transition-all duration-700 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
+                className={`inline-flex items-center gap-2.5 bg-white/[0.08] backdrop-blur-xl border border-white/[0.12] px-5 py-2.5 rounded-full mb-8 transition-all duration-700 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
               >
-                <span className="relative flex h-2.5 w-2.5">
-                  <span className="absolute inline-flex h-full w-full rounded-full bg-accent opacity-75 animate-ping" />
-                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent" />
-                </span>
-                <span className="text-sm font-semibold text-white/90 tracking-wide">Kenya's #1 Agricultural Marketplace</span>
+                <Leaf className="w-4 h-4 text-[hsl(var(--accent))]" />
+                <span className="text-sm font-semibold text-white/85 tracking-wide">Kenya's Premier Agricultural Marketplace</span>
               </div>
 
-              {/* Headline with word-by-word reveal */}
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-black mb-8 leading-[1.05] tracking-tight">
+              {/* Headline — staggered kinetic typography */}
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] font-black mb-8 leading-[1.02] tracking-[-0.03em]">
                 <span 
-                  className={`block text-white transition-all duration-700 delay-200 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                  className={`block text-white/95 transition-all duration-700 delay-150 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-14'}`}
                 >
-                  Connect.
+                  Farm Smarter.
                 </span>
                 <span 
-                  className={`block text-white relative transition-all duration-700 delay-400 ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'}`}
+                  className={`block text-white/95 transition-all duration-700 delay-[350ms] ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-14'}`}
                 >
-                  Trade.
-                  <svg className="absolute -bottom-2 left-0 w-[140px] lg:w-[180px]" viewBox="0 0 200 12" fill="none">
-                    <path d="M2 8C50 2 150 2 198 8" stroke="hsl(var(--accent))" strokeWidth="4" strokeLinecap="round" className={`transition-all duration-1000 delay-700 ${loaded ? 'opacity-100' : 'opacity-0'}`} />
-                  </svg>
+                  Sell Directly.
                 </span>
                 <span 
-                  className={`block bg-gradient-to-r from-accent via-accent-glow to-accent bg-clip-text text-transparent transition-all duration-700 delay-[600ms] ${loaded ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-12 scale-95'}`}
+                  className={`block transition-all duration-700 delay-[550ms] ${loaded ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-14 scale-95'}`}
                 >
-                  Prosper.
+                  <span className="text-gradient-warm inline-block" style={{
+                    background: 'linear-gradient(135deg, hsl(28 92% 55%), hsl(42 90% 58%), hsl(28 92% 50%))',
+                    backgroundSize: '200% auto',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                  }}>
+                    Grow Together.
+                  </span>
                 </span>
               </h1>
 
               {/* Subtext */}
               <p 
-                className={`text-lg sm:text-xl text-white/75 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0 transition-all duration-700 delay-[800ms] ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                className={`text-lg sm:text-xl text-white/65 mb-10 leading-relaxed max-w-xl mx-auto lg:mx-0 font-light transition-all duration-700 delay-[750ms] ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
               >
-                Empowering Kenyan farmers with direct market access, real-time prices, and expert agricultural insights. Join <strong className="text-white font-semibold">50,000+</strong> farmers transforming their businesses.
+                Empowering <strong className="text-white font-semibold">50,000+</strong> Kenyan farmers with direct market access, 
+                real-time prices, weather insights, and secure M-Pesa payments.
               </p>
 
               {/* CTA Buttons */}
-              <div className={`flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10 transition-all duration-700 delay-[1000ms] ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <div className={`flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12 transition-all duration-700 delay-[950ms] ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                 <Button 
                   variant="accent" 
                   size="lg" 
-                  className="group min-h-[56px] text-base font-bold shadow-glow-accent hover:scale-[1.03] transition-all duration-300 relative overflow-hidden"
+                  className="group min-h-[56px] text-base font-bold shadow-[0_0_40px_hsl(28,92%,50%,0.35)] hover:shadow-[0_0_60px_hsl(28,92%,50%,0.5)] hover:scale-[1.03] transition-all duration-300 relative overflow-hidden"
                   onClick={() => {
                     if ('vibrate' in navigator) navigator.vibrate(100);
                     onOpenAuth("signup");
@@ -130,82 +129,96 @@ export const HeroSection = ({ onOpenAuth }: HeroSectionProps) => {
                 <Button 
                   variant="outline" 
                   size="lg" 
-                  className="min-h-[56px] text-base bg-white/5 text-white border-white/20 hover:bg-white/15 hover:border-white/40 backdrop-blur-sm group transition-all duration-300"
+                  className="min-h-[56px] text-base bg-white/[0.04] text-white border-white/15 hover:bg-white/[0.1] hover:border-white/30 backdrop-blur-sm group transition-all duration-300"
                   onClick={handleInstall}
                 >
                   <Download className="w-5 h-5 mr-2" />
                   Get Mobile App
-                  <Zap className="w-4 h-4 ml-2 text-accent animate-pulse" />
+                  <Zap className="w-4 h-4 ml-2 text-[hsl(var(--accent))] animate-pulse" />
                 </Button>
               </div>
 
-              {/* Trust badges */}
-              <div className={`flex flex-wrap justify-center lg:justify-start gap-3 transition-all duration-700 delay-[1200ms] ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+              {/* Trust badges — horizontal strip */}
+              <div className={`flex flex-wrap justify-center lg:justify-start gap-3 transition-all duration-700 delay-[1150ms] ${loaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
                 {[
                   { icon: ShieldCheck, label: "Verified Farmers" },
-                  { icon: Smartphone, label: "Mobile-First" },
+                  { icon: Smartphone, label: "Works Offline" },
                   { icon: DollarSign, label: "M-Pesa Ready" },
                 ].map((badge, i) => (
                   <div 
                     key={i} 
-                    className="flex items-center gap-2 bg-white/5 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full text-sm text-white/80 hover:bg-white/10 hover:border-white/20 transition-all duration-300"
+                    className="flex items-center gap-2 bg-white/[0.05] backdrop-blur-sm border border-white/[0.08] px-4 py-2 rounded-full text-sm text-white/70 hover:bg-white/[0.1] hover:text-white/90 transition-all duration-300"
                   >
-                    <badge.icon className="w-4 h-4 text-accent" />
-                    <span>{badge.label}</span>
+                    <badge.icon className="w-3.5 h-3.5 text-[hsl(var(--accent))]" />
+                    <span className="font-medium">{badge.label}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Right: Premium floating dashboard card */}
-            <div className={`hidden lg:block transition-all duration-1000 delay-[600ms] ${loaded ? 'opacity-100 translate-x-0 translate-y-0' : 'opacity-0 translate-x-12 translate-y-8'}`}>
-              <div className="relative perspective-container">
-                {/* Floating accent cards */}
-                <div className="absolute -top-6 -left-6 z-20 animate-float-rotate">
-                  <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-5 shadow-elevated border border-white/50">
-                    <div className="text-4xl font-black text-primary tracking-tight">50K+</div>
-                    <div className="text-sm text-muted-foreground font-medium">Active Farmers</div>
+            {/* Right: Floating dashboard — 5 cols */}
+            <div className={`hidden lg:block lg:col-span-5 transition-all duration-1000 delay-[600ms] ${loaded ? 'opacity-100 translate-x-0 translate-y-0' : 'opacity-0 translate-x-16 translate-y-12'}`}>
+              <div className="relative">
+                {/* Floating stat cards */}
+                <div className="absolute -top-8 -left-8 z-20 animate-float-rotate">
+                  <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-5 shadow-elevated border border-white/60">
+                    <div className="text-3xl font-black text-[hsl(var(--primary))] tracking-tight">50K+</div>
+                    <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Farmers</div>
                   </div>
                 </div>
 
-                <div className="absolute -bottom-6 -right-6 z-20 animate-float-rotate" style={{ animationDelay: '1.5s' }}>
-                  <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-5 shadow-elevated border border-white/50">
-                    <div className="text-4xl font-black text-accent tracking-tight">85%</div>
-                    <div className="text-sm text-muted-foreground font-medium">Income Growth</div>
+                <div className="absolute -bottom-6 -right-4 z-20 animate-float-rotate" style={{ animationDelay: '2s' }}>
+                  <div className="bg-white/95 backdrop-blur-xl rounded-2xl p-5 shadow-elevated border border-white/60">
+                    <div className="text-3xl font-black text-[hsl(var(--accent))] tracking-tight">+85%</div>
+                    <div className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Income</div>
                   </div>
                 </div>
 
-                {/* Main glass dashboard card */}
-                <div className="bg-white/[0.07] backdrop-blur-xl rounded-3xl p-8 border border-white/15 shadow-[0_30px_80px_rgba(0,0,0,0.3)] animate-tilt-3d">
-                  <div className="space-y-6">
+                {/* Main dashboard glass card */}
+                <div className="bg-white/[0.06] backdrop-blur-2xl rounded-3xl p-7 border border-white/[0.1] shadow-[0_40px_100px_rgba(0,0,0,0.25)] animate-tilt-3d">
+                  <div className="space-y-5">
+                    {/* Header */}
                     <div className="flex items-center justify-between">
-                      <span className="text-white/70 font-medium">Today's Trade Volume</span>
-                      <span className="text-accent font-black text-lg">KSh 2.5M</span>
-                    </div>
-                    <div className="h-3 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full w-3/4 bg-gradient-to-r from-accent to-accent-glow rounded-full relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-6 pt-6 border-t border-white/10">
                       <div>
-                        <div className="text-3xl font-black text-white">47</div>
-                        <div className="text-sm text-white/60">Counties</div>
+                        <span className="text-white/50 text-xs font-semibold uppercase tracking-wider">Today's Volume</span>
+                        <div className="text-[hsl(var(--accent))] font-black text-2xl tracking-tight">KSh 2.5M</div>
                       </div>
-                      <div>
-                        <div className="text-3xl font-black text-white">24/7</div>
-                        <div className="text-sm text-white/60">Market Access</div>
+                      <div className="w-10 h-10 rounded-xl bg-[hsl(var(--accent),0.15)] flex items-center justify-center">
+                        <Leaf className="w-5 h-5 text-[hsl(var(--accent))]" />
                       </div>
                     </div>
-                    {/* Mini chart visualization */}
-                    <div className="flex items-end gap-1.5 h-16 pt-4 border-t border-white/10">
-                      {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map((h, i) => (
+                    
+                    {/* Progress bar */}
+                    <div className="h-2.5 bg-white/[0.08] rounded-full overflow-hidden">
+                      <div className="h-full w-3/4 bg-gradient-to-r from-[hsl(var(--accent))] to-[hsl(var(--gold))] rounded-full relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent animate-shimmer" style={{ backgroundSize: '200% 100%' }} />
+                      </div>
+                    </div>
+
+                    {/* Stats grid */}
+                    <div className="grid grid-cols-3 gap-4 pt-4 border-t border-white/[0.08]">
+                      {[
+                        { val: "47", label: "Counties" },
+                        { val: "24/7", label: "Access" },
+                        { val: "4.9★", label: "Rating" },
+                      ].map((s, i) => (
+                        <div key={i} className="text-center">
+                          <div className="text-xl font-black text-white">{s.val}</div>
+                          <div className="text-[11px] text-white/45 font-medium">{s.label}</div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Mini chart */}
+                    <div className="flex items-end gap-1.5 h-14 pt-3 border-t border-white/[0.06]">
+                      {[35, 55, 40, 75, 50, 85, 65, 80, 55, 90, 70, 82].map((h, i) => (
                         <div 
                           key={i} 
-                          className={`flex-1 rounded-t-sm bg-gradient-to-t from-accent/60 to-accent transition-all duration-500 ${loaded ? '' : 'h-0'}`}
+                          className={`flex-1 rounded-t-sm transition-all duration-700 ${loaded ? '' : 'h-0'}`}
                           style={{ 
                             height: loaded ? `${h}%` : '0%',
-                            transitionDelay: `${1200 + i * 80}ms` 
+                            background: `linear-gradient(to top, hsl(28 92% 50% / 0.5), hsl(42 90% 55% / 0.8))`,
+                            transitionDelay: `${1200 + i * 70}ms` 
                           }} 
                         />
                       ))}
@@ -223,10 +236,10 @@ export const HeroSection = ({ onOpenAuth }: HeroSectionProps) => {
         </div>
       </div>
 
-      {/* Bottom cinematic wave */}
+      {/* Bottom organic wave */}
       <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 140" fill="none" className="w-full h-auto" preserveAspectRatio="none">
-          <path d="M0 140L48 130C96 120 192 100 288 85C384 70 480 60 576 62.5C672 65 768 80 864 87.5C960 95 1056 95 1152 90C1248 85 1344 75 1392 70L1440 65V140H1392C1344 140 1248 140 1152 140C1056 140 960 140 864 140C768 140 672 140 576 140C480 140 384 140 288 140C192 140 96 140 48 140H0Z" fill="hsl(var(--background))" />
+        <svg viewBox="0 0 1440 120" fill="none" className="w-full h-auto" preserveAspectRatio="none">
+          <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 82C1200 84 1320 78 1380 75L1440 72V120H0Z" fill="hsl(var(--background))" />
         </svg>
       </div>
     </section>

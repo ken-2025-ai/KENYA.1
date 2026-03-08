@@ -43,45 +43,41 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-x-hidden">
-      {/* Subtle background texture */}
-      <div className="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,_hsl(var(--primary)/0.03),_transparent)] pointer-events-none" />
-      
       <div className="relative z-10">
         <Navigation />
         
-        {/* Hero - Full viewport cinematic */}
+        {/* Hero — Full cinematic viewport */}
         <HeroSection onOpenAuth={openAuthModal} />
 
-        {/* Section divider */}
-        <div className="section-divider mx-auto max-w-4xl" />
-
-        {/* Features - Core value proposition */}
+        {/* Features */}
         <FeaturesGrid />
 
-        {/* Marketplace - Show real products */}
-        <section className="py-12 relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-muted/20 to-transparent" />
-          <div className="relative">
-            <Marketplace />
-          </div>
+        {/* Marketplace */}
+        <section className="py-8 relative">
+          <Marketplace />
         </section>
-
-        {/* Equipment Preview */}
-        <EquipmentPreview />
 
         {/* Section divider */}
         <div className="section-divider mx-auto max-w-4xl my-4" />
+
+        {/* Equipment */}
+        <EquipmentPreview />
 
         {/* AI Market Intelligence */}
         <section id="prices" className="py-12">
           <AIMarketBoard />
         </section>
 
-        {/* Education - Value add */}
+        {/* Section divider */}
+        <div className="section-divider mx-auto max-w-4xl my-4" />
+
+        {/* Stats — Social proof numbers */}
+        <StatsSection />
+
+        {/* Education */}
         <EducationSection />
 
-        {/* Social Proof */}
-        <StatsSection />
+        {/* Testimonials */}
         <TestimonialsSection />
 
         {/* Final CTA */}

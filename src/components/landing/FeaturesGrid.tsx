@@ -1,118 +1,144 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Smartphone, TrendingUp, Users, DollarSign, ShieldCheck, Tractor, ArrowRight } from "lucide-react";
+import { Smartphone, TrendingUp, Users, DollarSign, ShieldCheck, Tractor, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ScrollReveal } from "@/hooks/useScrollReveal";
 
 const features = [
   {
     icon: Smartphone,
-    title: "Mobile-First Platform",
-    description: "Access markets and insights from any device, anywhere in Kenya. Works offline too.",
-    color: "from-primary to-primary-glow",
-    accent: "group-hover:shadow-[0_0_40px_hsl(var(--primary)/0.3)]",
+    title: "Mobile-First",
+    description: "Access markets from any device. Works seamlessly offline across all of Kenya.",
+    gradient: "from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))]",
+    tag: null,
   },
   {
     icon: TrendingUp,
-    title: "Real-Time Prices",
-    description: "Live pricing data from major markets. Make informed selling decisions instantly.",
-    color: "from-accent to-accent-glow",
-    accent: "group-hover:shadow-[0_0_40px_hsl(var(--accent)/0.3)]",
+    title: "Live Prices",
+    description: "Real-time pricing from major Kenyan markets. Make smarter selling decisions.",
+    gradient: "from-[hsl(var(--accent))] to-[hsl(var(--gold))]",
+    tag: null,
   },
   {
     icon: Users,
-    title: "Direct Market Access",
-    description: "Connect directly with buyers. No middlemen means better prices for you.",
-    color: "from-success to-primary-glow",
-    accent: "group-hover:shadow-[0_0_40px_hsl(var(--success)/0.3)]",
+    title: "Direct Access",
+    description: "Connect directly with buyers. No middlemen — better prices guaranteed.",
+    gradient: "from-[hsl(var(--success))] to-[hsl(var(--primary-glow))]",
+    tag: null,
   },
   {
     icon: Tractor,
     title: "Equipment Leasing",
-    description: "Rent tractors and machinery from owners near you. Pay only for what you need.",
-    color: "from-accent to-warning",
-    highlight: true,
+    description: "Rent tractors & machinery from verified owners near you. Pay what you need.",
+    gradient: "from-[hsl(var(--accent))] to-[hsl(var(--warning))]",
+    tag: "New",
     link: "/machinery",
-    accent: "group-hover:shadow-[0_0_40px_hsl(var(--accent)/0.3)]",
   },
   {
     icon: DollarSign,
-    title: "M-Pesa Integration",
-    description: "Secure mobile money payments. Fast, safe transactions for all trades.",
-    color: "from-success to-primary",
-    accent: "group-hover:shadow-[0_0_40px_hsl(var(--success)/0.3)]",
+    title: "M-Pesa Ready",
+    description: "Secure mobile money payments. Instant, trusted transactions for every trade.",
+    gradient: "from-[hsl(var(--success))] to-[hsl(var(--primary))]",
+    tag: null,
   },
   {
     icon: ShieldCheck,
-    title: "Quality Assurance",
-    description: "Verified farmers and buyers with ratings ensure reliable trading partners.",
-    color: "from-primary-glow to-accent",
-    accent: "group-hover:shadow-[0_0_40px_hsl(var(--primary)/0.3)]",
+    title: "Verified Partners",
+    description: "Rated farmers and buyers with trust scores ensure reliable trading.",
+    gradient: "from-[hsl(var(--primary-glow))] to-[hsl(var(--accent))]",
+    tag: null,
   },
 ];
 
 export const FeaturesGrid = () => {
   return (
-    <section id="features" className="py-24 md:py-32 relative overflow-hidden">
-      {/* Animated background orbs */}
-      <div className="absolute top-0 left-[20%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-drift" />
-      <div className="absolute bottom-0 right-[20%] w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] animate-drift" style={{ animationDelay: '-4s' }} />
+    <section id="features" className="py-28 md:py-36 relative overflow-hidden section-warm">
+      {/* Background orbs */}
+      <div className="absolute top-[10%] left-[15%] w-[500px] h-[500px] organic-blob bg-[hsl(var(--primary)/0.04)] blur-[120px]" />
+      <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] organic-blob bg-[hsl(var(--accent)/0.04)] blur-[100px]" style={{ animationDelay: '-5s' }} />
 
       <div className="container mx-auto px-4 relative">
-        {/* Section header */}
-        <ScrollReveal className="text-center max-w-3xl mx-auto mb-20">
-          <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-5 py-2.5 rounded-full mb-6">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-            <span className="text-sm font-bold text-primary uppercase tracking-wider">Platform Features</span>
+        {/* Section header — asymmetric */}
+        <div className="max-w-7xl mx-auto mb-20">
+          <div className="grid lg:grid-cols-2 gap-8 items-end">
+            <ScrollReveal direction="left">
+              <div className="inline-flex items-center gap-2 bg-[hsl(var(--primary)/0.08)] border border-[hsl(var(--primary)/0.15)] px-4 py-2 rounded-full mb-5">
+                <Sparkles className="w-3.5 h-3.5 text-[hsl(var(--primary))]" />
+                <span className="text-xs font-bold text-[hsl(var(--primary))] uppercase tracking-[0.15em]">Why Kenya Pulse</span>
+              </div>
+              <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground leading-[1.05] tracking-tight">
+                Everything you need,{" "}
+                <span className="text-gradient-earth animate-gradient-shift inline-block" style={{ backgroundSize: '200% auto' }}>
+                  one platform
+                </span>
+              </h2>
+            </ScrollReveal>
+            <ScrollReveal direction="right" delay={0.15}>
+              <p className="text-lg text-muted-foreground leading-relaxed lg:text-right">
+                From market intelligence to equipment leasing — we provide the complete 
+                toolkit for modern Kenyan agriculture.
+              </p>
+            </ScrollReveal>
           </div>
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-foreground mb-6 leading-[1.1] tracking-tight">
-            Everything Farmers Need{" "}
-            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient-shift" style={{ backgroundSize: '200% auto' }}>
-              in One Platform
-            </span>
-          </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            From market access to agricultural insights, we provide comprehensive tools 
-            to help Kenyan farmers thrive in the digital economy.
-          </p>
-        </ScrollReveal>
+        </div>
 
-        {/* Features grid with 3D perspective */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto perspective-container">
+        {/* Features — 3-column with alternating sizes */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {features.map((feature, index) => {
             const Icon = feature.icon;
+            const isHighlighted = index === 3; // Equipment leasing
 
-            const cardContent = (
-              <div className={`premium-card h-full rounded-2xl bg-card border border-border/50 overflow-hidden ${feature.accent} ${feature.highlight ? 'border-accent/30' : ''}`}>
-                {/* Shimmer overlay */}
+            const inner = (
+              <div className={`group relative h-full rounded-3xl overflow-hidden transition-all duration-500 ${
+                isHighlighted 
+                  ? 'bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--primary-glow))] text-white shadow-strong' 
+                  : 'bg-card border border-border/60 hover:border-[hsl(var(--accent)/0.3)] hover:shadow-strong'
+              }`}>
+                {/* Shimmer */}
                 <div className="shimmer-overlay h-full">
-                  <div className="p-7 relative">
-                    {/* Decorative corner accent */}
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-[60px]" />
-                    
-                    {/* Icon with glow ring */}
-                    <div className="relative mb-6">
-                      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 relative z-10`}>
-                        <Icon className="w-8 h-8 text-primary-foreground" />
+                  <div className="p-8 relative h-full flex flex-col">
+                    {/* Corner accent */}
+                    {!isHighlighted && (
+                      <div className="absolute top-0 right-0 w-28 h-28 bg-gradient-to-bl from-[hsl(var(--accent)/0.04)] to-transparent rounded-bl-[80px]" />
+                    )}
+
+                    {/* Tag */}
+                    {feature.tag && (
+                      <div className="absolute top-6 right-6">
+                        <span className={`text-[10px] px-3 py-1.5 rounded-full font-bold uppercase tracking-widest ${
+                          isHighlighted ? 'bg-white/20 text-white' : 'bg-[hsl(var(--accent))] text-[hsl(var(--accent-foreground))]'
+                        }`}>
+                          {feature.tag}
+                        </span>
                       </div>
-                      <div className={`absolute inset-0 w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-40 blur-xl transition-opacity duration-500`} />
+                    )}
+
+                    {/* Icon */}
+                    <div className="mb-6">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 ${
+                        isHighlighted 
+                          ? 'bg-white/15 shadow-lg' 
+                          : `bg-gradient-to-br ${feature.gradient} shadow-lg`
+                      }`}>
+                        <Icon className={`w-7 h-7 ${isHighlighted ? 'text-white' : 'text-white'}`} />
+                      </div>
                     </div>
 
                     {/* Content */}
-                    <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-300">
+                    <h3 className={`text-xl font-bold mb-3 ${
+                      isHighlighted ? 'text-white' : 'text-foreground group-hover:text-[hsl(var(--primary))]'
+                    } transition-colors duration-300`}>
                       {feature.title}
-                      {feature.highlight && (
-                        <span className="ml-2 text-[10px] bg-accent text-accent-foreground px-2.5 py-1 rounded-full font-bold uppercase tracking-wider animate-pulse">
-                          New
-                        </span>
-                      )}
                     </h3>
-                    <p className="text-muted-foreground leading-relaxed mb-5">
+                    <p className={`leading-relaxed flex-1 ${
+                      isHighlighted ? 'text-white/75' : 'text-muted-foreground'
+                    }`}>
                       {feature.description}
                     </p>
 
-                    {/* Arrow indicator */}
-                    <div className="flex items-center text-primary font-semibold opacity-0 group-hover:opacity-100 transition-all duration-400 translate-y-3 group-hover:translate-y-0">
-                      <span className="text-sm">Explore</span>
+                    {/* Arrow */}
+                    <div className={`mt-5 flex items-center font-semibold text-sm opacity-0 group-hover:opacity-100 transition-all duration-400 translate-y-3 group-hover:translate-y-0 ${
+                      isHighlighted ? 'text-white/90' : 'text-[hsl(var(--primary))]'
+                    }`}>
+                      Learn more
                       <ArrowRight className="w-4 h-4 ml-1.5 group-hover:translate-x-1.5 transition-transform duration-300" />
                     </div>
                   </div>
@@ -121,15 +147,11 @@ export const FeaturesGrid = () => {
             );
 
             return (
-              <ScrollReveal key={index} delay={index * 0.1} direction="up">
+              <ScrollReveal key={index} delay={index * 0.08} direction="up">
                 {feature.link ? (
-                  <Link to={feature.link} className="group block h-full">
-                    {cardContent}
-                  </Link>
+                  <Link to={feature.link} className="block h-full">{inner}</Link>
                 ) : (
-                  <div className="group h-full cursor-pointer">
-                    {cardContent}
-                  </div>
+                  <div className="h-full cursor-pointer">{inner}</div>
                 )}
               </ScrollReveal>
             );

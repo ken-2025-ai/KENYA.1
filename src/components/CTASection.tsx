@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Smartphone, Users, ArrowRight, Sparkles } from "lucide-react";
+import { Users, ArrowRight, Sparkles, Leaf } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
@@ -14,98 +14,83 @@ export const CTASection = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const openAuthModal = (defaultTab: "login" | "signup") => {
-    setAuthModal({ isOpen: true, defaultTab });
-  };
-
-  const closeAuthModal = () => {
-    setAuthModal({ isOpen: false, defaultTab: "signup" });
-  };
+  const openAuthModal = (defaultTab: "login" | "signup") => setAuthModal({ isOpen: true, defaultTab });
+  const closeAuthModal = () => setAuthModal({ isOpen: false, defaultTab: "signup" });
 
   const handleJoinAsFarmer = () => {
     if (user) navigate("/dashboard");
     else openAuthModal("signup");
   };
 
-  const handleFindSuppliers = () => {
-    if (user) navigate("/dashboard");
-    else openAuthModal("login");
-  };
-
   return (
-    <section className="py-28 relative overflow-hidden">
-      {/* Immersive background layers */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-primary-glow" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_hsl(var(--accent)/0.15),_transparent_60%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_hsl(var(--accent)/0.1),_transparent_50%)]" />
+    <section className="py-32 relative overflow-hidden">
+      {/* Rich earth-tone gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary))] via-[hsl(145,55%,28%)] to-[hsl(150,40%,18%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_30%,_hsl(28,92%,50%,0.12),_transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_70%,_hsl(42,90%,55%,0.08),_transparent_50%)]" />
       
-      {/* Animated orbs */}
-      <div className="absolute top-[10%] right-[15%] w-[300px] h-[300px] bg-accent/10 rounded-full blur-[100px] animate-drift" />
-      <div className="absolute bottom-[10%] left-[10%] w-[250px] h-[250px] bg-primary-glow/20 rounded-full blur-[80px] animate-drift" style={{ animationDelay: '-5s' }} />
+      {/* Organic orbs */}
+      <div className="absolute top-[15%] right-[10%] w-[350px] h-[350px] organic-blob bg-[hsl(var(--accent)/0.08)] blur-[100px]" />
+      <div className="absolute bottom-[10%] left-[8%] w-[300px] h-[300px] organic-blob bg-[hsl(var(--primary-glow)/0.12)] blur-[80px]" style={{ animationDelay: '-4s' }} />
       
       {/* Grain */}
       <div className="absolute inset-0 noise-bg pointer-events-none" />
 
       <div className="container mx-auto px-4 text-center relative">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <ScrollReveal>
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/15 px-5 py-2.5 rounded-full mb-8">
-              <Sparkles className="w-4 h-4 text-accent" />
-              <span className="text-sm font-bold text-white/90 uppercase tracking-wider">Join the Movement</span>
+            <div className="inline-flex items-center gap-2 bg-white/[0.08] backdrop-blur-sm border border-white/[0.1] px-5 py-2.5 rounded-full mb-8">
+              <Leaf className="w-4 h-4 text-[hsl(var(--accent))]" />
+              <span className="text-sm font-semibold text-white/80 tracking-wide">Join the Movement</span>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1] tracking-tight">
-              Join 50,000+ Farmers Building{" "}
-              <span className="bg-gradient-to-r from-accent via-accent-glow to-accent bg-clip-text text-transparent">
-                Kenya's Future
+            
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.08] tracking-tight">
+              Ready to transform{" "}
+              <span style={{
+                background: 'linear-gradient(135deg, hsl(28 92% 55%), hsl(42 90% 58%))',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}>
+                your harvest?
               </span>
             </h2>
-            <p className="text-xl text-white/70 mb-10 max-w-2xl mx-auto leading-relaxed">
-              Connect directly to markets, get fair prices, access agricultural insights, and transform your farming business today.
+            
+            <p className="text-xl text-white/60 mb-10 max-w-2xl mx-auto leading-relaxed font-light">
+              Join 50,000+ farmers connecting to markets, getting fair prices, and growing their businesses.
             </p>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.2}>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
-              <Button 
-                variant="accent" 
-                size="lg" 
-                className="group min-h-[56px] text-base font-bold hover:scale-[1.03] transition-all duration-300 shadow-glow-accent relative overflow-hidden"
-                onClick={handleJoinAsFarmer}
-              >
-                <span className="relative z-10 flex items-center">
-                  <Users className="w-5 h-5 mr-2" />
-                  {user ? "Go to Dashboard" : "Join as Farmer"}
-                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1.5 transition-transform duration-300" />
-                </span>
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="min-h-[56px] text-base bg-white/5 text-white border-white/20 hover:bg-white/15 hover:border-white/40 backdrop-blur-sm group transition-all duration-300"
-                onClick={handleFindSuppliers}
-              >
-                <Smartphone className="w-5 h-5 mr-2" />
-                {user ? "View Suppliers" : "Find Suppliers"}
-                <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
-              </Button>
-            </div>
+          <ScrollReveal delay={0.15}>
+            <Button 
+              variant="accent" 
+              size="lg" 
+              className="group min-h-[60px] text-lg font-bold shadow-[0_0_50px_hsl(28,92%,50%,0.4)] hover:shadow-[0_0_70px_hsl(28,92%,50%,0.55)] hover:scale-[1.03] transition-all duration-300"
+              onClick={handleJoinAsFarmer}
+            >
+              <span className="relative z-10 flex items-center">
+                <Users className="w-5 h-5 mr-2.5" />
+                {user ? "Go to Dashboard" : "Get Started — It's Free"}
+                <ArrowRight className="w-5 h-5 ml-2.5 group-hover:translate-x-2 transition-transform duration-300" />
+              </span>
+            </Button>
           </ScrollReveal>
 
-          {/* Stats row */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-2xl mx-auto">
-            {[
-              { value: "Free", desc: "No signup fees" },
-              { value: "24/7", desc: "Market access" },
-              { value: "100%", desc: "Mobile money secure" },
-            ].map((item, i) => (
-              <ScrollReveal key={i} delay={0.3 + i * 0.1} direction="scale">
-                <div className="bg-white/[0.06] backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover-lift">
-                  <div className="text-3xl font-black text-white mb-1">{item.value}</div>
-                  <div className="text-white/60 text-sm font-medium">{item.desc}</div>
+          {/* Minimal stats */}
+          <ScrollReveal delay={0.3}>
+            <div className="flex flex-wrap justify-center gap-8 mt-14">
+              {[
+                { value: "Free", desc: "No signup fees" },
+                { value: "24/7", desc: "Market access" },
+                { value: "100%", desc: "Secure payments" },
+              ].map((item, i) => (
+                <div key={i} className="text-center">
+                  <div className="text-2xl font-black text-white mb-0.5">{item.value}</div>
+                  <div className="text-white/40 text-sm">{item.desc}</div>
                 </div>
-              </ScrollReveal>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </div>
       
