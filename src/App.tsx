@@ -23,6 +23,7 @@ import Machinery from "./pages/Machinery";
 import MyMachinery from "./pages/MyMachinery";
 import MyBookings from "./pages/MyBookings";
 import LmsCourse from "./pages/LmsCourse";
+import LearnerDashboard from "./pages/LearnerDashboard";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/learn/health-center" element={<HealthCenter />} />
             <Route path="/learn/crop-planner" element={<CropPlanner />} />
             <Route path="/learn/course/:slug" element={<LmsCourse />} />
+            <Route path="/learn/dashboard" element={<LearnerDashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/support" element={<Support />} />
