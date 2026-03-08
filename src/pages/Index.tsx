@@ -49,38 +49,22 @@ const Index = () => {
         {/* Hero — Full cinematic viewport */}
         <HeroSection onOpenAuth={openAuthModal} />
 
-        {/* Features */}
         <FeaturesGrid />
 
-        {/* Marketplace */}
-        <section className="py-8 relative">
-          <Marketplace />
-        </section>
+        <Marketplace />
 
-        {/* Section divider */}
-        <div className="section-divider mx-auto max-w-4xl my-4" />
-
-        {/* Equipment */}
         <EquipmentPreview />
 
-        {/* AI Market Intelligence */}
-        <section id="prices" className="py-12">
+        <section id="prices">
           <AIMarketBoard />
         </section>
 
-        {/* Section divider */}
-        <div className="section-divider mx-auto max-w-4xl my-4" />
-
-        {/* Stats — Social proof numbers */}
         <StatsSection />
 
-        {/* Education */}
         <EducationSection />
 
-        {/* Testimonials */}
         <TestimonialsSection />
 
-        {/* Final CTA */}
         <CTASection />
 
         {/* Footer */}

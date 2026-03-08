@@ -23,7 +23,7 @@ export const CTASection = () => {
   };
 
   return (
-    <section className="py-32 relative overflow-hidden">
+    <section className="py-20 relative overflow-hidden">
       {/* Rich earth-tone gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-[hsl(var(--primary))] via-[hsl(145,55%,28%)] to-[hsl(150,40%,18%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_30%,_hsl(28,92%,50%,0.12),_transparent_60%)]" />

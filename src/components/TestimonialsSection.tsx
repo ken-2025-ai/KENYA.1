@@ -31,7 +31,7 @@ const testimonials = [
 
 export const TestimonialsSection = () => {
   return (
-    <section className="py-24 md:py-32 relative overflow-hidden section-earth">
+    <section className="py-14 md:py-20 relative overflow-hidden section-earth">
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       
       <div className="container mx-auto px-4 relative">

@@ -93,7 +93,7 @@ export const FeaturesGrid = () => {
   const doubledFeatures = [...features, ...features];
 
   return (
-    <section id="features" className="py-28 md:py-36 relative overflow-hidden section-warm">
+    <section id="features" className="py-14 md:py-20 relative overflow-hidden section-warm">
       {/* Background orbs */}
       <div className="absolute top-[10%] left-[15%] w-[500px] h-[500px] organic-blob bg-[hsl(var(--primary)/0.04)] blur-[120px]" />
       <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] organic-blob bg-[hsl(var(--accent)/0.04)] blur-[100px]" style={{ animationDelay: '-5s' }} />
