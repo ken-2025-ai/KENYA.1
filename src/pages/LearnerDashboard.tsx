@@ -23,6 +23,10 @@ import {
   BarChart3,
   Play,
   Zap,
+  Activity,
+  Sprout,
+  Stethoscope,
+  MapPin,
 } from "lucide-react";
 
 interface CourseProgress {
