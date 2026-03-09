@@ -23,6 +23,10 @@ import {
   BarChart3,
   Play,
   Zap,
+  Activity,
+  Sprout,
+  Stethoscope,
+  MapPin,
 } from "lucide-react";
 
 interface CourseProgress {
@@ -290,23 +294,145 @@ export default function LearnerDashboard() {
                 </section>
               )}
 
-              {/* Empty State */}
-              {enrolled.length === 0 && (
-                <Card className="glass-card">
-                  <CardContent className="p-12 text-center">
-                    <GraduationCap className="w-16 h-16 mx-auto text-muted-foreground/40 mb-4" />
-                    <h3 className="text-xl font-bold text-foreground mb-2">No courses started yet</h3>
-                    <p className="text-muted-foreground mb-6">
-                      Begin your sustainable farming journey by exploring our courses
-                    </p>
-                    <Button variant="hero" onClick={() => navigate("/learn")} className="gap-2">
-                      <BookOpen className="w-5 h-5" />
-                      Browse All Courses
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+               {/* Empty State */}
+               {enrolled.length === 0 && (
+                 <Card className="glass-card">
+                   <CardContent className="p-12 text-center">
+                     <GraduationCap className="w-16 h-16 mx-auto text-muted-foreground/40 mb-4" />
+                     <h3 className="text-xl font-bold text-foreground mb-2">No courses started yet</h3>
+                     <p className="text-muted-foreground mb-6">
+                       Begin your sustainable farming journey by exploring our courses
+                     </p>
+                     <Button variant="hero" onClick={() => navigate("/learn")} className="gap-2">
+                       <BookOpen className="w-5 h-5" />
+                       Browse All Courses
+                     </Button>
+                   </CardContent>
+                 </Card>
+               )}
+
+               {/* Specialized Management Systems */}
+               <section className="mt-12">
+                 <div className="flex items-center gap-2 mb-4">
+                   <Sparkles className="w-5 h-5 text-accent" />
+                   <h2 className="text-xl font-bold text-foreground">Specialized Management Systems</h2>
+                 </div>
+                 <p className="text-muted-foreground mb-6">Access our dedicated platforms for comprehensive farm management</p>
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                   {/* Animal Husbandry */}
+                   <Card className="glass-card hover:shadow-glow-primary/20 transition-all group overflow-hidden cursor-pointer"
+                     onClick={() => navigate("/farm-equipment")}>
+                     <CardContent className="p-6">
+                       <div className="flex items-start gap-4 mb-4">
+                         <div className="p-3 bg-primary/10 rounded-xl">
+                           <Activity className="w-6 h-6 text-primary" />
+                         </div>
+                         <div>
+                           <h3 className="font-bold text-lg text-foreground">Animal Husbandry</h3>
+                           <p className="text-sm text-muted-foreground">Complete livestock management system</p>
+                         </div>
+                       </div>
+                       <ul className="space-y-2 mb-4">
+                         {["Livestock Health Records", "Breeding & Genetics Tracking", "Feed Management & Costs", "Production Analytics"].map((item) => (
+                           <li key={item} className="text-sm text-muted-foreground flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-primary/50" />
+                             {item}
+                           </li>
+                         ))}
+                       </ul>
+                       <Button size="sm" className="w-full gap-2 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                         Manage Livestock
+                         <ArrowRight className="w-4 h-4" />
+                       </Button>
+                     </CardContent>
+                   </Card>
+
+                   {/* Crop Management */}
+                   <Card className="glass-card hover:shadow-glow-primary/20 transition-all group overflow-hidden cursor-pointer"
+                     onClick={() => navigate("/crop-management")}>
+                     <CardContent className="p-6">
+                       <div className="flex items-start gap-4 mb-4">
+                         <div className="p-3 bg-success/10 rounded-xl">
+                           <Sprout className="w-6 h-6 text-success" />
+                         </div>
+                         <div>
+                           <h3 className="font-bold text-lg text-foreground">Crop Management</h3>
+                           <p className="text-sm text-muted-foreground">Advanced crop planning system</p>
+                         </div>
+                       </div>
+                       <ul className="space-y-2 mb-4">
+                         {["Planting & Harvest Planning", "Pest & Disease Management", "Irrigation & Weather Integration", "Yield & Profit Analytics"].map((item) => (
+                           <li key={item} className="text-sm text-muted-foreground flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-success/50" />
+                             {item}
+                           </li>
+                         ))}
+                       </ul>
+                       <Button size="sm" className="w-full gap-2 group-hover:bg-success group-hover:text-success-foreground transition-colors">
+                         Manage Crops
+                         <ArrowRight className="w-4 h-4" />
+                       </Button>
+                     </CardContent>
+                   </Card>
+
+                   {/* Agricultural Health Center */}
+                   <Card className="glass-card hover:shadow-glow-primary/20 transition-all group overflow-hidden cursor-pointer"
+                     onClick={() => navigate("/health-center")}>
+                     <CardContent className="p-6">
+                       <div className="flex items-start gap-4 mb-4">
+                         <div className="p-3 bg-accent/10 rounded-xl">
+                           <Stethoscope className="w-6 h-6 text-accent" />
+                         </div>
+                         <div>
+                           <h3 className="font-bold text-lg text-foreground">Agricultural Health Center</h3>
+                           <p className="text-sm text-muted-foreground">AI-powered diagnosis system</p>
+                         </div>
+                       </div>
+                       <ul className="space-y-2 mb-4">
+                         {["Plant Disease Diagnosis", "Animal Health Analysis", "Treatment Recommendations", "Prevention & Care Tips"].map((item) => (
+                           <li key={item} className="text-sm text-muted-foreground flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-accent/50" />
+                             {item}
+                           </li>
+                         ))}
+                       </ul>
+                       <Button size="sm" className="w-full gap-2 group-hover:bg-accent group-hover:text-accent-foreground transition-colors">
+                         Diagnose Health
+                         <ArrowRight className="w-4 h-4" />
+                       </Button>
+                     </CardContent>
+                   </Card>
+
+                   {/* Regional Crop Planner */}
+                   <Card className="glass-card hover:shadow-glow-primary/20 transition-all group overflow-hidden cursor-pointer"
+                     onClick={() => navigate("/crop-planner")}>
+                     <CardContent className="p-6">
+                       <div className="flex items-start gap-4 mb-4">
+                         <div className="p-3 bg-gold/10 rounded-xl">
+                           <MapPin className="w-6 h-6 text-gold" />
+                         </div>
+                         <div>
+                           <h3 className="font-bold text-lg text-foreground">Regional Crop Planner</h3>
+                           <p className="text-sm text-muted-foreground">Personalized recommendations</p>
+                         </div>
+                       </div>
+                       <ul className="space-y-2 mb-4">
+                         {["Top 10 Crops for Your Region", "Seed Varieties & Suppliers", "Planting Calendar & Guides", "Pest Control & Chemicals"].map((item) => (
+                           <li key={item} className="text-sm text-muted-foreground flex items-center gap-2">
+                             <div className="w-1.5 h-1.5 rounded-full bg-gold/50" />
+                             {item}
+                           </li>
+                         ))}
+                       </ul>
+                       <Button size="sm" className="w-full gap-2 group-hover:bg-gold group-hover:text-gold-foreground transition-colors">
+                         Plan My Crops
+                         <ArrowRight className="w-4 h-4" />
+                       </Button>
+                     </CardContent>
+                   </Card>
+                 </div>
+               </section>
+             </div>
 
             {/* Sidebar */}
             <div className="space-y-6">
