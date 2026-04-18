@@ -96,6 +96,66 @@ const Dashboard = () => {
     }
   }, [user]);
 
+  // Compute live status badges for management system cards
+  useEffect(() => {
+    const today = new Date();
+    const activeListings = listings.filter(l => l.is_active && !l.sold_at);
+
+    // Crops: active listings + nearest upcoming harvest
+    const upcomingHarvests = activeListings
+      .map(l => l.harvest_date ? new Date(l.harvest_date) : null)
+      .filter((d): d is Date => !!d && d.getTime() >= today.getTime())
+      .sort((a, b) => a.getTime() - b.getTime());
+    const nextHarvest = upcomingHarvests[0];
+    const nextHarvestDays = nextHarvest
+      ? Math.max(0, Math.ceil((nextHarvest.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)))
+      : null;
+
+    // Livestock alerts: listings expiring within 7 days
+    const livestockAlerts = activeListings.filter(l => {
+      if (!l.expiry_date) return false;
+      const days = Math.ceil((new Date(l.expiry_date).getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      return days >= 0 && days <= 7;
+    }).length;
+
+    // Health diagnoses count from localStorage history (Dr. AgroSense)
+    let healthDiagnoses = 0;
+    try {
+      const hist = JSON.parse(localStorage.getItem('health-diagnosis-history') || '[]');
+      if (Array.isArray(hist)) healthDiagnoses = hist.length;
+    } catch {}
+
+    const county = userLocation?.name || profile?.location || null;
+
+    setSystemStats({
+      livestockAlerts,
+      livestockTotal: activeListings.filter(l => ['livestock', 'dairy', 'poultry'].includes(l.category?.toLowerCase())).length,
+      cropsActive: activeListings.filter(l => !['livestock', 'dairy', 'poultry'].includes(l.category?.toLowerCase())).length,
+      nextHarvestDays,
+      healthDiagnoses,
+      weatherAlerts: 0,
+      plannerReady: !!county,
+      plannerCounty: county,
+    });
+  }, [listings, userLocation, profile]);
+
+  // Fetch weather alerts for current location
+  useEffect(() => {
+    const loc = userLocation?.name || profile?.location;
+    if (!loc) return;
+    (async () => {
+      try {
+        const { data } = await supabase.functions.invoke('weather-forecast', {
+          body: { location: loc },
+        });
+        const alerts = data?.alerts?.length || data?.forecast?.filter((d: any) => d.alert)?.length || 0;
+        setSystemStats(prev => ({ ...prev, weatherAlerts: alerts }));
+      } catch {
+        // silent fail
+      }
+    })();
+  }, [userLocation, profile]);
+
   // Cleanup sold listings periodically
   useEffect(() => {
     const cleanupInterval = setInterval(async () => {
