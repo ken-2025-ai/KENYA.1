@@ -70,6 +70,7 @@ interface MarketListing {
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [listings, setListings] = useState<MarketListing[]>([]);
   const [loadingData, setLoadingData] = useState(true);
