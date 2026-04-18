@@ -680,6 +680,11 @@ const Dashboard = () => {
                 gradient: "from-orange-500/20 to-amber-500/10",
                 iconBg: "bg-gradient-accent",
                 glow: "hover:shadow-glow-accent",
+                badge: systemStats.livestockAlerts > 0
+                  ? { text: `${systemStats.livestockAlerts} alert${systemStats.livestockAlerts > 1 ? 's' : ''}`, tone: "warning" as const }
+                  : systemStats.livestockTotal > 0
+                  ? { text: `${systemStats.livestockTotal} active`, tone: "success" as const }
+                  : { text: "Ready", tone: "muted" as const },
               },
               {
                 icon: Sprout,
@@ -691,6 +696,11 @@ const Dashboard = () => {
                 gradient: "from-green-500/20 to-emerald-500/10",
                 iconBg: "bg-gradient-primary",
                 glow: "hover:shadow-glow-primary",
+                badge: systemStats.nextHarvestDays !== null
+                  ? { text: systemStats.nextHarvestDays === 0 ? "Harvest today" : `Harvest in ${systemStats.nextHarvestDays}d`, tone: "success" as const }
+                  : systemStats.cropsActive > 0
+                  ? { text: `${systemStats.cropsActive} crops listed`, tone: "primary" as const }
+                  : { text: "No crops yet", tone: "muted" as const },
               },
               {
                 icon: Stethoscope,
@@ -702,6 +712,11 @@ const Dashboard = () => {
                 gradient: "from-red-500/20 to-rose-500/10",
                 iconBg: "bg-gradient-success",
                 glow: "hover:shadow-glow-success",
+                badge: systemStats.weatherAlerts > 0
+                  ? { text: `${systemStats.weatherAlerts} weather risk${systemStats.weatherAlerts > 1 ? 's' : ''}`, tone: "warning" as const }
+                  : systemStats.healthDiagnoses > 0
+                  ? { text: `${systemStats.healthDiagnoses} diagnoses`, tone: "primary" as const }
+                  : { text: "AI ready", tone: "success" as const },
               },
               {
                 icon: MapPin,
@@ -713,9 +728,18 @@ const Dashboard = () => {
                 gradient: "from-blue-500/20 to-cyan-500/10",
                 iconBg: "bg-gradient-primary",
                 glow: "hover:shadow-glow-primary",
+                badge: systemStats.plannerReady
+                  ? { text: `${systemStats.plannerCounty} ready`, tone: "success" as const }
+                  : { text: "Set location", tone: "warning" as const },
               },
             ].map((sys, i) => {
               const Icon = sys.icon;
+              const toneClasses: Record<string, string> = {
+                warning: "bg-destructive/10 text-destructive border-destructive/30 animate-pulse",
+                success: "bg-success/10 text-success border-success/30",
+                primary: "bg-primary/10 text-primary border-primary/30",
+                muted: "bg-muted text-muted-foreground border-border",
+              };
               return (
                 <Card
                   key={sys.title}
@@ -723,7 +747,14 @@ const Dashboard = () => {
                   style={{ animationDelay: `${0.1 * i}s` }}
                 >
                   <div className={`absolute inset-0 bg-gradient-to-br ${sys.gradient} opacity-0 group-hover:opacity-100 transition-smooth pointer-events-none`} />
-                  <CardHeader className="relative">
+                  <Badge
+                    variant="outline"
+                    className={`absolute top-3 right-3 z-10 text-xs font-semibold ${toneClasses[sys.badge.tone]}`}
+                  >
+                    <Activity className="w-3 h-3 mr-1" />
+                    {sys.badge.text}
+                  </Badge>
+                  <CardHeader className="relative pr-28">
                     <div className="flex items-start gap-4">
                       <div className={`p-3 rounded-xl ${sys.iconBg} shadow-medium group-hover:scale-110 transition-spring flex-shrink-0`}>
                         <Icon className="w-6 h-6 text-primary-foreground" />
