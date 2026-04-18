@@ -78,6 +78,16 @@ const Dashboard = () => {
   const [editingListing, setEditingListing] = useState<MarketListing | null>(null);
   const [isLocationSelectorOpen, setIsLocationSelectorOpen] = useState(false);
   const [userLocation, setUserLocation] = useState<{ name: string; lat: number; lng: number } | null>(null);
+  const [systemStats, setSystemStats] = useState({
+    livestockAlerts: 0,
+    livestockTotal: 0,
+    cropsActive: 0,
+    nextHarvestDays: null as number | null,
+    healthDiagnoses: 0,
+    weatherAlerts: 0,
+    plannerReady: false,
+    plannerCounty: null as string | null,
+  });
   const { toast } = useToast();
 
   useEffect(() => {
