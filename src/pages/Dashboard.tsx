@@ -33,7 +33,12 @@ import {
   Zap,
   Award,
   Activity,
-  MessageCircle
+  MessageCircle,
+  Sprout,
+  Stethoscope,
+  Beef,
+  CheckCircle2,
+  ArrowRight
 } from "lucide-react";
 
 interface Profile {
