@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,12 @@ import {
   Zap,
   Award,
   Activity,
-  MessageCircle
+  MessageCircle,
+  Sprout,
+  Stethoscope,
+  Beef,
+  CheckCircle2,
+  ArrowRight
 } from "lucide-react";
 
 interface Profile {
@@ -64,6 +70,7 @@ interface MarketListing {
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [listings, setListings] = useState<MarketListing[]>([]);
   const [loadingData, setLoadingData] = useState(true);
@@ -575,6 +582,113 @@ const Dashboard = () => {
             )}
           </CardContent>
         </Card>
+
+        {/* Specialized Management Systems */}
+        <section className="mt-12 animate-slide-up">
+          <div className="text-center mb-8">
+            <Badge className="mb-3 bg-primary/10 text-primary border-primary/20">
+              <Zap className="w-3 h-3 mr-1" />
+              Dedicated Platforms
+            </Badge>
+            <h2 className="text-2xl md:text-4xl font-bold text-foreground mb-2">
+              Specialized Management Systems
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Access our dedicated platforms for comprehensive farm management
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                icon: Beef,
+                title: "Animal Husbandry",
+                desc: "Complete livestock management system for cattle, goats, sheep, and poultry. Track health, breeding, feeding schedules, and profitability.",
+                features: ["Livestock Health Records", "Breeding & Genetics Tracking", "Feed Management & Costs", "Production Analytics"],
+                cta: "Manage Livestock",
+                route: "/learn/health-center",
+                gradient: "from-orange-500/20 to-amber-500/10",
+                iconBg: "bg-gradient-accent",
+                glow: "hover:shadow-glow-accent",
+              },
+              {
+                icon: Sprout,
+                title: "Crop Management",
+                desc: "Advanced crop planning and management system for maize, coffee, vegetables, and other crops. Optimize yields and maximize profits.",
+                features: ["Planting & Harvest Planning", "Pest & Disease Management", "Irrigation & Weather Integration", "Yield & Profit Analytics"],
+                cta: "Manage Crops",
+                route: "/learn/crop-management",
+                gradient: "from-green-500/20 to-emerald-500/10",
+                iconBg: "bg-gradient-primary",
+                glow: "hover:shadow-glow-primary",
+              },
+              {
+                icon: Stethoscope,
+                title: "Agricultural Health Center",
+                desc: "AI-powered diagnosis for plant diseases and animal health issues. Upload photos for instant analysis, treatment recommendations, and prevention tips.",
+                features: ["Plant Disease Diagnosis", "Animal Health Analysis", "Treatment Recommendations", "Prevention & Care Tips"],
+                cta: "Diagnose Health",
+                route: "/learn/health-center",
+                gradient: "from-red-500/20 to-rose-500/10",
+                iconBg: "bg-gradient-success",
+                glow: "hover:shadow-glow-success",
+              },
+              {
+                icon: MapPin,
+                title: "Regional Crop Planner",
+                desc: "Get personalized crop recommendations, planting calendars, and complete farming guides tailored to your county's climate and soil conditions.",
+                features: ["Top 10 Crops for Your Region", "Seed Varieties & Suppliers", "Planting Calendar & Guides", "Pest Control & Chemicals"],
+                cta: "Plan My Crops",
+                route: "/learn/crop-planner",
+                gradient: "from-blue-500/20 to-cyan-500/10",
+                iconBg: "bg-gradient-primary",
+                glow: "hover:shadow-glow-primary",
+              },
+            ].map((sys, i) => {
+              const Icon = sys.icon;
+              return (
+                <Card
+                  key={sys.title}
+                  className={`glass-card group relative overflow-hidden transition-spring hover:-translate-y-1 ${sys.glow}`}
+                  style={{ animationDelay: `${0.1 * i}s` }}
+                >
+                  <div className={`absolute inset-0 bg-gradient-to-br ${sys.gradient} opacity-0 group-hover:opacity-100 transition-smooth pointer-events-none`} />
+                  <CardHeader className="relative">
+                    <div className="flex items-start gap-4">
+                      <div className={`p-3 rounded-xl ${sys.iconBg} shadow-medium group-hover:scale-110 transition-spring flex-shrink-0`}>
+                        <Icon className="w-6 h-6 text-primary-foreground" />
+                      </div>
+                      <div className="flex-1">
+                        <CardTitle className="text-xl mb-1">{sys.title}</CardTitle>
+                        <CardDescription className="text-sm leading-relaxed">
+                          {sys.desc}
+                        </CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="relative space-y-4">
+                    <ul className="space-y-2">
+                      {sys.features.map((f) => (
+                        <li key={f} className="flex items-center gap-2 text-sm text-foreground/90">
+                          <CheckCircle2 className="w-4 h-4 text-success flex-shrink-0" />
+                          <span>{f}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button
+                      variant="hero"
+                      className="w-full group/btn"
+                      onClick={() => navigate(sys.route)}
+                    >
+                      {sys.cta}
+                      <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-smooth" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </section>
       </div>
 
       <ListingForm 
