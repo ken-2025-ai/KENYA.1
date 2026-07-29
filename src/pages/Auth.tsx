@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,7 +18,10 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState({ email: "", password: "", fullName: "", phone: "" });
 
-  const redirect = params.get("redirect") || "/dashboard";
+  const location = useLocation();
+  // Supports both /auth?redirect=/path and /path/auth
+  const pathRedirect = location.pathname.replace(/\/auth\/?$/, "");
+  const redirect = params.get("redirect") || pathRedirect || "/dashboard";
   const defaultTab = params.get("tab") === "signup" ? "signup" : "login";
 
   useEffect(() => {
