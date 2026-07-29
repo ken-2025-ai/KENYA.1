@@ -38,6 +38,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/*/auth" element={<Auth />} />
             <Route path="/learn" element={<Learn />} />
             <Route path="/learn/crop-management" element={<CropManagement />} />
             <Route path="/learn/weather-climate" element={<WeatherClimate />} />
