@@ -676,7 +676,7 @@ const Dashboard = () => {
                 desc: "Complete livestock management system for cattle, goats, sheep, and poultry. Track health, breeding, feeding schedules, and profitability.",
                 features: ["Livestock Health Records", "Breeding & Genetics Tracking", "Feed Management & Costs", "Production Analytics"],
                 cta: "Manage Livestock",
-                route: "/learn/health-center/auth",
+                route: "https://farmsite-manager-kendagor.netlify.app/dashboard",
                 gradient: "from-orange-500/20 to-amber-500/10",
                 iconBg: "bg-gradient-accent",
                 glow: "hover:shadow-glow-accent",
@@ -779,7 +779,13 @@ const Dashboard = () => {
                     <Button
                       variant="hero"
                       className="w-full group/btn"
-                      onClick={() => navigate(sys.route)}
+                      onClick={() => {
+                        if (sys.route.startsWith("http")) {
+                          window.location.href = sys.route;
+                        } else {
+                          navigate(sys.route);
+                        }
+                      }}
                     >
                       {sys.cta}
                       <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-smooth" />
