@@ -788,7 +788,7 @@ const Dashboard = () => {
                       }}
                     >
                       {sys.cta}
-                      <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate.translate-x-1 transition-smooth" />
+                      <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-smooth" />
                     </Button>
                   </CardContent>
                 </Card>
