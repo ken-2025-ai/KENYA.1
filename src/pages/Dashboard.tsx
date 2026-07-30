@@ -779,10 +779,16 @@ const Dashboard = () => {
                     <Button
                       variant="hero"
                       className="w-full group/btn"
-                      onClick={() => navigate(sys.route)}
+                      onClick={() => {
+                        if (sys.route.startsWith("http")) {
+                          window.location.href = sys.route;
+                        } else {
+                          navigate(sys.route);
+                        }
+                      }}
                     >
                       {sys.cta}
-                      <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate-x-1 transition-smooth" />
+                      <ArrowRight className="w-4 h-4 ml-1 group-hover/btn:translate.translate-x-1 transition-smooth" />
                     </Button>
                   </CardContent>
                 </Card>
