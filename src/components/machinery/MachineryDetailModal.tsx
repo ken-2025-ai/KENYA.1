@@ -34,6 +34,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ReportListingModal } from "@/components/ReportListingModal";
+import { Flag } from "lucide-react";
 
 interface Machinery {
   id: string;
@@ -85,6 +87,7 @@ const MachineryDetailModal = ({
   const [endDate, setEndDate] = useState<Date>();
   const [notes, setNotes] = useState("");
   const [isBooking, setIsBooking] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   // Fetch owner profile
   const { data: ownerProfile } = useQuery({
@@ -449,6 +452,25 @@ const MachineryDetailModal = ({
                 <p className="text-xs text-center text-muted-foreground mt-3">
                   The owner will confirm your booking request
                 </p>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full mt-2 text-xs text-muted-foreground hover:text-destructive"
+                  onClick={() => setReportOpen(true)}
+                >
+                  <Flag className="h-3 w-3 mr-1.5" />
+                  Report this equipment or owner
+                </Button>
+
+                <ReportListingModal
+                  open={reportOpen}
+                  onOpenChange={setReportOpen}
+                  targetType="machinery_listing"
+                  targetId={machinery.id}
+                  targetTitle={machinery.title}
+                  reportedUserId={machinery.owner_id}
+                />
               </div>
             </div>
           </div>

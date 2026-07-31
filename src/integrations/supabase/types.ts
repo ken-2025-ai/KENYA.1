@@ -49,6 +49,48 @@ export type Database = {
           },
         ]
       }
+      listing_reports: {
+        Row: {
+          contact_email: string | null
+          created_at: string
+          details: string | null
+          id: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reported_user_id: string | null
+          reporter_id: string | null
+          status: string
+          target_id: string
+          target_title: string | null
+          target_type: Database["public"]["Enums"]["report_target"]
+        }
+        Insert: {
+          contact_email?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason: Database["public"]["Enums"]["report_reason"]
+          reported_user_id?: string | null
+          reporter_id?: string | null
+          status?: string
+          target_id: string
+          target_title?: string | null
+          target_type: Database["public"]["Enums"]["report_target"]
+        }
+        Update: {
+          contact_email?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          reason?: Database["public"]["Enums"]["report_reason"]
+          reported_user_id?: string | null
+          reporter_id?: string | null
+          status?: string
+          target_id?: string
+          target_title?: string | null
+          target_type?: Database["public"]["Enums"]["report_target"]
+        }
+        Relationships: []
+      }
       machinery_bookings: {
         Row: {
           created_at: string
@@ -430,6 +472,16 @@ export type Database = {
         | "trailer"
         | "other"
       rental_period: "hourly" | "daily" | "weekly" | "per_acre"
+      report_reason:
+        | "scam"
+        | "fake_listing"
+        | "misleading_price"
+        | "spam"
+        | "inappropriate"
+        | "no_response"
+        | "counterfeit"
+        | "other"
+      report_target: "market_listing" | "machinery_listing" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -577,6 +629,17 @@ export const Constants = {
         "other",
       ],
       rental_period: ["hourly", "daily", "weekly", "per_acre"],
+      report_reason: [
+        "scam",
+        "fake_listing",
+        "misleading_price",
+        "spam",
+        "inappropriate",
+        "no_response",
+        "counterfeit",
+        "other",
+      ],
+      report_target: ["market_listing", "machinery_listing", "user"],
     },
   },
 } as const

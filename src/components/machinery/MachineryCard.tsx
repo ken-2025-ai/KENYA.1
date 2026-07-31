@@ -1,6 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { ReportListingModal } from "@/components/ReportListingModal";
 import {
   Tractor,
   MapPin,
@@ -9,6 +11,7 @@ import {
   Shield,
   ChevronRight,
   Gauge,
+  Flag,
 } from "lucide-react";
 
 interface Machinery {
@@ -28,6 +31,7 @@ interface Machinery {
   is_verified: boolean;
   rating_average: number;
   review_count: number;
+  owner_id?: string;
 }
 
 interface MachineryCardProps {
@@ -62,6 +66,7 @@ const getRentalPeriodLabel = (period: string) => {
 
 const MachineryCard = ({ machinery, onClick }: MachineryCardProps) => {
   const imageUrl = machinery.image_urls?.[0] || "/placeholder.svg";
+  const [reportOpen, setReportOpen] = useState(false);
 
   return (
     <Card
@@ -151,7 +156,31 @@ const MachineryCard = ({ machinery, onClick }: MachineryCardProps) => {
             <ChevronRight className="h-4 w-4 ml-1" />
           </Button>
         </div>
+
+        <Button
+          variant="ghost"
+          size="sm"
+          className="w-full mt-2 text-xs text-muted-foreground hover:text-destructive"
+          onClick={(e) => {
+            e.stopPropagation();
+            setReportOpen(true);
+          }}
+        >
+          <Flag className="h-3 w-3 mr-1.5" />
+          Report this equipment or owner
+        </Button>
       </CardContent>
+
+      <div onClick={(e) => e.stopPropagation()}>
+        <ReportListingModal
+          open={reportOpen}
+          onOpenChange={setReportOpen}
+          targetType="machinery_listing"
+          targetId={machinery.id}
+          targetTitle={machinery.title}
+          reportedUserId={machinery.owner_id}
+        />
+      </div>
     </Card>
   );
 };

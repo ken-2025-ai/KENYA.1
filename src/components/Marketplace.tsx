@@ -15,6 +15,7 @@ import {
   Sparkles,
   Navigation as NavigationIcon,
   Loader2,
+  Flag,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +24,7 @@ import { FilterModal } from "./FilterModal";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useBuyerPreferences } from "@/hooks/useBuyerPreferences";
 import { distanceToListing } from "@/lib/kenyaGeo";
+import { ReportListingModal } from "./ReportListingModal";
 
 interface MarketListing {
   id: string;
@@ -79,6 +81,7 @@ export const Marketplace = () => {
   const [loading, setLoading] = useState(true);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState<MarketListing | null>(null);
+  const [reportTarget, setReportTarget] = useState<{ id: string; title: string; userId: string } | null>(null);
   const [radiusKm, setRadiusKm] = useState<number>(50);
   const [aiRecs, setAiRecs] = useState<{ id: string; score: number; reason: string }[]>([]);
   const [recsLoading, setRecsLoading] = useState(false);
@@ -421,6 +424,16 @@ export const Marketplace = () => {
             Contact Farmer
             <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-smooth" />
           </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-xs text-muted-foreground hover:text-destructive"
+            onClick={() => setReportTarget({ id: listing.id, title: listing.title, userId: listing.user_id })}
+          >
+            <Flag className="w-3 h-3 mr-1.5" />
+            Report this listing or farmer
+          </Button>
         </CardContent>
       </Card>
     );
@@ -601,6 +614,15 @@ export const Marketplace = () => {
           isOpen={contactModalOpen}
           onClose={() => setContactModalOpen(false)}
           listing={selectedListing}
+        />
+
+        <ReportListingModal
+          open={!!reportTarget}
+          onOpenChange={(o) => !o && setReportTarget(null)}
+          targetType="market_listing"
+          targetId={reportTarget?.id ?? ""}
+          targetTitle={reportTarget?.title}
+          reportedUserId={reportTarget?.userId}
         />
       </div>
     </section>
