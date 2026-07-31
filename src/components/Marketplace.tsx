@@ -81,6 +81,7 @@ export const Marketplace = () => {
   const [loading, setLoading] = useState(true);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [selectedListing, setSelectedListing] = useState<MarketListing | null>(null);
+  const [reportTarget, setReportTarget] = useState<{ id: string; title: string; userId: string } | null>(null);
   const [radiusKm, setRadiusKm] = useState<number>(50);
   const [aiRecs, setAiRecs] = useState<{ id: string; score: number; reason: string }[]>([]);
   const [recsLoading, setRecsLoading] = useState(false);
@@ -613,6 +614,15 @@ export const Marketplace = () => {
           isOpen={contactModalOpen}
           onClose={() => setContactModalOpen(false)}
           listing={selectedListing}
+        />
+
+        <ReportListingModal
+          open={!!reportTarget}
+          onOpenChange={(o) => !o && setReportTarget(null)}
+          targetType="market_listing"
+          targetId={reportTarget?.id ?? ""}
+          targetTitle={reportTarget?.title}
+          reportedUserId={reportTarget?.userId}
         />
       </div>
     </section>
