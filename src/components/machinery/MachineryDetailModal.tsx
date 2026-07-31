@@ -87,6 +87,7 @@ const MachineryDetailModal = ({
   const [endDate, setEndDate] = useState<Date>();
   const [notes, setNotes] = useState("");
   const [isBooking, setIsBooking] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   // Fetch owner profile
   const { data: ownerProfile } = useQuery({
