@@ -15,6 +15,7 @@ import {
   Sparkles,
   Navigation as NavigationIcon,
   Loader2,
+  Flag,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +24,7 @@ import { FilterModal } from "./FilterModal";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { useBuyerPreferences } from "@/hooks/useBuyerPreferences";
 import { distanceToListing } from "@/lib/kenyaGeo";
+import { ReportListingModal } from "./ReportListingModal";
 
 interface MarketListing {
   id: string;
@@ -420,6 +422,16 @@ export const Marketplace = () => {
             <Package className="w-4 h-4 mr-2" />
             Contact Farmer
             <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-smooth" />
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-xs text-muted-foreground hover:text-destructive"
+            onClick={() => setReportTarget({ id: listing.id, title: listing.title, userId: listing.user_id })}
+          >
+            <Flag className="w-3 h-3 mr-1.5" />
+            Report this listing or farmer
           </Button>
         </CardContent>
       </Card>
