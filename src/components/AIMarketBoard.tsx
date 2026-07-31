@@ -71,11 +71,39 @@ export const AIMarketBoard = () => {
         body: { crop, city }
       });
 
+      // Read the real error body returned by the edge function (402 / 429 / 500)
+      let serverError: { status?: number; message?: string } | null = null;
       if (error) {
-        console.error('Supabase function error:', error);
+        const ctx = (error as any)?.context;
+        try {
+          if (ctx && typeof ctx.json === 'function') {
+            const body = await ctx.json();
+            serverError = { status: ctx.status, message: body?.error };
+          } else {
+            serverError = { status: ctx?.status, message: error.message };
+          }
+        } catch {
+          serverError = { status: ctx?.status, message: error.message };
+        }
+      } else if (data?.error) {
+        serverError = { message: data.error };
+      }
+
+      if (serverError) {
+        console.error('ai-market-prices failed:', serverError);
+        const isCredits = serverError.status === 402 || /credit|payment/i.test(serverError.message || '');
+        const isRate = serverError.status === 429 || /rate limit/i.test(serverError.message || '');
         toast({
-          title: "Error",
-          description: "Failed to fetch market prices. Please try again.",
+          title: isCredits
+            ? "AI credits exhausted"
+            : isRate
+              ? "Too many requests"
+              : "Could not load market prices",
+          description: isCredits
+            ? "The AI market analysis service has run out of credits. Add credits to your Lovable workspace to resume live pricing."
+            : isRate
+              ? "The AI service is rate limited. Please wait a few seconds and try again."
+              : serverError.message || "Failed to fetch market prices. Please try again.",
           variant: "destructive"
         });
         return;
@@ -97,6 +125,7 @@ export const AIMarketBoard = () => {
       setLoading(false);
     }
   };
+
 
   const handleCropSelect = (crop: string) => {
     setSelectedCrop(crop);
