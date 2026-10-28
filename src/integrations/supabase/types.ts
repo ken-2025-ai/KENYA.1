@@ -49,6 +49,48 @@ export type Database = {
           },
         ]
       }
+      donations: {
+        Row: {
+          amount: number
+          created_at: string
+          donor_name: string | null
+          failure_reason: string | null
+          id: string
+          kyanda_ref: string | null
+          message: string | null
+          mpesa_receipt: string | null
+          phone: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          donor_name?: string | null
+          failure_reason?: string | null
+          id?: string
+          kyanda_ref?: string | null
+          message?: string | null
+          mpesa_receipt?: string | null
+          phone: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          donor_name?: string | null
+          failure_reason?: string | null
+          id?: string
+          kyanda_ref?: string | null
+          message?: string | null
+          mpesa_receipt?: string | null
+          phone?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       listing_reports: {
         Row: {
           contact_email: string | null
